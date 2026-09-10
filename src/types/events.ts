@@ -3,7 +3,7 @@
  * Strongly typed events emitted by the four operational departments of Blacktide Systems.
  */
 
-export type DepartmentCode = 'sales' | 'product' | 'engineering' | 'finance' | 'command_center';
+export type DepartmentCode = 'sales' | 'product' | 'engineering' | 'finance' | 'command_center' | 'operations';
 
 // =============================================================================
 // SALES EVENTS
@@ -128,6 +128,26 @@ export interface CapacityChangedPayload {
   effective_date: string;
   previousCapacity?: number;
   newCapacity?: number;
+  production_capacity?: number;
+  previous_production_capacity?: number;
+  unit?: string;
+  equipment_status?: string;
+  inventory_level?: string;
+  inventory_units?: number;
+  previous_inventory_units?: number;
+  shipment_status?: string;
+  operations_status?: string;
+  notes?: string;
+}
+
+export interface InventoryChangedPayload {
+  inventory_id: string;
+  item_name?: string;
+  previous_value: number; // e.g. 1240
+  new_value: number;      // e.g. 860
+  unit?: string;
+  location?: string;
+  notes?: string;
 }
 
 export interface ResourceUnavailablePayload {
@@ -160,10 +180,13 @@ export interface SupplierDelayPayload {
 
 export type EngineeringEventType =
   | 'capacity_changed'
+  | 'inventory_changed'
   | 'resource_unavailable'
   | 'delivery_delay'
   | 'infrastructure_cost_changed'
   | 'supplier_delay';
+
+export type OperationsEventType = EngineeringEventType;
 
 // =============================================================================
 // FINANCE EVENTS
@@ -235,8 +258,9 @@ export type EventPayloadMap = {
   feature_deprioritized: FeatureDeprioritizedPayload;
   launch_date_changed: LaunchDateChangedPayload;
   priority_changed: PriorityChangedPayload;
-  // Engineering
+  // Engineering / Operations
   capacity_changed: CapacityChangedPayload;
+  inventory_changed: InventoryChangedPayload;
   resource_unavailable: ResourceUnavailablePayload;
   delivery_delay: DeliveryDelayPayload;
   infrastructure_cost_changed: InfrastructureCostChangedPayload;

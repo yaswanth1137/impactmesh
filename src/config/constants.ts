@@ -47,6 +47,12 @@ export const DEPARTMENTS: Record<
     deviceLabel: 'Device 5: Command Center Laptop',
     description: 'Central real-time situational awareness, impact graph, and decision intelligence',
   },
+  operations: {
+    name: 'Operations',
+    code: 'operations',
+    deviceLabel: 'Device 3: Operations Mobile',
+    description: 'Production capacity, inventory units, machinery burn rate, delivery delays',
+  },
 };
 
 export const CORE_ENTITY_TYPES: BusinessEntityType[] = [

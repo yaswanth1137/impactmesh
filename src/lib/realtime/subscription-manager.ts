@@ -6,6 +6,7 @@
 
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../supabase/client.ts';
+import { env } from '../../config/env.ts';
 import type { DecisionEvent, ImpactMeshEventType } from '../../types/events.ts';
 import type { BusinessState, ImpactResult, Recommendation } from '../../types/domain.ts';
 
@@ -14,7 +15,7 @@ export type RealtimeConnectionState = 'DISCONNECTED' | 'CONNECTING' | 'CONNECTED
 export type EventCallback<T> = (payload: T) => void;
 export type UnsubscribeFn = () => void;
 
-class RealtimeSubscriptionManager {
+export class RealtimeSubscriptionManager {
   private channels: Map<string, RealtimeChannel> = new Map();
   private connectionState: RealtimeConnectionState = 'DISCONNECTED';
   private stateListeners: Set<EventCallback<RealtimeConnectionState>> = new Set();
@@ -26,6 +27,14 @@ class RealtimeSubscriptionManager {
 
   private processedEventIds: Set<string> = new Set();
   private broadcastChannel: BroadcastChannel | null = null;
+
+  // Auto-reconnect telemetry
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempts: number = 0;
+  private readonly baseReconnectDelayMs: number = 1000;
+  private readonly maxReconnectDelayMs: number = 10000;
+  private isTornDown: boolean = false;
+  private currentOrgId?: string;
 
   constructor() {
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
@@ -40,16 +49,55 @@ class RealtimeSubscriptionManager {
         console.warn('[RealtimeManager] BroadcastChannel unavailable:', err);
       }
     }
+
+    // Attach online/offline network listeners and storage bus in browser environments
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => {
+        if (!this.isTornDown) {
+          this.reconnectAttempts = 0;
+          this.reconnect();
+        }
+      });
+      window.addEventListener('offline', () => {
+        this.setConnectionState('DISCONNECTED');
+      });
+
+      // Storage event listener ensures instantaneous sync across tabs/windows
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'impactmesh_event_bus' && e.newValue) {
+          try {
+            const data = JSON.parse(e.newValue);
+            if (data && data.event) {
+              this.handleIncomingEvent(data.event);
+            }
+          } catch (_err) {
+            // Ignore parse errors
+          }
+        }
+      });
+    }
   }
 
   public getConnectionState(): RealtimeConnectionState {
     return this.connectionState;
   }
 
+  public isEventProcessed(eventId: string): boolean {
+    return this.processedEventIds.has(eventId);
+  }
+
+  public getProcessedEventCount(): number {
+    return this.processedEventIds.size;
+  }
+
+  public clearProcessedEvents(): void {
+    this.processedEventIds.clear();
+  }
+
   public handleIncomingEvent(event: DecisionEvent): void {
     if (!event || !event.id) return;
     if (this.processedEventIds.has(event.id)) {
-      return; // Deduplicate
+      return; // Deduplicate: Drop repeat occurrences of the same event ID
     }
     this.processedEventIds.add(event.id);
     if (this.processedEventIds.size > 2000) {
@@ -75,6 +123,16 @@ class RealtimeSubscriptionManager {
         console.warn('[RealtimeManager] BroadcastChannel postMessage failed:', err);
       }
     }
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        window.localStorage.setItem(
+          'impactmesh_event_bus',
+          JSON.stringify({ event, t: Date.now() })
+        );
+      } catch (_err) {
+        // Storage quota / security policy safe
+      }
+    }
   }
 
   public onConnectionStateChange(callback: EventCallback<RealtimeConnectionState>): UnsubscribeFn {
@@ -86,8 +144,36 @@ class RealtimeSubscriptionManager {
   private setConnectionState(newState: RealtimeConnectionState): void {
     if (this.connectionState !== newState) {
       this.connectionState = newState;
-      this.stateListeners.forEach((listener) => listener(newState));
+      this.stateListeners.forEach((listener) => {
+        try {
+          listener(newState);
+        } catch (err) {
+          console.error('[RealtimeManager] Error in state listener:', err);
+        }
+      });
     }
+  }
+
+  /**
+   * Schedules automatic reconnection with exponential backoff.
+   */
+  private scheduleReconnect(): void {
+    if (this.isTornDown) return;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+    }
+
+    const delay = Math.min(
+      this.baseReconnectDelayMs * Math.pow(1.5, this.reconnectAttempts),
+      this.maxReconnectDelayMs
+    );
+    this.reconnectAttempts += 1;
+
+    this.reconnectTimer = setTimeout(() => {
+      if (!this.isTornDown) {
+        this.reconnect();
+      }
+    }, delay);
   }
 
   /**
@@ -98,13 +184,23 @@ class RealtimeSubscriptionManager {
    * 4. recommendations table INSERT listener
    */
   public initializeChannels(organizationId?: string): void {
+    this.currentOrgId = organizationId;
+    this.isTornDown = false;
+
     if (this.channels.size > 0) {
       return; // Already initialized
     }
 
+    if (!env.isSupabaseConfigured) {
+      // Local development realtime mesh: BroadcastChannel is active across tabs & devices
+      this.reconnectAttempts = 0;
+      this.setConnectionState('CONNECTED');
+      return;
+    }
+
     this.setConnectionState('CONNECTING');
 
-    // 1. Channel for incoming operational events across all 4 departments
+    // 1. Channel for incoming operational events across all departments
     const eventChannelName = organizationId ? `events:${organizationId}` : 'events:global';
     const eventChannel = supabase
       .channel(eventChannelName)
@@ -123,11 +219,17 @@ class RealtimeSubscriptionManager {
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
+          this.reconnectAttempts = 0;
           this.setConnectionState('CONNECTED');
         } else if (status === 'CHANNEL_ERROR') {
-          this.setConnectionState('ERROR');
+          this.setConnectionState('DISCONNECTED');
+          this.scheduleReconnect();
         } else if (status === 'CLOSED') {
           this.setConnectionState('DISCONNECTED');
+          this.scheduleReconnect();
+        } else if (status === 'TIMED_OUT') {
+          this.setConnectionState('DISCONNECTED');
+          this.scheduleReconnect();
         }
       });
 
@@ -236,14 +338,38 @@ class RealtimeSubscriptionManager {
   }
 
   /**
-   * Cleanly unsubscribe from all channels (e.g. on teardown or user logoff).
+   * Disconnect manually from all channels.
    */
-  public async teardown(): Promise<void> {
+  public async disconnect(): Promise<void> {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     for (const [, channel] of this.channels) {
       await supabase.removeChannel(channel);
     }
     this.channels.clear();
     this.setConnectionState('DISCONNECTED');
+  }
+
+  /**
+   * Force reconnect or trigger auto-reconnection.
+   */
+  public async reconnect(): Promise<void> {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    await this.disconnect();
+    this.initializeChannels(this.currentOrgId);
+  }
+
+  /**
+   * Cleanly unsubscribe from all channels and halt auto-reconnect timers.
+   */
+  public async teardown(): Promise<void> {
+    this.isTornDown = true;
+    await this.disconnect();
   }
 }
 

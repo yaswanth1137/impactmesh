@@ -14,6 +14,7 @@ const VALID_DEPARTMENTS: DepartmentCode[] = [
   'engineering',
   'finance',
   'command_center',
+  'operations',
 ];
 
 const EVENT_DEPARTMENT_MAP: Record<ImpactMeshEventType, DepartmentCode[]> = {
@@ -32,11 +33,12 @@ const EVENT_DEPARTMENT_MAP: Record<ImpactMeshEventType, DepartmentCode[]> = {
   launch_date_changed: ['product', 'command_center'],
   priority_changed: ['product', 'command_center'],
   // Engineering / Operations
-  capacity_changed: ['engineering', 'command_center'],
-  resource_unavailable: ['engineering', 'command_center'],
-  delivery_delay: ['engineering', 'command_center'],
+  capacity_changed: ['engineering', 'command_center', 'operations'],
+  inventory_changed: ['engineering', 'command_center', 'operations'],
+  resource_unavailable: ['engineering', 'command_center', 'operations'],
+  delivery_delay: ['engineering', 'command_center', 'operations'],
   infrastructure_cost_changed: ['engineering', 'finance', 'command_center'],
-  supplier_delay: ['engineering', 'command_center'],
+  supplier_delay: ['engineering', 'command_center', 'operations'],
   // Finance
   budget_changed: ['finance', 'command_center'],
   cost_changed: ['finance', 'command_center'],

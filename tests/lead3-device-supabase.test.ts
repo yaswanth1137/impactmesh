@@ -8,11 +8,13 @@ import { realtimeSubscriptionManager } from '../src/lib/realtime/subscription-ma
 import { enterpriseDatasetService } from '../src/lib/dataset/dataset.service.ts';
 import { groqReasoningService } from '../src/lib/groq/groq.service.ts';
 import { checkSupabaseConnection } from '../src/lib/supabase/client.ts';
+import { securityPolicyService, CEO_USER } from '../src/lib/auth/auth-service.ts';
 import type { DecisionEvent } from '../src/types/events.ts';
 import type { ReasoningContext } from '../src/types/groq.ts';
 
 describe('Lead 3: Device to Supabase & Realtime Connectivity', () => {
   beforeEach(() => {
+    securityPolicyService.setCurrentUser(CEO_USER);
     // Teardown previous channels
     realtimeSubscriptionManager.teardown();
     realtimeSubscriptionManager.initializeChannels();
