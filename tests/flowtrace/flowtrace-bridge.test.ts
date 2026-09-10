@@ -8,6 +8,12 @@ import { FlowTraceAdapter } from '../../server/services/flowtrace/flowtrace.adap
 import { StateTransitionEngine } from '../../server/services/state-transition/state-transition.service.ts';
 import { EventStore } from '../../server/services/event-store/event-store.service.ts';
 import type { Decision, Recommendation, BusinessState } from '../../src/types/domain.ts';
+import {
+  executionPlanToFlowTraceWorkflow,
+  registerPlanInFlowTraceDB,
+  executeStepWithRealFlowTrace,
+} from '../../server/services/flowtrace/flowtrace-real-bridge.ts';
+import { db } from '../../flowtrace/server/db.ts';
 
 describe('FlowTrace Execution Bridge (Phase 3)', () => {
   let adapter: FlowTraceAdapter;
@@ -286,5 +292,106 @@ describe('FlowTrace Execution Bridge (Phase 3)', () => {
     const finalResult = adapter.getExecutionResult(plan.id);
     expect(finalResult.completedStepsCount).toBe(4);
     expect(finalResult.generatedEvents).toHaveLength(4);
+  });
+
+  // ---------------------------------------------------------------------------
+  // 11. Real FlowTrace WorkflowDefinition Mapping
+  // ---------------------------------------------------------------------------
+  it('11. maps ExecutionPlan into real FlowTrace WorkflowDefinition with DAG nodes and edges', () => {
+    const plan = adapter.createExecutionPlan(mockRecommendation, mockDecision);
+    const workflow = executionPlanToFlowTraceWorkflow(plan);
+
+    expect(workflow.id).toBe(plan.id);
+    expect(workflow.nodes).toHaveLength(plan.steps.length);
+    expect(workflow.nodes[0].id).toBe(plan.steps[0].id);
+    expect(workflow.nodes[0].label).toContain('PRODUCT:');
+    expect(workflow.nodes[0].type).toBe('decision');
+    expect(workflow.nodes[1].type).toBe('system');
+    expect(workflow.nodes[2].type).toBe('agent');
+    expect(workflow.nodes[3].type).toBe('approval');
+
+    // Verify DAG edges reflect dependsOn relations
+    expect(workflow.edges.length).toBeGreaterThanOrEqual(3);
+    const step2Edge = workflow.edges.find((e) => e.target === plan.steps[1].id);
+    expect(step2Edge).toBeDefined();
+    expect(step2Edge?.source).toBe(plan.steps[0].id);
+    expect(step2Edge?.protocol).toBe('EXECUTION_COUPLING');
+  });
+
+  // ---------------------------------------------------------------------------
+  // 12. Real FlowTrace Database Workflow Registration & Retrieval
+  // ---------------------------------------------------------------------------
+  it('12. persists and retrieves workflow from real FlowTrace in-memory database', () => {
+    const plan = adapter.createExecutionPlan(mockRecommendation, mockDecision);
+    const registered = registerPlanInFlowTraceDB(plan);
+
+    expect(registered.id).toBe(plan.id);
+
+    // Verify directly from real FlowTrace DB
+    const retrieved = db.getWorkflowById(plan.id);
+    expect(retrieved).toBeDefined();
+    expect(retrieved?.id).toBe(plan.id);
+    expect(retrieved?.totalNodes).toBe(plan.steps.length);
+    expect(retrieved?.nodes.map((n) => n.id)).toEqual(plan.steps.map((s) => s.id));
+  });
+
+  // ---------------------------------------------------------------------------
+  // 13. Step Execution Appends Real FlowTrace Audit Logs
+  // ---------------------------------------------------------------------------
+  it('13. appends audit log entries directly into real FlowTrace database upon step execution', async () => {
+    const plan = adapter.createExecutionPlan(mockRecommendation, mockDecision);
+    adapter.approveExecutionPlan(plan.id, 'Captain Maya');
+    adapter.startExecution(plan.id);
+
+    const initialLogsCount = db.getAuditLogs().length;
+
+    const step1 = plan.steps[0];
+    const { auditEntryId, event } = await executeStepWithRealFlowTrace(
+      plan,
+      step1.id,
+      getBaselineState()
+    );
+
+    expect(auditEntryId).toMatch(/^AUD-FT-/);
+    const logs = db.getAuditLogs();
+    // Real FlowTrace LangGraph engine + step completion appends multiple stage audit logs
+    expect(logs.length).toBeGreaterThan(initialLogsCount);
+
+    const createdAudit = logs.find((l) => l.id === auditEntryId);
+    expect(createdAudit).toBeDefined();
+    expect(createdAudit?.workflow).toBe(plan.title);
+    expect(createdAudit?.action).toContain('FlowTrace Step Execution');
+    expect(createdAudit?.status).toBe('action_taken');
+    expect(createdAudit?.result).toContain(event.id);
+
+    // Verify that real FlowTrace LangGraph pipeline nodes also logged to db
+    const langgraphAudit = logs.find((l) => l.category === 'detection');
+    expect(langgraphAudit).toBeDefined();
+  });
+
+  // ---------------------------------------------------------------------------
+  // 14. Real FlowTrace Workflow Sync Reflects Step Completion
+  // ---------------------------------------------------------------------------
+  it('14. updates workflow node status in real FlowTrace DB after step execution', async () => {
+    const plan = adapter.createExecutionPlan(mockRecommendation, mockDecision);
+    adapter.approveExecutionPlan(plan.id, 'Captain Maya');
+    adapter.startExecution(plan.id);
+
+    const step1 = plan.steps[0];
+    const { workflow } = await executeStepWithRealFlowTrace(
+      plan,
+      step1.id,
+      getBaselineState()
+    );
+
+    const nodeInWorkflow = workflow.nodes.find((n) => n.id === step1.id);
+    expect(nodeInWorkflow?.status).toBe('healthy');
+    expect(nodeInWorkflow?.impactClassification).toBe('unaffected');
+    expect(nodeInWorkflow?.errorRate).toBe(0);
+
+    // Check directly in FlowTrace DB
+    const dbWorkflow = db.getWorkflowById(plan.id);
+    const dbNode = dbWorkflow?.nodes.find((n) => n.id === step1.id);
+    expect(dbNode?.status).toBe('healthy');
   });
 });

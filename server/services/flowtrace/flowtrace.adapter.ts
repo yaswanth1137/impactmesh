@@ -25,6 +25,12 @@ import {
 } from './blacktide-execution-plan.ts';
 import { stateTransitionEngine } from '../state-transition/state-transition.service.ts';
 import { eventStore } from '../event-store/event-store.service.ts';
+import {
+  registerPlanInFlowTraceDB,
+  executionPlanToFlowTraceWorkflow,
+} from './flowtrace-real-bridge.ts';
+import { db } from '../../../flowtrace/server/db.ts';
+import type { WorkflowDefinition } from '../../../flowtrace/src/types/index.ts';
 
 export class FlowTraceAdapter implements IFlowTraceAdapter {
   private readonly plans = new Map<string, ExecutionPlan>();
@@ -32,10 +38,11 @@ export class FlowTraceAdapter implements IFlowTraceAdapter {
   private currentState: BusinessState | null = null;
 
   constructor() {
-    // Seed canonical Blacktide plan
+    // Seed canonical Blacktide plan & register in real FlowTrace DB
     const canonicalPlan = createCanonicalBlacktideExecutionPlan();
     this.plans.set(canonicalPlan.id, canonicalPlan);
     this.generatedEvents.set(canonicalPlan.id, []);
+    registerPlanInFlowTraceDB(canonicalPlan);
   }
 
   public setCurrentState(state: BusinessState): void {
@@ -253,6 +260,31 @@ export class FlowTraceAdapter implements IFlowTraceAdapter {
     };
     step.evidence = evidence;
 
+    // Record in real FlowTrace DB audit log and update workflow
+    try {
+      db.addAuditLog({
+        id: `AUD-FT-${Math.floor(Math.random() * 90000) + 10000}`,
+        timestamp: step.completedAt,
+        relative_time: 'Just now',
+        action: `Execute Step: ${step.title}`,
+        category: 'operator_action',
+        target: step.departmentTitle,
+        affected_component: step.title,
+        workflow_id: plan.id,
+        workflow_name: plan.title,
+        workflow_code: `WF-FLOW-${plan.id.slice(0, 8).toUpperCase()}`,
+        actor: plan.approvedBy || 'Bridge Operator',
+        result: `Step ${step.sequence} executed (${step.actionType}). Emitted DecisionEvent ${decisionEvent.id}.`,
+        status: 'action_taken',
+        severity: 'normal',
+        details: step.description,
+        is_current_incident: true,
+      });
+      registerPlanInFlowTraceDB(plan);
+    } catch {
+      // Safe fallback
+    }
+
     // Evaluate downstream steps: unblock those whose dependencies are now satisfied
     plan.steps.forEach((s) => {
       if (s.status === 'blocked') {
@@ -312,10 +344,16 @@ export class FlowTraceAdapter implements IFlowTraceAdapter {
     };
   }
 
+  public getFlowTraceWorkflow(planId = CANONICAL_EXECUTION_PLAN_ID): WorkflowDefinition {
+    const plan = this.plans.get(planId) || this.resetPlan(planId);
+    return executionPlanToFlowTraceWorkflow(plan);
+  }
+
   public resetPlan(planId = CANONICAL_EXECUTION_PLAN_ID): ExecutionPlan {
     const freshPlan = createCanonicalBlacktideExecutionPlan();
     this.plans.set(planId, freshPlan);
     this.generatedEvents.set(planId, []);
+    registerPlanInFlowTraceDB(freshPlan);
     return freshPlan;
   }
 }

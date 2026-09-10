@@ -1,0 +1,4 @@
+change_id,timestamp,workflow_id,service,event_type,old_version,new_version,changed_field,previous_type,new_type,reason
+CHG-94021,14:32:04 UTC,WF-CVA-01,Customer Identity API,API Contract / Schema Change,v2.4.0,v2.5.0,customer.identity.status,string enum,nested dictionary object,Breaking schema contract drift without backward compatibility
+CHG-94018,13:14:10 UTC,WF-PFD-02,Fraud Rule Engine,Rule Weight Adjustment,v3.1.0,v3.1.1,velocity_threshold,float,float,Routine fraud threshold tuning
+CHG-94015,11:05:22 UTC,WF-COB-03,OCR Extraction API,Model Patch,v1.2.0,v1.2.1,confidence_threshold,float,float,OCR model confidence calibration

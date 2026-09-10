@@ -1,0 +1,19 @@
+[
+  {
+    "id": "risk-94021",
+    "workflowId": "wf-customer-verification",
+    "workflowCode": "WF-CVA-01",
+    "riskScore": 82,
+    "failureProbability": "68%",
+    "severity": "HIGH RISK",
+    "confidence": 0.94,
+    "affectedComponentsCount": 3,
+    "dependenciesTracedCount": 5,
+    "blastRadius": [
+      "Customer Verification Agent (Groq-Powered)",
+      "Fraud Assessment Agent",
+      "Approval API / Business System"
+    ],
+    "evaluatedAt": "14:32:04 UTC"
+  }
+]

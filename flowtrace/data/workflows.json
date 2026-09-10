@@ -1,0 +1,50 @@
+[
+  {
+    "id": "wf-customer-verification",
+    "name": "Customer Verification & Approval",
+    "code": "WF-CVA-01",
+    "environment": "Production",
+    "description": "End-to-end automated loan verification and underwriting chain: orchestrating KYC checks, risk intelligence, and core approval API bindings.",
+    "healthScore": 58,
+    "riskLevel": "high",
+    "totalNodes": 5,
+    "avgLatencyMs": 115,
+    "datasetClassification": "Representative Demo Dataset"
+  },
+  {
+    "id": "wf-payment-fraud",
+    "name": "Payment Fraud Detection",
+    "code": "WF-PFD-02",
+    "environment": "Production",
+    "description": "Real-time card transaction velocity scoring and merchant anomaly evaluation pipeline.",
+    "healthScore": 99,
+    "riskLevel": "low",
+    "totalNodes": 4,
+    "avgLatencyMs": 42,
+    "datasetClassification": "Representative Demo Dataset"
+  },
+  {
+    "id": "wf-customer-onboarding",
+    "name": "Customer Onboarding",
+    "code": "WF-COB-03",
+    "environment": "Production",
+    "description": "Document extraction, OCR verification, and automated customer profile synthesis.",
+    "healthScore": 98,
+    "riskLevel": "low",
+    "totalNodes": 3,
+    "avgLatencyMs": 88,
+    "datasetClassification": "Representative Demo Dataset"
+  },
+  {
+    "id": "wf-loan-underwriting",
+    "name": "Loan Underwriting",
+    "code": "WF-LUW-04",
+    "environment": "Production",
+    "description": "Credit score aggregation, debt-to-income verification, and loan pricing calculation.",
+    "healthScore": 95,
+    "riskLevel": "low",
+    "totalNodes": 3,
+    "avgLatencyMs": 76,
+    "datasetClassification": "Representative Demo Dataset"
+  }
+]

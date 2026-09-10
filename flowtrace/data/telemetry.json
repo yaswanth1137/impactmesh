@@ -1,0 +1,83 @@
+[
+  {
+    "time": "14:20",
+    "timestamp": "14:20:00 UTC",
+    "errorRate": 0.0,
+    "agentErrorRate": 0.0,
+    "workflowAverage": 0.05,
+    "throughput": "18.2K req/min",
+    "p99LatencyMs": 42,
+    "annotation": "Baseline nominal telemetry"
+  },
+  {
+    "time": "14:24",
+    "timestamp": "14:24:00 UTC",
+    "errorRate": 0.0,
+    "agentErrorRate": 0.0,
+    "workflowAverage": 0.05,
+    "throughput": "18.4K req/min",
+    "p99LatencyMs": 43,
+    "annotation": "Pre-deployment telemetry baseline"
+  },
+  {
+    "time": "14:28",
+    "timestamp": "14:28:00 UTC",
+    "errorRate": 0.0,
+    "agentErrorRate": 0.1,
+    "workflowAverage": 0.06,
+    "throughput": "18.3K req/min",
+    "p99LatencyMs": 44,
+    "annotation": "Canary traffic shift 0%"
+  },
+  {
+    "time": "14:32",
+    "timestamp": "14:32:04 UTC",
+    "errorRate": 0.4,
+    "agentErrorRate": 0.4,
+    "workflowAverage": 0.12,
+    "throughput": "18.4K req/min",
+    "p99LatencyMs": 85,
+    "annotation": "Customer Identity API v2.5 schema change detected (14:32:04)",
+    "isEventMarker": true
+  },
+  {
+    "time": "14:34",
+    "timestamp": "14:34:00 UTC",
+    "errorRate": 18.0,
+    "agentErrorRate": 18.5,
+    "workflowAverage": 2.1,
+    "throughput": "18.1K req/min",
+    "p99LatencyMs": 140,
+    "annotation": "Verification agent deserialization exceptions begin"
+  },
+  {
+    "time": "14:36",
+    "timestamp": "14:36:00 UTC",
+    "errorRate": 45.0,
+    "agentErrorRate": 46.2,
+    "workflowAverage": 6.8,
+    "throughput": "17.6K req/min",
+    "p99LatencyMs": 195,
+    "annotation": "Cascade to Fraud Assessment Agent"
+  },
+  {
+    "time": "14:38",
+    "timestamp": "14:38:00 UTC",
+    "errorRate": 68.0,
+    "agentErrorRate": 68.0,
+    "workflowAverage": 9.4,
+    "throughput": "16.8K req/min",
+    "p99LatencyMs": 240,
+    "annotation": "Peak verification failure rate reached (68%)"
+  },
+  {
+    "time": "14:40",
+    "timestamp": "14:40:00 UTC",
+    "errorRate": 68.0,
+    "agentErrorRate": 68.0,
+    "workflowAverage": 11.2,
+    "throughput": "16.5K req/min",
+    "p99LatencyMs": 245,
+    "annotation": "Current Observation Window"
+  }
+]

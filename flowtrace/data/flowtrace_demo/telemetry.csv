@@ -1,0 +1,9 @@
+timestamp,time_label,error_rate_pct,agent_error_pct,workflow_avg_pct,throughput_req_min,p99_latency_ms,annotation,is_event_marker
+14:20:00 UTC,14:20,0.0,0.0,0.05,18200,42,Baseline nominal telemetry,false
+14:24:00 UTC,14:24,0.0,0.0,0.05,18400,43,Pre-deployment baseline,false
+14:28:00 UTC,14:28,0.0,0.1,0.06,18300,44,Canary traffic shift,false
+14:32:04 UTC,14:32,0.4,0.4,0.12,18400,85,Customer Identity API v2.5 schema change detected,true
+14:34:00 UTC,14:34,18.0,18.5,2.10,18100,140,Verification agent deserialization exceptions begin,false
+14:36:00 UTC,14:36,45.0,46.2,6.80,17600,195,Cascade to Fraud Assessment Agent,false
+14:38:00 UTC,14:38,68.0,68.0,9.40,16800,240,Peak verification failure rate reached,false
+14:40:00 UTC,14:40,68.0,68.0,11.20,16500,245,Current observation window,false

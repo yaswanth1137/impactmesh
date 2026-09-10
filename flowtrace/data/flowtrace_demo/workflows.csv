@@ -1,0 +1,5 @@
+workflow_id,code,name,environment,health_score,risk_level,total_nodes,avg_latency_ms,description
+wf-customer-verification,WF-CVA-01,Customer Verification & Approval,Production,58,high,5,115,End-to-end automated loan verification and underwriting chain
+wf-payment-fraud,WF-PFD-02,Payment Fraud Detection,Production,99,low,4,42,Real-time card transaction velocity scoring and merchant anomaly evaluation
+wf-customer-onboarding,WF-COB-03,Customer Onboarding,Production,98,low,3,88,Document extraction OCR verification and automated profile synthesis
+wf-loan-underwriting,WF-LUW-04,Loan Underwriting,Production,95,low,3,76,Credit score aggregation and loan pricing calculation

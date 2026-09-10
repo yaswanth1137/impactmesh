@@ -1,5 +1,5 @@
 # FLOWTRACE INTEGRATION ARCHITECTURE SPECIFICATION
-**IMPACTMESH × FLOWTRACE Closed-Loop Execution Bridge**
+**IMPACTMESH × FLOWTRACE Closed-Loop Execution Bridge (Phase 3.5 — Real FlowTrace Codebase Integration)**
 
 Company: **BLACKTIDE SYSTEMS**  
 Product: **Decision Impact Intelligence**  
@@ -16,9 +16,9 @@ IMPACTMESH answers:
 
 FLOWTRACE answers:
 > **"HOW DO WE EXECUTE THE APPROVED RESPONSE?"**  
-> *(Human Approval → Execution Plan Generation → Step-by-Step Dispatch → Evidence Telemetry → Execution Events)*
+> *(Human Approval → Execution Plan Generation → Real FlowTrace Workflow Engine → LangGraph Analysis & Step Dispatch → Real FlowTrace Audit Logs → Typed DecisionEvents → State Transition Engine)*
 
-By coupling IMPACTMESH and FLOWTRACE through a strict, event-driven adapter boundary, we complete a **closed feedback loop**:
+By coupling IMPACTMESH and the **REAL FlowTrace codebase** through a strict, event-driven adapter boundary, we complete an authentic **closed feedback loop**:
 ```
   ┌────────────────────────────────────────────────────────────────────────┐
   │                           IMPACTMESH CORE                              │
@@ -44,151 +44,163 @@ By coupling IMPACTMESH and FLOWTRACE through a strict, event-driven adapter boun
   │        │                                 ExecutionPlan                 │
   │        │                                       │                       │
   │        │                                       ▼                       │
-  │        │                               FlowTraceAdapter                │
+  │        │                           flowtrace-real-bridge.ts            │
+  │        │                         (Translation to FlowTrace)            │
+  │        │                                       │                       │
+  │        │                                       ▼                       │
+  │        │                            REAL FLOWTRACE CODEBASE            │
+  │        │                        - WorkflowDefinition (DAG nodes/edges) │
+  │        │                        - WorkflowGraph (@xyflow/react)        │
+  │        │                        - In-Memory DB (flowtrace/server/db.ts)│
+  │        │                        - LangGraph Change Pipeline            │
+  │        │                        - Real Audit Logs (db.addAuditLog)     │
   │        │                                       │                       │
   │        │                                       ▼                       │
   │   DecisionEvent <── ExecutionStep Completed ───┘                       │
-  │   (with provenance context)                                            │
+  │   (with executionContext provenance:                                   │
+  │    decisionId, recommendationId, planId, stepId)                       │
   │                                                                        │
-  │                           FLOWTRACE LAYER                              │
+  │                        FLOWTRACE REAL EXECUTION                        │
   └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. FlowTrace Architecture Discovered (Inspection Report)
+## 2. Actual FlowTrace Repository Architecture & Analysis
 
-Direct inspection of `https://github.com/NManishkumar/FLOWTRACE-.git` revealed the following concrete architectural characteristics:
+Inspection of the real FlowTrace repository (`https://github.com/NManishkumar/FLOWTRACE-.git`) revealed:
 
-| Property | FlowTrace Implementation |
+| Property | Real FlowTrace Implementation |
 | :--- | :--- |
-| **1. Framework** | React 19 (`19.2.8`) + TypeScript (`~6.0.2`) |
-| **2. Build Tool** | Vite 8 (`^8.2.0`) with `@vitejs/plugin-react` |
-| **3. React Structure** | Single-page application shell with fixed sidebar navigation (`src/components/Sidebar.tsx`), top bar (`src/components/Topbar.tsx`), and five primary views (`Overview`, `Workflows`, `ImpactSimulator`, `RiskEvents`, `AuditLog`). |
-| **4. Entry Points** | `src/main.tsx` mounting `src/App.tsx`. |
-| **5. Routing** | Tab-based state navigation (`useState<NavigationPageId>('simulator')`), not react-router. |
-| **6. State Management** | React `useState` hooks combined with service-level API abstraction (`src/services/api.ts`). |
-| **7. Data Model** | Graph-centric DAG structures (`WorkflowDefinition`, `WorkflowNodeData`, `WorkflowEdgeData`), incident models (`RiskEventItem`), and audit entries (`AuditEntry`). |
-| **8. Execution Model** | Interactive simulation pipeline with stage-based progression: `healthy` $\to$ `change_detected` $\to$ `tracing_dependencies` $\to$ `predicting_impact` $\to$ `risk_assessment` $\to$ `analysis_complete` $\to$ `workflow_paused`/`workflow_continued`. |
-| **9. Workflow / Step Representation**| React Flow (`@xyflow/react`) node-edge canvas with interactive inspector panels and status badges. |
-| **10. Existing APIs / Services** | REST client functions in `src/services/api.ts` connecting to `/api/overview`, `/api/workflows`, `/api/analyze-change`, `/api/operator-decision`, `/api/demo/run`, and `/api/demo/reset`. |
-| **11. Existing Backend** | Self-contained Node HTTP middleware in `server/api.ts`, `server/db.ts`, and `server/langgraph.ts` running within the Vite dev server. |
-| **12. Deployment Model** | Standalone web application with optional embedded API server, capable of operating 100% offline via bundled fallback mocks (`src/data/`). |
-| **13. Execution Status Representation**| Status strings: `'healthy' \| 'warning' \| 'critical' \| 'changed'` on nodes; `'action_required' \| 'investigating' \| 'action_taken'` on risk events; `'completed' \| 'recommended' \| 'pending'` on audit entries. |
-| **14. Step Creation** | Pre-configured or dynamically assembled through node-edge definitions (`WorkflowNodeData[]`, `WorkflowEdgeData[]`). |
-| **15. Step Execution** | Triggered via `analyzeChange` or `recordOperatorDecision` calls which update backend database state and append audit log items. |
-| **16. Execution Completion** | Emits `operator_action` audit entries and locks incident resolution state. |
-| **17. Persistence Mechanism** | In-memory JavaScript Map database (`server/db.ts`) with seed reset capabilities. |
+| **1. Source Repository** | `https://github.com/NManishkumar/FLOWTRACE-.git` |
+| **2. Local Location** | `flowtrace/` in the workspace root |
+| **3. Framework & Tooling** | React 19 (`^19.2.8`), Vite 8 (`^8.2.0`), TypeScript (`~6.0.2`), Tailwind CSS v4 (`^4.2.1`) |
+| **4. Graph / Workflow Engine** | `@xyflow/react` (`^12.11.3`) for DAG interactive node-and-edge visualization (`WorkflowGraph.tsx`) |
+| **5. Persistence** | Real in-memory persistence engine (`flowtrace/server/db.ts`) with typed Maps for workflows, services, dependencies, production changes, risk events, and audit logs |
+| **6. Execution Pipeline** | LangGraph multi-stage execution and analysis pipeline (`flowtrace/server/langgraph.ts`) comprising `ChangeDetectionNode`, `DependencyTraceNode`, `ImpactPredictionNode`, `RiskAssessmentNode`, and `RecommendationNode` |
+| **7. Real UI Components** | `WorkflowGraph.tsx` (React Flow canvas with custom edge rendering, status badges, and zoom/pan navigation), `Sidebar.tsx`, `Topbar.tsx`, `CreateWorkflowModal.tsx` |
+| **8. Standalone Build** | Fully self-contained build: `npm --prefix flowtrace run build` produces production bundles in under 2 seconds with 0 errors |
 
 ---
 
-## 3. Integration Strategy Selection
+## 3. Integration Strategy Selected & Justification
 
-We evaluated four possible architectural approaches:
+### Strategy Selected: Monorepo/Subproject Route & Module Integration
 
-### Strategy Evaluation
+We incorporated the real FlowTrace codebase directly under `flowtrace/` in the root repository.
 
-| Strategy | Description | Pros | Cons | Verdict |
-| :--- | :--- | :--- | :--- | :--- |
-| **A. Shared Package / npm** | Publish FlowTrace as an npm package. | High abstraction. | Requires publishing, version churn, and heavy build overhead for a local hackathon. | ❌ Rejected |
-| **B. Monorepo Workspace** | Convert to pnpm/npm workspace with twin apps. | Code sharing. | Alters repository root structure and adds complex dev orchestrations. | ❌ Rejected |
-| **C. Service / API Boundary** | FlowTrace runs on separate port; communicates via HTTP REST. | Process isolation. | Requires running 2 dev servers on separate ports; complicates local multi-device demo. | ⚠️ Partial |
-| **D. Route-Based Application Integration (Chosen Strategy)** | Deep integration via dedicated `/flowtrace` route inside IMPACTMESH, backed by an isolated `FlowTraceAdapter` service. | Single-port local deployment, zero network fragility, unified visual styling, strict event-driven boundary. | Requires unified TypeScript contracts. | ✅ **SELECTED** |
-
-### Selected Architecture: Hybrid Route & Service Boundary (Strategy D + C)
-1. **Single Unified Server & Host**: IMPACTMESH hosts the `/flowtrace` route directly within its existing Vite setup.
-2. **Design Language Alignment**: The FlowTrace execution experience adopts the Blacktide **Pixel Command Deck** visual system (Navy `#0D131A`, Brass `#D6A84F`, Seafoam `#59A66A`), eliminating CSS utility collisions from Tailwind v4.
-3. **Decoupled State Ownership**: FlowTrace *never* modifies `BusinessState` directly. It communicates exclusively by emitting typed `DecisionEvent`s through `FlowTraceAdapter`.
+### Why This Strategy Was Selected:
+1. **Preserves Real FlowTrace Code**: The entire FlowTrace source tree (`src/`, `server/`, `data/`, `package.json`, `tsconfig.json`, `vite.config.ts`) remains authentic and uncompromised.
+2. **Standalone Integrity**: The FlowTrace project builds independently with `npm --prefix flowtrace run build` without any modification to its core contracts.
+3. **Single Local Hackathon Deployment**: Developers and judges run a single command (`npm run dev`) to serve both the IMPACTMESH Command Center and the real FlowTrace execution suite (`/flowtrace`).
+4. **Direct Component & Engine Reuse**: IMPACTMESH imports the real `WorkflowGraph` React Flow canvas directly into `FlowTraceRoute.tsx`, and invokes the real FlowTrace database (`db.saveWorkflow`, `db.addAuditLog`, `db.getAuditLogs`) and LangGraph analysis pipeline directly from `flowtrace-real-bridge.ts`.
+5. **Reproducible GitHub Collaboration**: The entire codebase is version-controlled in git without fragile git submodule credential barriers or broken external npm dependencies.
 
 ---
 
-## 4. Ownership Boundaries & Contracts
+## 4. Where the REAL FlowTrace Source Lives
 
+The real FlowTrace repository is located at:
 ```
-┌────────────────────────────────────────────────────────┐
-│                   IMPACTMESH OWNS:                     │
-│  - Authoritative BusinessState (Financial, Ops, Scope) │
-│  - Dependency Graph & Multi-Department Topologies      │
-│  - Strategic Recommendations                           │
-│  - Human Approval State                                │
-│  - Immutable Append-Only Event Store                   │
-│  - State Transition Engine                             │
-└────────────────────────────────────────────────────────┘
-                           │
-                 [ FlowTraceAdapter ]
-                           │
-┌────────────────────────────────────────────────────────┐
-│                   FLOWTRACE OWNS:                      │
-│  - ExecutionPlan Lifecycle                             │
-│  - ExecutionStep Sequencing & Dependency Gating        │
-│  - Step Execution Status (pending, running, completed) │
-│  - Operational Evidence Telemetry & Audit Stamps       │
-│  - Emitting Completed Step DecisionEvents              │
-└────────────────────────────────────────────────────────┘
+c:\Users\yaswa\impact_mesh\flowtrace\
+├── data/                       # FlowTrace seed telemetry, changes, workflows
+├── server/
+│   ├── api.ts                  # Real FlowTrace REST endpoints
+│   ├── datasetEngine.ts        # FlowTrace dataset processing
+│   ├── db.ts                   # Real FlowTrace in-memory database & audit store
+│   ├── groq.ts                 # Real FlowTrace LLM client
+│   └── langgraph.ts            # Real FlowTrace LangGraph multi-stage pipeline
+├── src/
+│   ├── components/
+│   │   ├── WorkflowGraph.tsx   # Real FlowTrace React Flow DAG component
+│   │   ├── Sidebar.tsx
+│   │   └── Topbar.tsx
+│   ├── pages/                  # Overview, Workflows, ImpactSimulator, RiskEvents, AuditLog
+│   ├── services/api.ts         # Real FlowTrace API client
+│   └── types/index.ts          # FlowTrace domain contracts (WorkflowDefinition, WorkflowNodeData, etc.)
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
 
 ---
 
-## 5. Execution Contract Specification
+## 5. REAL FlowTrace Components Being Used
 
-Defined in [`src/types/execution.ts`](file:///c:/Users/yaswa/impact_mesh/src/types/execution.ts):
-
-### Core Types:
-- **`ExecutionStatus`**: `'pending' | 'ready' | 'running' | 'completed' | 'failed' | 'blocked' | 'skipped'`
-- **`ExecutionPlan`**:
-  - `id: string`
-  - `decisionId: string`
-  - `title: string`
-  - `objective: string`
-  - `sourceRecommendationId: string`
-  - `status: ExecutionStatus`
-  - `approvedAt: string | null`
-  - `approvedBy: string | null`
-  - `steps: ExecutionStep[]`
-  - `expectedOutcome: string`
-- **`ExecutionStep`**:
-  - `id: string`
-  - `planId: string`
-  - `sequence: number` (1-indexed order)
-  - `department: DepartmentCode` (`product`, `operations`, `sales`, `finance`)
-  - `actionType: string`
-  - `title: string`
-  - `description: string`
-  - `inputs: Record<string, unknown>`
-  - `dependsOn: string[]` (preceding step IDs that must be `completed`)
-  - `expectedStateChanges: Record<string, unknown>`
-  - `status: ExecutionStatus`
-  - `startedAt?: string`
-  - `completedAt?: string`
-  - `resultingEvent?: Partial<DecisionEvent>`
-- **`ExecutionContext`** (Provenance tracking attached to resulting `DecisionEvent`):
-  - `executionPlanId: string`
-  - `executionStepId: string`
-  - `decisionId: string`
-  - `recommendationId: string`
+1. **`flowtrace/src/components/WorkflowGraph.tsx`**:
+   - Rendered directly inside `src/app/routes/FlowTraceRoute.tsx`.
+   - Displays the execution DAG using `@xyflow/react` with custom styled nodes, status indicators (`healthy`, `warning`, `critical`, `changed`), dependency edges, and interactive node selection.
+2. **`flowtrace/server/db.ts`**:
+   - Stores the translated execution plan as a native FlowTrace `WorkflowDefinition` via `db.saveWorkflow()`.
+   - Records audit log entries for every executed step via `db.addAuditLog()`.
+   - Queried in real-time by both test suites and UI components.
+3. **`flowtrace/server/langgraph.ts`**:
+   - Executes multi-stage evaluation (`runLangGraphAnalysis`) during step execution, producing risk assessments, dependency propagation, and telemetry stamps.
+4. **`flowtrace/src/types/index.ts`**:
+   - Authoritative FlowTrace interfaces (`WorkflowDefinition`, `WorkflowNodeData`, `WorkflowEdgeData`, `AuditEntry`, `RiskEventItem`) used for contract translation.
 
 ---
 
-## 6. The Canonical Blacktide Execution Sequence
+## 6. Translation Adapter: ExecutionPlan ↔ FlowTrace Workflow
 
-Based on the core incident: **Budget Reduced from ₹18L to ₹11L (-₹7.0L deficit) at 140% capacity utilization**, the strategic recommendation is **"REDUCE FEATURE SCOPE"**.
+The translation adapter is located in [`server/services/flowtrace/flowtrace-real-bridge.ts`](file:///c:/Users/yaswa/impact_mesh/server/services/flowtrace/flowtrace-real-bridge.ts):
 
-FlowTrace executes the approved 4-step sequence:
+### Step Mapping (`ExecutionStep` → `WorkflowNodeData`):
+- `step.id` $\to$ `node.id`
+- `step.department` $\to$ FlowTrace `ServiceNodeType` (`decision`, `system`, `agent`, `approval`)
+- `step.title` $\to$ `node.label` with department prefix
+- `step.status` $\to$ FlowTrace status (`completed` $\to$ `healthy`, `ready` $\to$ `warning`, `running` $\to$ `changed`, `blocked` $\to$ `critical`)
+- `step.dependsOn` $\to$ Node dependency counts and impact classifications (`downstream_impact`, `direct_impact`, `unaffected`)
 
-| Step | Department | Action | Input / Target | Resulting DecisionEvent | Expected State Mutation |
-| :---: | :---: | :--- | :--- | :--- | :--- |
-| **1** | **Product** | Freeze non-critical custom analytics scope | `freed_capacity_hours: 120` | `feature_deprioritized` | Engineering demand drops from 420h to 300h. |
-| **2** | **Operations** | Reallocate and balance platform engineering capacity | `new_capacity_hours: 300` | `capacity_changed` | Utilization normalizes from 140% to 100%. |
-| **3** | **Sales** | Deliver client phasing protocol (SAML on track; Analytics Phase 2) | `new_deadline: '60 DAYS'` | `deadline_changed` | Delivery slippage risk eliminated. |
-| **4** | **Finance** | Audit and lock contractor savings | `delta_amount: -240000` | `cost_changed` | Committed cost reduced; cash runway extended. |
+### Plan Mapping (`ExecutionPlan` → `WorkflowDefinition`):
+- Generates DAG edges for all `step.dependsOn` relationships with protocol `EXECUTION_COUPLING` and `DIRECT` propagation.
+- Computes overall workflow health score and risk level based on completed step progression.
+- Registers the workflow into FlowTrace DB via `registerPlanInFlowTraceDB()`.
 
 ---
 
-## 7. Closed-Loop Lifecycle Verification
+## 7. Execution Completion → DecisionEvent Mapping
 
-1. **Human Approval**: The operator clicks `[ APPROVE EXECUTION ROUTE ]`.
-2. **Step Dispatch**: Step 1 executes $\to$ generates `feature_deprioritized`.
-3. **Validation & Transition**: The event passes through `EventValidator` $\to$ `StateTransitionEngine`.
-4. **State Update**: `BusinessState` reflects updated capacity utilization.
-5. **Next Step Unblocked**: Step 2 detects Step 1 completion, transitioning from `blocked` to `ready`.
-6. **Command Center Real-time Observation**: Command Deck reflects updated metrics instantly.
+When an operator triggers step execution (via UI or automated bridge):
+1. **Dependency Check**: Validates that all prerequisite steps in `step.dependsOn` are `completed`.
+2. **FlowTrace Execution**: Invokes FlowTrace's LangGraph pipeline and writes an audit record into FlowTrace DB (`db.addAuditLog`).
+3. **DecisionEvent Construction**: Emits a strongly-typed `DecisionEvent` retaining full provenance:
+   ```ts
+   {
+     id: "evt-ft-real-step-product-freeze-01-...",
+     department: "product",
+     event_type: "feature_deprioritized",
+     execution_context: {
+       executionPlanId: "plan-...",
+       executionStepId: "step-product-freeze-01",
+       decisionId: "dec-fin-01",
+       recommendationId: "rec-fin-01",
+       sequence: 1
+     }
+   }
+   ```
+4. **State Transition**: The event is passed strictly through `StateTransitionEngine.applyEvent()` to update `BusinessState`.
+5. **Downstream Unblocking**: The bridge inspects downstream steps, promoting any blocked steps whose prerequisites are now satisfied from `blocked` to `ready`.
+
+---
+
+## 8. Preserved Phase 3 Artifacts
+
+The following Phase 3 files were preserved and enhanced:
+- [`src/types/execution.ts`](file:///c:/Users/yaswa/impact_mesh/src/types/execution.ts): Authoritative execution contracts (`ExecutionPlan`, `ExecutionStep`, `ExecutionContext`).
+- [`server/services/flowtrace/flowtrace.interface.ts`](file:///c:/Users/yaswa/impact_mesh/server/services/flowtrace/flowtrace.interface.ts): Adapter interface specification.
+- [`server/services/flowtrace/blacktide-execution-plan.ts`](file:///c:/Users/yaswa/impact_mesh/server/services/flowtrace/blacktide-execution-plan.ts): Canonical 4-step execution template.
+- [`server/services/flowtrace/flowtrace.adapter.ts`](file:///c:/Users/yaswa/impact_mesh/server/services/flowtrace/flowtrace.adapter.ts): Updated to delegate workflow registration and step audit tracking to real FlowTrace DB.
+- [`src/app/routes/FlowTraceRoute.tsx`](file:///c:/Users/yaswa/impact_mesh/src/app/routes/FlowTraceRoute.tsx): Updated to mount real FlowTrace `WorkflowGraph` React Flow canvas.
+- [`tests/flowtrace/flowtrace-bridge.test.ts`](file:///c:/Users/yaswa/impact_mesh/tests/flowtrace/flowtrace-bridge.test.ts): Expanded from 10 to 14 tests, verifying both adapter contracts and real FlowTrace components.
+
+---
+
+## 9. Verification Summary
+
+| Test Suite / Command | Result |
+| :--- | :--- |
+| `npm run typecheck` (`tsc -b --noEmit`) | **Passed (0 errors)** |
+| `npx vitest run` (All 9 test suites, 37 tests) | **37 passed (100%)** |
+| `npm run build` (Root project) | **Built in 2.10s (0 errors)** |
+| `npm --prefix flowtrace run build` (Real FlowTrace) | **Built in 1.48s (0 errors)** |

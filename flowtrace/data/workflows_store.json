@@ -1,0 +1,5675 @@
+{
+  "workflows": [
+    [
+      "wf-customer-verification",
+      {
+        "id": "wf-customer-verification",
+        "name": "Customer Verification & Approval",
+        "code": "WF-CVA-01",
+        "environment": "Production",
+        "description": "End-to-end automated loan verification and underwriting chain: orchestrating KYC checks, risk intelligence, and core approval API bindings.",
+        "health_score": 58,
+        "risk_level": "high",
+        "total_nodes": 5,
+        "avg_latency_ms": 115,
+        "created_at": "2026-08-21T05:43:23.052Z",
+        "updated_at": "2026-08-21T05:43:23.052Z"
+      }
+    ],
+    [
+      "wf-payment-fraud",
+      {
+        "id": "wf-payment-fraud",
+        "name": "Payment Fraud Detection",
+        "code": "WF-PFD-02",
+        "environment": "Production",
+        "description": "Real-time card transaction velocity scoring and merchant anomaly evaluation pipeline.",
+        "health_score": 99,
+        "risk_level": "low",
+        "total_nodes": 4,
+        "avg_latency_ms": 42,
+        "created_at": "2026-08-21T05:43:23.052Z",
+        "updated_at": "2026-08-21T05:43:23.052Z"
+      }
+    ],
+    [
+      "wf-customer-onboarding",
+      {
+        "id": "wf-customer-onboarding",
+        "name": "Customer Onboarding",
+        "code": "WF-COB-03",
+        "environment": "Production",
+        "description": "Document extraction, OCR verification, and automated customer profile synthesis.",
+        "health_score": 98,
+        "risk_level": "low",
+        "total_nodes": 3,
+        "avg_latency_ms": 88,
+        "created_at": "2026-08-21T05:43:23.052Z",
+        "updated_at": "2026-08-21T05:43:23.052Z"
+      }
+    ],
+    [
+      "wf-loan-underwriting",
+      {
+        "id": "wf-loan-underwriting",
+        "name": "Loan Underwriting",
+        "code": "WF-LUW-04",
+        "environment": "Production",
+        "description": "Credit score aggregation, debt-to-income verification, and loan pricing calculation.",
+        "health_score": 95,
+        "risk_level": "low",
+        "total_nodes": 3,
+        "avg_latency_ms": 76,
+        "created_at": "2026-08-21T05:43:23.052Z",
+        "updated_at": "2026-08-21T05:43:23.052Z"
+      }
+    ],
+    [
+      "wf-mined-bpi2017",
+      {
+        "id": "wf-mined-bpi2017",
+        "name": "BPI2017 Process Workflow",
+        "code": "WF-BPI2-31509",
+        "environment": "Production",
+        "description": "Reconstructed from event log BPI2017.txt (1,202,267 events across 31,509 cases).",
+        "health_score": 35,
+        "risk_level": "critical",
+        "total_nodes": 26,
+        "avg_latency_ms": 45,
+        "is_live_dataset": true,
+        "dataset_id": "UP-1787292173031-479",
+        "dataset_filename": "BPI2017.txt",
+        "case_count": 31509,
+        "event_count": 1202267,
+        "activity_count": 26,
+        "transition_count": 178,
+        "time_range": {
+          "start": "2016-01-01 09:51:15.304000+00:00",
+          "end": "2017-02-01 14:11:03.499000+00:00"
+        },
+        "metrics": {
+          "totalEvents": 1202267,
+          "totalCases": 31509,
+          "uniqueActivities": 26,
+          "uniqueResources": 149,
+          "processVariantsCount": 12975,
+          "firstActivity": "A_Create Application",
+          "finalActivity": "W_Validate application",
+          "mostFrequentActivities": [
+            {
+              "activity": "W_Validate application",
+              "count": 209496,
+              "casesCount": 21870,
+              "percentage": "17%"
+            },
+            {
+              "activity": "W_Call after offers",
+              "count": 191092,
+              "casesCount": 31362,
+              "percentage": "16%"
+            },
+            {
+              "activity": "W_Call incomplete files",
+              "count": 168529,
+              "casesCount": 15003,
+              "percentage": "14%"
+            },
+            {
+              "activity": "W_Complete application",
+              "count": 148900,
+              "casesCount": 31509,
+              "percentage": "12%"
+            },
+            {
+              "activity": "W_Handle leads",
+              "count": 47264,
+              "casesCount": 20423,
+              "percentage": "4%"
+            }
+          ],
+          "mostFrequentTransitions": [
+            {
+              "transition": "W_Validate application → W_Validate application",
+              "count": 115590,
+              "casesCount": 21870,
+              "avgDuration": "10.6h",
+              "percentage": "10%"
+            },
+            {
+              "transition": "W_Call after offers → W_Call after offers",
+              "count": 115569,
+              "casesCount": 31362,
+              "avgDuration": "45.8h",
+              "percentage": "10%"
+            },
+            {
+              "transition": "W_Call incomplete files → W_Call incomplete files",
+              "count": 113918,
+              "casesCount": 15003,
+              "avgDuration": "12.5h",
+              "percentage": "9%"
+            },
+            {
+              "transition": "W_Complete application → W_Complete application",
+              "count": 64695,
+              "casesCount": 24649,
+              "avgDuration": "6.8h",
+              "percentage": "5%"
+            },
+            {
+              "transition": "O_Create Offer → O_Created",
+              "count": 42995,
+              "casesCount": 31509,
+              "avgDuration": "1s",
+              "percentage": "4%"
+            }
+          ],
+          "avgEventsPerCase": "38.2",
+          "minCaseDuration": "3.4m",
+          "maxCaseDuration": "6865.7h",
+          "avgCaseDuration": "662.4h",
+          "medianCaseDuration": "463.1h",
+          "throughput": "79 cases / day (3027 events/day)",
+          "bottleneckActivity": "W_Call after offers",
+          "bottleneckTransition": "W_Call after offers → O_Create Offer",
+          "bottleneckAvgDuration": "135.2h",
+          "reworkRate": "1422%",
+          "reworkOccurrences": 448205,
+          "anomalyCount": 11,
+          "resourceAnalysis": "149 distinct execution resources / actors observed across event traces.",
+          "topResources": [
+            {
+              "resource": "User_1",
+              "count": 148404,
+              "percentage": "12%"
+            },
+            {
+              "resource": "User_3",
+              "count": 26342,
+              "percentage": "2%"
+            },
+            {
+              "resource": "User_5",
+              "count": 22900,
+              "percentage": "2%"
+            },
+            {
+              "resource": "User_87",
+              "count": 22498,
+              "percentage": "2%"
+            },
+            {
+              "resource": "User_30",
+              "count": 21272,
+              "percentage": "2%"
+            }
+          ]
+        },
+        "created_at": "2026-08-21T06:13:07.704Z",
+        "updated_at": "2026-08-21T06:13:07.704Z"
+      }
+    ]
+  ],
+  "components": [
+    [
+      "customer-identity-api",
+      {
+        "id": "customer-identity-api",
+        "workflow_id": "wf-customer-verification",
+        "label": "Customer Identity API",
+        "type": "tool",
+        "model_or_protocol": "REST / JSON (v2.5)",
+        "status": "changed",
+        "latency_ms": 45,
+        "error_rate": 1.2,
+        "version": "v2.5.0",
+        "owner": "Identity & Auth Platform",
+        "description": "Provides government registry verification and customer identity status tokens.",
+        "consumers_count": 3,
+        "last_evaluated": "Just now",
+        "change_summary": "Schema modified: status changed from string enum to nested object.",
+        "is_root_cause": true,
+        "is_affected": false,
+        "impact_classification": "changed",
+        "why_affected": "Source of schema contract drift. Changed contract without backwards compatibility.",
+        "position_x": 40,
+        "position_y": 90
+      }
+    ],
+    [
+      "customer-verification-agent",
+      {
+        "id": "customer-verification-agent",
+        "workflow_id": "wf-customer-verification",
+        "label": "Customer Verification Agent",
+        "type": "agent",
+        "model_or_protocol": "Groq / LLaMA 3.3 (Reasoning)",
+        "status": "critical",
+        "latency_ms": 140,
+        "error_rate": 68,
+        "version": "v2.1.0",
+        "owner": "Customer Onboarding Squad",
+        "description": "Orchestrates identity verification, document parsing, and customer attribute checks.",
+        "consumers_count": 2,
+        "last_evaluated": "Just now",
+        "is_affected": true,
+        "impact_classification": "direct_impact",
+        "why_affected": "Directly consumes Customer Identity API payload; deserialization exceptions spike to 68%.",
+        "position_x": 330,
+        "position_y": 90
+      }
+    ],
+    [
+      "fraud-assessment-agent",
+      {
+        "id": "fraud-assessment-agent",
+        "workflow_id": "wf-customer-verification",
+        "label": "Fraud Assessment Agent",
+        "type": "agent",
+        "model_or_protocol": "GPT-4o (Reasoning)",
+        "status": "critical",
+        "latency_ms": 210,
+        "error_rate": 42.5,
+        "version": "v3.0.4",
+        "owner": "Risk Intelligence Pod",
+        "description": "Analyzes behavioral velocity, device anomalies, and consumer risk profiles.",
+        "consumers_count": 1,
+        "last_evaluated": "Just now",
+        "is_affected": true,
+        "impact_classification": "downstream_impact",
+        "why_affected": "Receives unverified fallback tokens from verification agent, causing underwriting analysis failures.",
+        "position_x": 620,
+        "position_y": 90
+      }
+    ],
+    [
+      "approval-api",
+      {
+        "id": "approval-api",
+        "workflow_id": "wf-customer-verification",
+        "label": "Approval API / Business System",
+        "type": "system",
+        "model_or_protocol": "Enterprise Core gRPC",
+        "status": "warning",
+        "latency_ms": 65,
+        "error_rate": 18,
+        "version": "v4.1.2",
+        "owner": "Core Banking Systems",
+        "description": "Executes automated underwriting decisions and generates account binding tokens.",
+        "consumers_count": 0,
+        "last_evaluated": "Just now",
+        "is_affected": true,
+        "impact_classification": "downstream_impact",
+        "why_affected": "Final underwriting gate receives incomplete risk scores, triggering automatic approval rejections.",
+        "position_x": 910,
+        "position_y": 90
+      }
+    ],
+    [
+      "audit-telemetry-sink",
+      {
+        "id": "audit-telemetry-sink",
+        "workflow_id": "wf-customer-verification",
+        "label": "Audit & Compliance Sink",
+        "type": "system",
+        "model_or_protocol": "Kafka / EventStream",
+        "status": "healthy",
+        "latency_ms": 14,
+        "error_rate": 0,
+        "version": "v1.8.0",
+        "owner": "SecOps & Compliance",
+        "description": "Immutable asynchronous event store logging verification lifecycle records.",
+        "consumers_count": 0,
+        "last_evaluated": "Just now",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "why_affected": "Operates on independent raw event stream with schema isolation.",
+        "position_x": 330,
+        "position_y": 270
+      }
+    ],
+    [
+      "txn-gateway",
+      {
+        "id": "txn-gateway",
+        "workflow_id": "wf-payment-fraud",
+        "label": "Card Transaction Ingress",
+        "type": "api",
+        "model_or_protocol": "ISO 8583 REST Gateway",
+        "status": "healthy",
+        "latency_ms": 18,
+        "error_rate": 0.01,
+        "version": "v3.2.0",
+        "owner": "Payment Infra",
+        "description": "Ingests global point-of-sale and e-commerce payment payloads.",
+        "consumers_count": 2,
+        "last_evaluated": "4 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 40,
+        "position_y": 90
+      }
+    ],
+    [
+      "fraud-scorer-agent",
+      {
+        "id": "fraud-scorer-agent",
+        "workflow_id": "wf-payment-fraud",
+        "label": "Velocity & Pattern Scorer",
+        "type": "agent",
+        "model_or_protocol": "Groq / LLaMA 3.1 Instant",
+        "status": "healthy",
+        "latency_ms": 38,
+        "error_rate": 0.02,
+        "version": "v2.0.1",
+        "owner": "Risk Engineering",
+        "description": "Computes rolling 5-minute geolocation and card velocity vectors.",
+        "consumers_count": 1,
+        "last_evaluated": "4 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 340,
+        "position_y": 90
+      }
+    ],
+    [
+      "feature-store",
+      {
+        "id": "feature-store",
+        "workflow_id": "wf-payment-fraud",
+        "label": "Redis Feature Store",
+        "type": "database",
+        "model_or_protocol": "Redis Cluster",
+        "status": "healthy",
+        "latency_ms": 4,
+        "error_rate": 0,
+        "version": "v7.2.4",
+        "owner": "Data Platform",
+        "description": "Low-latency distributed state for historical merchant transaction baselines.",
+        "consumers_count": 1,
+        "last_evaluated": "4 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 640,
+        "position_y": 40
+      }
+    ],
+    [
+      "settlement-router",
+      {
+        "id": "settlement-router",
+        "workflow_id": "wf-payment-fraud",
+        "label": "Settlement Decision Router",
+        "type": "system",
+        "model_or_protocol": "gRPC Core",
+        "status": "healthy",
+        "latency_ms": 22,
+        "error_rate": 0,
+        "version": "v1.4.0",
+        "owner": "Banking Core",
+        "description": "Applies automated authorization blocks or passes cleared transactions.",
+        "consumers_count": 0,
+        "last_evaluated": "4 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 640,
+        "position_y": 190
+      }
+    ],
+    [
+      "doc-parser-agent",
+      {
+        "id": "doc-parser-agent",
+        "workflow_id": "wf-customer-onboarding",
+        "label": "Document Extraction Agent",
+        "type": "agent",
+        "model_or_protocol": "Groq / LLaMA Vision",
+        "status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.05,
+        "version": "v2.8.0",
+        "owner": "Onboarding Squad",
+        "description": "Extracts structured fields from passports and utility bills.",
+        "consumers_count": 1,
+        "last_evaluated": "7 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 40,
+        "position_y": 90
+      }
+    ],
+    [
+      "crm-sync-api",
+      {
+        "id": "crm-sync-api",
+        "workflow_id": "wf-customer-onboarding",
+        "label": "Enterprise CRM Sync API",
+        "type": "api",
+        "model_or_protocol": "REST / OAuth2",
+        "status": "healthy",
+        "latency_ms": 48,
+        "error_rate": 0,
+        "version": "v4.0.0",
+        "owner": "Enterprise Apps",
+        "description": "Creates lead and customer records in core Salesforce/HubSpot.",
+        "consumers_count": 1,
+        "last_evaluated": "7 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 350,
+        "position_y": 90
+      }
+    ],
+    [
+      "welcome-stream",
+      {
+        "id": "welcome-stream",
+        "workflow_id": "wf-customer-onboarding",
+        "label": "Customer Notification Stream",
+        "type": "stream",
+        "model_or_protocol": "Kafka Event",
+        "status": "healthy",
+        "latency_ms": 10,
+        "error_rate": 0,
+        "version": "v1.1.0",
+        "owner": "Growth Platform",
+        "description": "Triggers personalized onboarding emails and mobile push verification.",
+        "consumers_count": 0,
+        "last_evaluated": "7 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 660,
+        "position_y": 90
+      }
+    ],
+    [
+      "credit-bureau-agent",
+      {
+        "id": "credit-bureau-agent",
+        "workflow_id": "wf-loan-underwriting",
+        "label": "Credit Bureau Integration",
+        "type": "agent",
+        "model_or_protocol": "Groq / LLaMA 3.3 (Reasoning)",
+        "status": "healthy",
+        "latency_ms": 95,
+        "error_rate": 0.1,
+        "version": "v1.9.0",
+        "owner": "Lending Platform",
+        "description": "Fetches Equifax and Experian telemetry with automated retry policies.",
+        "consumers_count": 1,
+        "last_evaluated": "9 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 40,
+        "position_y": 90
+      }
+    ],
+    [
+      "pricing-calc-api",
+      {
+        "id": "pricing-calc-api",
+        "workflow_id": "wf-loan-underwriting",
+        "label": "Loan Pricing Calculator API",
+        "type": "api",
+        "model_or_protocol": "C++ Fast gRPC",
+        "status": "healthy",
+        "latency_ms": 16,
+        "error_rate": 0,
+        "version": "v5.1.0",
+        "owner": "Quantitative Finance",
+        "description": "Calculates actuarial risk models and APR brackets.",
+        "consumers_count": 1,
+        "last_evaluated": "9 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 350,
+        "position_y": 90
+      }
+    ],
+    [
+      "loan-ledger-db",
+      {
+        "id": "loan-ledger-db",
+        "workflow_id": "wf-loan-underwriting",
+        "label": "Loan Origination Ledger",
+        "type": "database",
+        "model_or_protocol": "CockroachDB SQL",
+        "status": "healthy",
+        "latency_ms": 25,
+        "error_rate": 0,
+        "version": "v23.2.0",
+        "owner": "Lending Core",
+        "description": "Stores approved loan covenants with cryptographic signature hashing.",
+        "consumers_count": 0,
+        "last_evaluated": "9 min ago",
+        "is_affected": false,
+        "impact_classification": "unaffected",
+        "position_x": 660,
+        "position_y": 90
+      }
+    ],
+    [
+      "node-1",
+      {
+        "id": "node-1",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Create Application",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 31,509 times across 31,509 cases.",
+        "consumers_count": 3,
+        "last_evaluated": "Just now",
+        "occurrences": 31509,
+        "cases_count": 31509,
+        "frequency": 31509
+      }
+    ],
+    [
+      "node-2",
+      {
+        "id": "node-2",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Submitted",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 20,423 times across 20,423 cases.",
+        "consumers_count": 1,
+        "last_evaluated": "Just now",
+        "occurrences": 20423,
+        "cases_count": 20423,
+        "frequency": 20423
+      }
+    ],
+    [
+      "node-3",
+      {
+        "id": "node-3",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Handle leads",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 47,264 times across 20,423 cases.",
+        "consumers_count": 3,
+        "last_evaluated": "Just now",
+        "occurrences": 47264,
+        "cases_count": 20423,
+        "frequency": 47264
+      }
+    ],
+    [
+      "node-4",
+      {
+        "id": "node-4",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Complete application",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 148,900 times across 31,509 cases.",
+        "consumers_count": 12,
+        "last_evaluated": "Just now",
+        "occurrences": 148900,
+        "cases_count": 31509,
+        "frequency": 148900
+      }
+    ],
+    [
+      "node-5",
+      {
+        "id": "node-5",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Concept",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 31,509 times across 31,509 cases.",
+        "consumers_count": 3,
+        "last_evaluated": "Just now",
+        "occurrences": 31509,
+        "cases_count": 31509,
+        "frequency": 31509
+      }
+    ],
+    [
+      "node-6",
+      {
+        "id": "node-6",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Accepted",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 31,509 times across 31,509 cases.",
+        "consumers_count": 3,
+        "last_evaluated": "Just now",
+        "occurrences": 31509,
+        "cases_count": 31509,
+        "frequency": 31509
+      }
+    ],
+    [
+      "node-7",
+      {
+        "id": "node-7",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Create Offer",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 42,995 times across 31,509 cases.",
+        "consumers_count": 1,
+        "last_evaluated": "Just now",
+        "occurrences": 42995,
+        "cases_count": 31509,
+        "frequency": 42995
+      }
+    ],
+    [
+      "node-8",
+      {
+        "id": "node-8",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Created",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 42,995 times across 31,509 cases.",
+        "consumers_count": 11,
+        "last_evaluated": "Just now",
+        "occurrences": 42995,
+        "cases_count": 31509,
+        "frequency": 42995
+      }
+    ],
+    [
+      "node-9",
+      {
+        "id": "node-9",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Sent (mail and online)",
+        "type": "agent",
+        "model_or_protocol": "Groq / LLaMA 3.3 (Reasoning)",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Autonomous Agent Pod",
+        "description": "Discovered from BPI2017.txt: executed 39,707 times across 31,050 cases.",
+        "consumers_count": 12,
+        "last_evaluated": "Just now",
+        "occurrences": 39707,
+        "cases_count": 31050,
+        "frequency": 39707
+      }
+    ],
+    [
+      "node-10",
+      {
+        "id": "node-10",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Call after offers",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 191,092 times across 31,362 cases.",
+        "consumers_count": 12,
+        "last_evaluated": "Just now",
+        "occurrences": 191092,
+        "cases_count": 31362,
+        "frequency": 191092
+      }
+    ],
+    [
+      "node-11",
+      {
+        "id": "node-11",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Complete",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 31,362 times across 31,362 cases.",
+        "consumers_count": 8,
+        "last_evaluated": "Just now",
+        "occurrences": 31362,
+        "cases_count": 31362,
+        "frequency": 31362
+      }
+    ],
+    [
+      "node-12",
+      {
+        "id": "node-12",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Validate application",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 209,496 times across 21,870 cases.",
+        "consumers_count": 13,
+        "last_evaluated": "Just now",
+        "occurrences": 209496,
+        "cases_count": 21870,
+        "frequency": 209496
+      }
+    ],
+    [
+      "node-13",
+      {
+        "id": "node-13",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Validating",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 38,816 times across 21,870 cases.",
+        "consumers_count": 6,
+        "last_evaluated": "Just now",
+        "occurrences": 38816,
+        "cases_count": 21870,
+        "frequency": 38816
+      }
+    ],
+    [
+      "node-14",
+      {
+        "id": "node-14",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Returned",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 23,305 times across 21,768 cases.",
+        "consumers_count": 9,
+        "last_evaluated": "Just now",
+        "occurrences": 23305,
+        "cases_count": 21768,
+        "frequency": 23305
+      }
+    ],
+    [
+      "node-15",
+      {
+        "id": "node-15",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Call incomplete files",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 168,529 times across 15,003 cases.",
+        "consumers_count": 14,
+        "last_evaluated": "Just now",
+        "occurrences": 168529,
+        "cases_count": 15003,
+        "frequency": 168529
+      }
+    ],
+    [
+      "node-16",
+      {
+        "id": "node-16",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Incomplete",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 23,055 times across 15,003 cases.",
+        "consumers_count": 6,
+        "last_evaluated": "Just now",
+        "occurrences": 23055,
+        "cases_count": 15003,
+        "frequency": 23055
+      }
+    ],
+    [
+      "node-17",
+      {
+        "id": "node-17",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Accepted",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 17,228 times across 17,228 cases.",
+        "consumers_count": 1,
+        "last_evaluated": "Just now",
+        "occurrences": 17228,
+        "cases_count": 17228,
+        "frequency": 17228
+      }
+    ],
+    [
+      "node-18",
+      {
+        "id": "node-18",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Pending",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 17,228 times across 17,228 cases.",
+        "consumers_count": 3,
+        "last_evaluated": "Just now",
+        "occurrences": 17228,
+        "cases_count": 17228,
+        "frequency": 17228
+      }
+    ],
+    [
+      "node-19",
+      {
+        "id": "node-19",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Denied",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 3,753 times across 3,752 cases.",
+        "consumers_count": 5,
+        "last_evaluated": "Just now",
+        "occurrences": 3753,
+        "cases_count": 3752,
+        "frequency": 3753
+      }
+    ],
+    [
+      "node-20",
+      {
+        "id": "node-20",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Refused",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 4,695 times across 3,720 cases.",
+        "consumers_count": 6,
+        "last_evaluated": "Just now",
+        "occurrences": 4695,
+        "cases_count": 3720,
+        "frequency": 4695
+      }
+    ],
+    [
+      "node-21",
+      {
+        "id": "node-21",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Cancelled",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 20,898 times across 15,682 cases.",
+        "consumers_count": 13,
+        "last_evaluated": "Just now",
+        "occurrences": 20898,
+        "cases_count": 15682,
+        "frequency": 20898
+      }
+    ],
+    [
+      "node-22",
+      {
+        "id": "node-22",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "A_Cancelled",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 10,431 times across 10,431 cases.",
+        "consumers_count": 5,
+        "last_evaluated": "Just now",
+        "occurrences": 10431,
+        "cases_count": 10431,
+        "frequency": 10431
+      }
+    ],
+    [
+      "node-23",
+      {
+        "id": "node-23",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "O_Sent (online only)",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 2,026 times across 1,800 cases.",
+        "consumers_count": 12,
+        "last_evaluated": "Just now",
+        "occurrences": 2026,
+        "cases_count": 1800,
+        "frequency": 2026
+      }
+    ],
+    [
+      "node-24",
+      {
+        "id": "node-24",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Assess potential fraud",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 3,282 times across 303 cases.",
+        "consumers_count": 6,
+        "last_evaluated": "Just now",
+        "occurrences": 3282,
+        "cases_count": 303,
+        "frequency": 3282
+      }
+    ],
+    [
+      "node-25",
+      {
+        "id": "node-25",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Personal Loan collection",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 22 times across 2 cases.",
+        "consumers_count": 2,
+        "last_evaluated": "Just now",
+        "occurrences": 22,
+        "cases_count": 2,
+        "frequency": 22
+      }
+    ],
+    [
+      "node-26",
+      {
+        "id": "node-26",
+        "workflow_id": "wf-mined-bpi2017",
+        "label": "W_Shortened completion",
+        "type": "tool",
+        "model_or_protocol": "Process Activity",
+        "status": "healthy",
+        "latency_ms": 45,
+        "error_rate": 0,
+        "version": "v1.0.0 (Mined)",
+        "owner": "Business Workflow Core",
+        "description": "Discovered from BPI2017.txt: executed 238 times across 74 cases.",
+        "consumers_count": 8,
+        "last_evaluated": "Just now",
+        "occurrences": 238,
+        "cases_count": 74,
+        "frequency": 238
+      }
+    ]
+  ],
+  "dependencies": [
+    [
+      "e1",
+      {
+        "id": "e1",
+        "workflow_id": "wf-customer-verification",
+        "source_id": "customer-identity-api",
+        "target_id": "customer-verification-agent",
+        "source_label": "Customer Identity API",
+        "target_label": "Customer Verification Agent",
+        "protocol": "REST / JSON",
+        "latency_ms": 32,
+        "requests_per_min": "18.4K / min",
+        "failure_rate": "6.8%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true
+      }
+    ],
+    [
+      "e2",
+      {
+        "id": "e2",
+        "workflow_id": "wf-customer-verification",
+        "source_id": "customer-verification-agent",
+        "target_id": "fraud-assessment-agent",
+        "source_label": "Customer Verification Agent",
+        "target_label": "Fraud Assessment Agent",
+        "protocol": "Agentic ToolCall",
+        "latency_ms": 28,
+        "requests_per_min": "14.2K / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "CASCADE",
+        "is_impact_path": true
+      }
+    ],
+    [
+      "e3",
+      {
+        "id": "e3",
+        "workflow_id": "wf-customer-verification",
+        "source_id": "fraud-assessment-agent",
+        "target_id": "approval-api",
+        "source_label": "Fraud Assessment Agent",
+        "target_label": "Approval API",
+        "protocol": "gRPC v2",
+        "latency_ms": 24,
+        "requests_per_min": "8.6K / min",
+        "failure_rate": "1.8%",
+        "propagation_type": "CASCADE",
+        "is_impact_path": true
+      }
+    ],
+    [
+      "e4",
+      {
+        "id": "e4",
+        "workflow_id": "wf-customer-verification",
+        "source_id": "customer-identity-api",
+        "target_id": "audit-telemetry-sink",
+        "source_label": "Customer Identity API",
+        "target_label": "Audit & Compliance Sink",
+        "protocol": "Kafka Event",
+        "latency_ms": 14,
+        "requests_per_min": "18.4K / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "NONE",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "pfd-e1",
+      {
+        "id": "pfd-e1",
+        "workflow_id": "wf-payment-fraud",
+        "source_id": "txn-gateway",
+        "target_id": "fraud-scorer-agent",
+        "source_label": "Card Transaction Ingress",
+        "target_label": "Velocity & Pattern Scorer",
+        "protocol": "gRPC Stream",
+        "latency_ms": 12,
+        "requests_per_min": "42.0K / min",
+        "failure_rate": "0.01%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "pfd-e2",
+      {
+        "id": "pfd-e2",
+        "workflow_id": "wf-payment-fraud",
+        "source_id": "fraud-scorer-agent",
+        "target_id": "feature-store",
+        "source_label": "Velocity & Pattern Scorer",
+        "target_label": "Redis Feature Store",
+        "protocol": "RESP3 Redis",
+        "latency_ms": 4,
+        "requests_per_min": "42.0K / min",
+        "failure_rate": "0.00%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "pfd-e3",
+      {
+        "id": "pfd-e3",
+        "workflow_id": "wf-payment-fraud",
+        "source_id": "fraud-scorer-agent",
+        "target_id": "settlement-router",
+        "source_label": "Velocity & Pattern Scorer",
+        "target_label": "Settlement Decision Router",
+        "protocol": "gRPC v2",
+        "latency_ms": 16,
+        "requests_per_min": "41.9K / min",
+        "failure_rate": "0.00%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "cob-e1",
+      {
+        "id": "cob-e1",
+        "workflow_id": "wf-customer-onboarding",
+        "source_id": "doc-parser-agent",
+        "target_id": "crm-sync-api",
+        "source_label": "Document Extraction Agent",
+        "target_label": "Enterprise CRM Sync API",
+        "protocol": "REST / JSON",
+        "latency_ms": 35,
+        "requests_per_min": "2.4K / min",
+        "failure_rate": "0.02%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "cob-e2",
+      {
+        "id": "cob-e2",
+        "workflow_id": "wf-customer-onboarding",
+        "source_id": "crm-sync-api",
+        "target_id": "welcome-stream",
+        "source_label": "Enterprise CRM Sync API",
+        "target_label": "Customer Notification Stream",
+        "protocol": "Kafka Event",
+        "latency_ms": 10,
+        "requests_per_min": "2.4K / min",
+        "failure_rate": "0.00%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "luw-e1",
+      {
+        "id": "luw-e1",
+        "workflow_id": "wf-loan-underwriting",
+        "source_id": "credit-bureau-agent",
+        "target_id": "pricing-calc-api",
+        "source_label": "Credit Bureau Integration",
+        "target_label": "Loan Pricing Calculator API",
+        "protocol": "gRPC v2",
+        "latency_ms": 14,
+        "requests_per_min": "5.1K / min",
+        "failure_rate": "0.04%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "luw-e2",
+      {
+        "id": "luw-e2",
+        "workflow_id": "wf-loan-underwriting",
+        "source_id": "pricing-calc-api",
+        "target_id": "loan-ledger-db",
+        "source_label": "Loan Pricing Calculator API",
+        "target_label": "Loan Origination Ledger",
+        "protocol": "Postgres wire / SQL",
+        "latency_ms": 22,
+        "requests_per_min": "5.1K / min",
+        "failure_rate": "0.00%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false
+      }
+    ],
+    [
+      "e-mined-1",
+      {
+        "id": "e-mined-1",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-1",
+        "target_id": "node-2",
+        "source_label": "A_Create Application",
+        "target_label": "A_Submitted",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "4085 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 20423,
+        "cases_count": 20423,
+        "frequency": 20423
+      }
+    ],
+    [
+      "e-mined-2",
+      {
+        "id": "e-mined-2",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-2",
+        "target_id": "node-3",
+        "source_label": "A_Submitted",
+        "target_label": "W_Handle leads",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "4085 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 20423,
+        "cases_count": 20423,
+        "frequency": 20423
+      }
+    ],
+    [
+      "e-mined-3",
+      {
+        "id": "e-mined-3",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-3",
+        "target_id": "node-3",
+        "source_label": "W_Handle leads",
+        "target_label": "W_Handle leads",
+        "protocol": "Event Transition",
+        "latency_ms": 3031000,
+        "requests_per_min": "5364 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 26819,
+        "cases_count": 20423,
+        "frequency": 26819
+      }
+    ],
+    [
+      "e-mined-4",
+      {
+        "id": "e-mined-4",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-3",
+        "target_id": "node-4",
+        "source_label": "W_Handle leads",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "4085 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 20423,
+        "cases_count": 20423,
+        "frequency": 20423
+      }
+    ],
+    [
+      "e-mined-5",
+      {
+        "id": "e-mined-5",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-5",
+        "source_label": "W_Complete application",
+        "target_label": "A_Concept",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "5624 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 28120,
+        "cases_count": 28120,
+        "frequency": 28120
+      }
+    ],
+    [
+      "e-mined-6",
+      {
+        "id": "e-mined-6",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-5",
+        "target_id": "node-4",
+        "source_label": "A_Concept",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 70688000,
+        "requests_per_min": "4453 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 22264,
+        "cases_count": 22264,
+        "frequency": 22264
+      }
+    ],
+    [
+      "e-mined-7",
+      {
+        "id": "e-mined-7",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-4",
+        "source_label": "W_Complete application",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 24535000,
+        "requests_per_min": "12939 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 64695,
+        "cases_count": 24649,
+        "frequency": 64695
+      }
+    ],
+    [
+      "e-mined-8",
+      {
+        "id": "e-mined-8",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-6",
+        "source_label": "W_Complete application",
+        "target_label": "A_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 32516000,
+        "requests_per_min": "4450 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 22249,
+        "cases_count": 22249,
+        "frequency": 22249
+      }
+    ],
+    [
+      "e-mined-9",
+      {
+        "id": "e-mined-9",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-6",
+        "target_id": "node-7",
+        "source_label": "A_Accepted",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 767000,
+        "requests_per_min": "5993 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 29966,
+        "cases_count": 29966,
+        "frequency": 29966
+      }
+    ],
+    [
+      "e-mined-10",
+      {
+        "id": "e-mined-10",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-7",
+        "target_id": "node-8",
+        "source_label": "O_Create Offer",
+        "target_label": "O_Created",
+        "protocol": "Event Transition",
+        "latency_ms": 1000,
+        "requests_per_min": "8599 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 42995,
+        "cases_count": 31509,
+        "frequency": 42995
+      }
+    ],
+    [
+      "e-mined-11",
+      {
+        "id": "e-mined-11",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-9",
+        "source_label": "O_Created",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 424000,
+        "requests_per_min": "7121 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 35604,
+        "cases_count": 30386,
+        "frequency": 35604
+      }
+    ],
+    [
+      "e-mined-12",
+      {
+        "id": "e-mined-12",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-4",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "6182 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 30912,
+        "cases_count": 30912,
+        "frequency": 30912
+      }
+    ],
+    [
+      "e-mined-13",
+      {
+        "id": "e-mined-13",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-10",
+        "source_label": "W_Complete application",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "6272 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 31362,
+        "cases_count": 31362,
+        "frequency": 31362
+      }
+    ],
+    [
+      "e-mined-14",
+      {
+        "id": "e-mined-14",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-10",
+        "source_label": "W_Call after offers",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 164955000,
+        "requests_per_min": "23114 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 115569,
+        "cases_count": 31362,
+        "frequency": 115569
+      }
+    ],
+    [
+      "e-mined-15",
+      {
+        "id": "e-mined-15",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-11",
+        "source_label": "W_Call after offers",
+        "target_label": "A_Complete",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "6272 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 31362,
+        "cases_count": 31362,
+        "frequency": 31362
+      }
+    ],
+    [
+      "e-mined-16",
+      {
+        "id": "e-mined-16",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-10",
+        "source_label": "A_Complete",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 488000,
+        "requests_per_min": "6079 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 30396,
+        "cases_count": 30396,
+        "frequency": 30396
+      }
+    ],
+    [
+      "e-mined-17",
+      {
+        "id": "e-mined-17",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-12",
+        "source_label": "W_Call after offers",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "4376 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 21880,
+        "cases_count": 21870,
+        "frequency": 21880
+      }
+    ],
+    [
+      "e-mined-18",
+      {
+        "id": "e-mined-18",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-12",
+        "source_label": "W_Validate application",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 38201000,
+        "requests_per_min": "23118 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 115590,
+        "cases_count": 21870,
+        "frequency": 115590
+      }
+    ],
+    [
+      "e-mined-19",
+      {
+        "id": "e-mined-19",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-13",
+        "source_label": "W_Validate application",
+        "target_label": "A_Validating",
+        "protocol": "Event Transition",
+        "latency_ms": 1000,
+        "requests_per_min": "7763 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 38816,
+        "cases_count": 21870,
+        "frequency": 38816
+      }
+    ],
+    [
+      "e-mined-20",
+      {
+        "id": "e-mined-20",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-13",
+        "target_id": "node-14",
+        "source_label": "A_Validating",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 61000,
+        "requests_per_min": "4135 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 20673,
+        "cases_count": 20406,
+        "frequency": 20673
+      }
+    ],
+    [
+      "e-mined-21",
+      {
+        "id": "e-mined-21",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-12",
+        "source_label": "O_Returned",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 1932000,
+        "requests_per_min": "4247 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 21235,
+        "cases_count": 20675,
+        "frequency": 21235
+      }
+    ],
+    [
+      "e-mined-22",
+      {
+        "id": "e-mined-22",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-15",
+        "source_label": "W_Validate application",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "4610 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 23052,
+        "cases_count": 15003,
+        "frequency": 23052
+      }
+    ],
+    [
+      "e-mined-23",
+      {
+        "id": "e-mined-23",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-15",
+        "source_label": "W_Call incomplete files",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 45152000,
+        "requests_per_min": "22784 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 113918,
+        "cases_count": 15003,
+        "frequency": 113918
+      }
+    ],
+    [
+      "e-mined-24",
+      {
+        "id": "e-mined-24",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-16",
+        "source_label": "W_Call incomplete files",
+        "target_label": "A_Incomplete",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "4611 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 23055,
+        "cases_count": 15003,
+        "frequency": 23055
+      }
+    ],
+    [
+      "e-mined-25",
+      {
+        "id": "e-mined-25",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-16",
+        "target_id": "node-15",
+        "source_label": "A_Incomplete",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 161000,
+        "requests_per_min": "4455 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 22277,
+        "cases_count": 14731,
+        "frequency": 22277
+      }
+    ],
+    [
+      "e-mined-26",
+      {
+        "id": "e-mined-26",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-12",
+        "source_label": "W_Call incomplete files",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "3386 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 16929,
+        "cases_count": 11665,
+        "frequency": 16929
+      }
+    ],
+    [
+      "e-mined-27",
+      {
+        "id": "e-mined-27",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-13",
+        "target_id": "node-12",
+        "source_label": "A_Validating",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 181000,
+        "requests_per_min": "3585 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 17925,
+        "cases_count": 11662,
+        "frequency": 17925
+      }
+    ],
+    [
+      "e-mined-28",
+      {
+        "id": "e-mined-28",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-17",
+        "source_label": "W_Validate application",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 63759000,
+        "requests_per_min": "2348 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 11738,
+        "cases_count": 11738,
+        "frequency": 11738
+      }
+    ],
+    [
+      "e-mined-29",
+      {
+        "id": "e-mined-29",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-17",
+        "target_id": "node-18",
+        "source_label": "O_Accepted",
+        "target_label": "A_Pending",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "3446 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 17228,
+        "cases_count": 17228,
+        "frequency": 17228
+      }
+    ],
+    [
+      "e-mined-30",
+      {
+        "id": "e-mined-30",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-18",
+        "target_id": "node-12",
+        "source_label": "A_Pending",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "2458 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 12291,
+        "cases_count": 12291,
+        "frequency": 12291
+      }
+    ],
+    [
+      "e-mined-31",
+      {
+        "id": "e-mined-31",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-19",
+        "source_label": "W_Validate application",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 89106000,
+        "requests_per_min": "651 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3254,
+        "cases_count": 3254,
+        "frequency": 3254
+      }
+    ],
+    [
+      "e-mined-32",
+      {
+        "id": "e-mined-32",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-19",
+        "target_id": "node-20",
+        "source_label": "A_Denied",
+        "target_label": "O_Refused",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "744 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3720,
+        "cases_count": 3720,
+        "frequency": 3720
+      }
+    ],
+    [
+      "e-mined-33",
+      {
+        "id": "e-mined-33",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-20",
+        "target_id": "node-12",
+        "source_label": "O_Refused",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "658 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3289,
+        "cases_count": 3289,
+        "frequency": 3289
+      }
+    ],
+    [
+      "e-mined-34",
+      {
+        "id": "e-mined-34",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-7",
+        "source_label": "W_Call after offers",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 486795000,
+        "requests_per_min": "786 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 3931,
+        "cases_count": 3756,
+        "frequency": 3931
+      }
+    ],
+    [
+      "e-mined-35",
+      {
+        "id": "e-mined-35",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-21",
+        "source_label": "O_Created",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 1453000,
+        "requests_per_min": "141 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 704,
+        "cases_count": 689,
+        "frequency": 704
+      }
+    ],
+    [
+      "e-mined-36",
+      {
+        "id": "e-mined-36",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-9",
+        "source_label": "O_Cancelled",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 180000,
+        "requests_per_min": "66 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 332,
+        "cases_count": 329,
+        "frequency": 332
+      }
+    ],
+    [
+      "e-mined-37",
+      {
+        "id": "e-mined-37",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-10",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 391136000,
+        "requests_per_min": "690 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3451,
+        "cases_count": 3272,
+        "frequency": 3451
+      }
+    ],
+    [
+      "e-mined-38",
+      {
+        "id": "e-mined-38",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-21",
+        "source_label": "W_Validate application",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 330000,
+        "requests_per_min": "605 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3026,
+        "cases_count": 3026,
+        "frequency": 3026
+      }
+    ],
+    [
+      "e-mined-39",
+      {
+        "id": "e-mined-39",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-22",
+        "source_label": "W_Call after offers",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 1998353000,
+        "requests_per_min": "1708 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 8539,
+        "cases_count": 8539,
+        "frequency": 8539
+      }
+    ],
+    [
+      "e-mined-40",
+      {
+        "id": "e-mined-40",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-22",
+        "target_id": "node-21",
+        "source_label": "A_Cancelled",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "2054 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 10270,
+        "cases_count": 10270,
+        "frequency": 10270
+      }
+    ],
+    [
+      "e-mined-41",
+      {
+        "id": "e-mined-41",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-10",
+        "source_label": "O_Cancelled",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 13040000,
+        "requests_per_min": "1932 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 9659,
+        "cases_count": 9574,
+        "frequency": 9659
+      }
+    ],
+    [
+      "e-mined-42",
+      {
+        "id": "e-mined-42",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-22",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 2396786000,
+        "requests_per_min": "109 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 546,
+        "cases_count": 546,
+        "frequency": 546
+      }
+    ],
+    [
+      "e-mined-43",
+      {
+        "id": "e-mined-43",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-21",
+        "source_label": "O_Cancelled",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 574000,
+        "requests_per_min": "885 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 4426,
+        "cases_count": 3381,
+        "frequency": 4426
+      }
+    ],
+    [
+      "e-mined-44",
+      {
+        "id": "e-mined-44",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-22",
+        "source_label": "W_Call incomplete files",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 62331000,
+        "requests_per_min": "174 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 871,
+        "cases_count": 871,
+        "frequency": 871
+      }
+    ],
+    [
+      "e-mined-45",
+      {
+        "id": "e-mined-45",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-15",
+        "source_label": "O_Cancelled",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 5804000,
+        "requests_per_min": "184 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 920,
+        "cases_count": 915,
+        "frequency": 920
+      }
+    ],
+    [
+      "e-mined-46",
+      {
+        "id": "e-mined-46",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-17",
+        "source_label": "W_Call incomplete files",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 462404000,
+        "requests_per_min": "957 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 4783,
+        "cases_count": 4783,
+        "frequency": 4783
+      }
+    ],
+    [
+      "e-mined-47",
+      {
+        "id": "e-mined-47",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-18",
+        "target_id": "node-15",
+        "source_label": "A_Pending",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "987 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 4935,
+        "cases_count": 4935,
+        "frequency": 4935
+      }
+    ],
+    [
+      "e-mined-48",
+      {
+        "id": "e-mined-48",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-5",
+        "target_id": "node-6",
+        "source_label": "A_Concept",
+        "target_label": "A_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 18382000,
+        "requests_per_min": "1846 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 9231,
+        "cases_count": 9231,
+        "frequency": 9231
+      }
+    ],
+    [
+      "e-mined-49",
+      {
+        "id": "e-mined-49",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-7",
+        "source_label": "O_Created",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 1436000,
+        "requests_per_min": "777 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3887,
+        "cases_count": 3366,
+        "frequency": 3887
+      }
+    ],
+    [
+      "e-mined-50",
+      {
+        "id": "e-mined-50",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-9",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "622 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3111,
+        "cases_count": 2781,
+        "frequency": 3111
+      }
+    ],
+    [
+      "e-mined-51",
+      {
+        "id": "e-mined-51",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-21",
+        "source_label": "W_Call incomplete files",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 3762000,
+        "requests_per_min": "306 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1529,
+        "cases_count": 1529,
+        "frequency": 1529
+      }
+    ],
+    [
+      "e-mined-52",
+      {
+        "id": "e-mined-52",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-20",
+        "target_id": "node-20",
+        "source_label": "O_Refused",
+        "target_label": "O_Refused",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "195 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 975,
+        "cases_count": 777,
+        "frequency": 975
+      }
+    ],
+    [
+      "e-mined-53",
+      {
+        "id": "e-mined-53",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-1",
+        "target_id": "node-4",
+        "source_label": "A_Create Application",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "1539 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 7697,
+        "cases_count": 7697,
+        "frequency": 7697
+      }
+    ],
+    [
+      "e-mined-54",
+      {
+        "id": "e-mined-54",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-23",
+        "source_label": "O_Created",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 788000,
+        "requests_per_min": "379 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1895,
+        "cases_count": 1760,
+        "frequency": 1895
+      }
+    ],
+    [
+      "e-mined-55",
+      {
+        "id": "e-mined-55",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-4",
+        "source_label": "O_Sent (online only)",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "90 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 450,
+        "cases_count": 450,
+        "frequency": 450
+      }
+    ],
+    [
+      "e-mined-56",
+      {
+        "id": "e-mined-56",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-21",
+        "source_label": "A_Complete",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 136000,
+        "requests_per_min": "57 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 287,
+        "cases_count": 287,
+        "frequency": 287
+      }
+    ],
+    [
+      "e-mined-57",
+      {
+        "id": "e-mined-57",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-7",
+        "source_label": "O_Cancelled",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 26108000,
+        "requests_per_min": "138 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 688,
+        "cases_count": 666,
+        "frequency": 688
+      }
+    ],
+    [
+      "e-mined-58",
+      {
+        "id": "e-mined-58",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-7",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 407539000,
+        "requests_per_min": "81 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 406,
+        "cases_count": 358,
+        "frequency": 406
+      }
+    ],
+    [
+      "e-mined-59",
+      {
+        "id": "e-mined-59",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-10",
+        "source_label": "O_Sent (online only)",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 504041000,
+        "requests_per_min": "60 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 300,
+        "cases_count": 293,
+        "frequency": 300
+      }
+    ],
+    [
+      "e-mined-60",
+      {
+        "id": "e-mined-60",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-21",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 20883000,
+        "requests_per_min": "73 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 363,
+        "cases_count": 356,
+        "frequency": 363
+      }
+    ],
+    [
+      "e-mined-61",
+      {
+        "id": "e-mined-61",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-14",
+        "source_label": "W_Call incomplete files",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 191725000,
+        "requests_per_min": "144 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 721,
+        "cases_count": 709,
+        "frequency": 721
+      }
+    ],
+    [
+      "e-mined-62",
+      {
+        "id": "e-mined-62",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-15",
+        "source_label": "O_Returned",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 8929000,
+        "requests_per_min": "307 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1536,
+        "cases_count": 1479,
+        "frequency": 1536
+      }
+    ],
+    [
+      "e-mined-63",
+      {
+        "id": "e-mined-63",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-7",
+        "source_label": "A_Complete",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 153000,
+        "requests_per_min": "104 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 521,
+        "cases_count": 521,
+        "frequency": 521
+      }
+    ],
+    [
+      "e-mined-64",
+      {
+        "id": "e-mined-64",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-1",
+        "target_id": "node-5",
+        "source_label": "A_Create Application",
+        "target_label": "A_Concept",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "678 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3389,
+        "cases_count": 3389,
+        "frequency": 3389
+      }
+    ],
+    [
+      "e-mined-65",
+      {
+        "id": "e-mined-65",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-6",
+        "target_id": "node-4",
+        "source_label": "A_Accepted",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 18964000,
+        "requests_per_min": "308 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1538,
+        "cases_count": 1538,
+        "frequency": 1538
+      }
+    ],
+    [
+      "e-mined-66",
+      {
+        "id": "e-mined-66",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-7",
+        "source_label": "W_Complete application",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 54228000,
+        "requests_per_min": "315 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1575,
+        "cases_count": 1574,
+        "frequency": 1575
+      }
+    ],
+    [
+      "e-mined-67",
+      {
+        "id": "e-mined-67",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-21",
+        "source_label": "W_Call after offers",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 315014000,
+        "requests_per_min": "42 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 208,
+        "cases_count": 208,
+        "frequency": 208
+      }
+    ],
+    [
+      "e-mined-68",
+      {
+        "id": "e-mined-68",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-7",
+        "source_label": "W_Call incomplete files",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 66607000,
+        "requests_per_min": "364 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1819,
+        "cases_count": 1670,
+        "frequency": 1819
+      }
+    ],
+    [
+      "e-mined-69",
+      {
+        "id": "e-mined-69",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-15",
+        "source_label": "O_Sent (online only)",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 101283000,
+        "requests_per_min": "174 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 868,
+        "cases_count": 838,
+        "frequency": 868
+      }
+    ],
+    [
+      "e-mined-70",
+      {
+        "id": "e-mined-70",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-14",
+        "source_label": "O_Sent (online only)",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 114244000,
+        "requests_per_min": "24 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 122,
+        "cases_count": 122,
+        "frequency": 122
+      }
+    ],
+    [
+      "e-mined-71",
+      {
+        "id": "e-mined-71",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-14",
+        "source_label": "W_Validate application",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 47561000,
+        "requests_per_min": "185 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 923,
+        "cases_count": 905,
+        "frequency": 923
+      }
+    ],
+    [
+      "e-mined-72",
+      {
+        "id": "e-mined-72",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-17",
+        "source_label": "O_Returned",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 18512000,
+        "requests_per_min": "97 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 483,
+        "cases_count": 483,
+        "frequency": 483
+      }
+    ],
+    [
+      "e-mined-73",
+      {
+        "id": "e-mined-73",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-15",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 184234000,
+        "requests_per_min": "150 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 748,
+        "cases_count": 720,
+        "frequency": 748
+      }
+    ],
+    [
+      "e-mined-74",
+      {
+        "id": "e-mined-74",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-4",
+        "source_label": "O_Created",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 35657000,
+        "requests_per_min": "144 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 722,
+        "cases_count": 718,
+        "frequency": 722
+      }
+    ],
+    [
+      "e-mined-75",
+      {
+        "id": "e-mined-75",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-9",
+        "source_label": "W_Complete application",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 8007000,
+        "requests_per_min": "119 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 596,
+        "cases_count": 596,
+        "frequency": 596
+      }
+    ],
+    [
+      "e-mined-76",
+      {
+        "id": "e-mined-76",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-7",
+        "source_label": "O_Sent (online only)",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 305668000,
+        "requests_per_min": "18 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 88,
+        "cases_count": 79,
+        "frequency": 88
+      }
+    ],
+    [
+      "e-mined-77",
+      {
+        "id": "e-mined-77",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-16",
+        "target_id": "node-19",
+        "source_label": "A_Incomplete",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 177000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 9,
+        "cases_count": 9,
+        "frequency": 9
+      }
+    ],
+    [
+      "e-mined-78",
+      {
+        "id": "e-mined-78",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-20",
+        "target_id": "node-15",
+        "source_label": "O_Refused",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "39 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 195,
+        "cases_count": 195,
+        "frequency": 195
+      }
+    ],
+    [
+      "e-mined-79",
+      {
+        "id": "e-mined-79",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-4",
+        "source_label": "O_Cancelled",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 10683000,
+        "requests_per_min": "25 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 125,
+        "cases_count": 123,
+        "frequency": 125
+      }
+    ],
+    [
+      "e-mined-80",
+      {
+        "id": "e-mined-80",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-13",
+        "target_id": "node-17",
+        "source_label": "A_Validating",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 178000,
+        "requests_per_min": "40 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 198,
+        "cases_count": 198,
+        "frequency": 198
+      }
+    ],
+    [
+      "e-mined-81",
+      {
+        "id": "e-mined-81",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-16",
+        "target_id": "node-14",
+        "source_label": "A_Incomplete",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 101000,
+        "requests_per_min": "149 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 746,
+        "cases_count": 746,
+        "frequency": 746
+      }
+    ],
+    [
+      "e-mined-82",
+      {
+        "id": "e-mined-82",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-19",
+        "source_label": "W_Call incomplete files",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 50747000,
+        "requests_per_min": "37 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 186,
+        "cases_count": 185,
+        "frequency": 186
+      }
+    ],
+    [
+      "e-mined-83",
+      {
+        "id": "e-mined-83",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-22",
+        "source_label": "O_Cancelled",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 333091000,
+        "requests_per_min": "33 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 166,
+        "cases_count": 166,
+        "frequency": 166
+      }
+    ],
+    [
+      "e-mined-84",
+      {
+        "id": "e-mined-84",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-22",
+        "target_id": "node-15",
+        "source_label": "A_Cancelled",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 41,
+        "cases_count": 41,
+        "frequency": 41
+      }
+    ],
+    [
+      "e-mined-85",
+      {
+        "id": "e-mined-85",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-19",
+        "source_label": "O_Returned",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 126404000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 25,
+        "cases_count": 25,
+        "frequency": 25
+      }
+    ],
+    [
+      "e-mined-86",
+      {
+        "id": "e-mined-86",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-21",
+        "source_label": "W_Complete application",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 75597000,
+        "requests_per_min": "11 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 56,
+        "cases_count": 54,
+        "frequency": 56
+      }
+    ],
+    [
+      "e-mined-87",
+      {
+        "id": "e-mined-87",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-19",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 397213000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 8,
+        "cases_count": 8,
+        "frequency": 8
+      }
+    ],
+    [
+      "e-mined-88",
+      {
+        "id": "e-mined-88",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-20",
+        "target_id": "node-10",
+        "source_label": "O_Refused",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "22 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 109,
+        "cases_count": 109,
+        "frequency": 109
+      }
+    ],
+    [
+      "e-mined-89",
+      {
+        "id": "e-mined-89",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-19",
+        "source_label": "W_Call after offers",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 271866000,
+        "requests_per_min": "17 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 85,
+        "cases_count": 85,
+        "frequency": 85
+      }
+    ],
+    [
+      "e-mined-90",
+      {
+        "id": "e-mined-90",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-19",
+        "source_label": "O_Created",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 617000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 18,
+        "cases_count": 18,
+        "frequency": 18
+      }
+    ],
+    [
+      "e-mined-91",
+      {
+        "id": "e-mined-91",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-20",
+        "target_id": "node-4",
+        "source_label": "O_Refused",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 25,
+        "cases_count": 25,
+        "frequency": 25
+      }
+    ],
+    [
+      "e-mined-92",
+      {
+        "id": "e-mined-92",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-22",
+        "target_id": "node-10",
+        "source_label": "A_Cancelled",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "21 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 103,
+        "cases_count": 103,
+        "frequency": 103
+      }
+    ],
+    [
+      "e-mined-93",
+      {
+        "id": "e-mined-93",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-24",
+        "source_label": "W_Validate application",
+        "target_label": "W_Assess potential fraud",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "50 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 248,
+        "cases_count": 241,
+        "frequency": 248
+      }
+    ],
+    [
+      "e-mined-94",
+      {
+        "id": "e-mined-94",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-24",
+        "target_id": "node-24",
+        "source_label": "W_Assess potential fraud",
+        "target_label": "W_Assess potential fraud",
+        "protocol": "Event Transition",
+        "latency_ms": 36576000,
+        "requests_per_min": "573 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2866,
+        "cases_count": 303,
+        "frequency": 2866
+      }
+    ],
+    [
+      "e-mined-95",
+      {
+        "id": "e-mined-95",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-24",
+        "target_id": "node-12",
+        "source_label": "W_Assess potential fraud",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "33 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 166,
+        "cases_count": 161,
+        "frequency": 166
+      }
+    ],
+    [
+      "e-mined-96",
+      {
+        "id": "e-mined-96",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-19",
+        "source_label": "O_Cancelled",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 9854000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 29,
+        "cases_count": 29,
+        "frequency": 29
+      }
+    ],
+    [
+      "e-mined-97",
+      {
+        "id": "e-mined-97",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-19",
+        "target_id": "node-15",
+        "source_label": "A_Denied",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 10,
+        "cases_count": 10,
+        "frequency": 10
+      }
+    ],
+    [
+      "e-mined-98",
+      {
+        "id": "e-mined-98",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-14",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 265505000,
+        "requests_per_min": "20 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 100,
+        "cases_count": 100,
+        "frequency": 100
+      }
+    ],
+    [
+      "e-mined-99",
+      {
+        "id": "e-mined-99",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-22",
+        "source_label": "A_Complete",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 429000,
+        "requests_per_min": "11 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 57,
+        "cases_count": 57,
+        "frequency": 57
+      }
+    ],
+    [
+      "e-mined-100",
+      {
+        "id": "e-mined-100",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-19",
+        "target_id": "node-4",
+        "source_label": "A_Denied",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 11,
+        "cases_count": 11,
+        "frequency": 11
+      }
+    ],
+    [
+      "e-mined-101",
+      {
+        "id": "e-mined-101",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-10",
+        "source_label": "O_Created",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 340486000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 46,
+        "cases_count": 46,
+        "frequency": 46
+      }
+    ],
+    [
+      "e-mined-102",
+      {
+        "id": "e-mined-102",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-9",
+        "source_label": "W_Call after offers",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 123897000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 14,
+        "cases_count": 14,
+        "frequency": 14
+      }
+    ],
+    [
+      "e-mined-103",
+      {
+        "id": "e-mined-103",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-22",
+        "source_label": "W_Validate application",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 114810000,
+        "requests_per_min": "16 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 78,
+        "cases_count": 78,
+        "frequency": 78
+      }
+    ],
+    [
+      "e-mined-104",
+      {
+        "id": "e-mined-104",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-12",
+        "source_label": "O_Cancelled",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 10947000,
+        "requests_per_min": "20 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 101,
+        "cases_count": 101,
+        "frequency": 101
+      }
+    ],
+    [
+      "e-mined-105",
+      {
+        "id": "e-mined-105",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-24",
+        "target_id": "node-19",
+        "source_label": "W_Assess potential fraud",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 10387000,
+        "requests_per_min": "20 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 102,
+        "cases_count": 102,
+        "frequency": 102
+      }
+    ],
+    [
+      "e-mined-106",
+      {
+        "id": "e-mined-106",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-20",
+        "target_id": "node-24",
+        "source_label": "O_Refused",
+        "target_label": "W_Assess potential fraud",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "20 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 102,
+        "cases_count": 102,
+        "frequency": 102
+      }
+    ],
+    [
+      "e-mined-107",
+      {
+        "id": "e-mined-107",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-23",
+        "source_label": "O_Sent (online only)",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "17 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 85,
+        "cases_count": 56,
+        "frequency": 85
+      }
+    ],
+    [
+      "e-mined-108",
+      {
+        "id": "e-mined-108",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-13",
+        "target_id": "node-19",
+        "source_label": "A_Validating",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 261000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 12,
+        "cases_count": 12,
+        "frequency": 12
+      }
+    ],
+    [
+      "e-mined-109",
+      {
+        "id": "e-mined-109",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-22",
+        "source_label": "O_Created",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 326653000,
+        "requests_per_min": "16 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 79,
+        "cases_count": 79,
+        "frequency": 79
+      }
+    ],
+    [
+      "e-mined-110",
+      {
+        "id": "e-mined-110",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-7",
+        "source_label": "W_Validate application",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 112401000,
+        "requests_per_min": "21 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 104,
+        "cases_count": 103,
+        "frequency": 104
+      }
+    ],
+    [
+      "e-mined-111",
+      {
+        "id": "e-mined-111",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-12",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 77986000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 45,
+        "cases_count": 45,
+        "frequency": 45
+      }
+    ],
+    [
+      "e-mined-112",
+      {
+        "id": "e-mined-112",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-13",
+        "target_id": "node-22",
+        "source_label": "A_Validating",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 250000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 6,
+        "cases_count": 6,
+        "frequency": 6
+      }
+    ],
+    [
+      "e-mined-113",
+      {
+        "id": "e-mined-113",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-22",
+        "source_label": "O_Sent (online only)",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 2166351000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 45,
+        "cases_count": 45,
+        "frequency": 45
+      }
+    ],
+    [
+      "e-mined-114",
+      {
+        "id": "e-mined-114",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-22",
+        "target_id": "node-4",
+        "source_label": "A_Cancelled",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 14,
+        "cases_count": 14,
+        "frequency": 14
+      }
+    ],
+    [
+      "e-mined-115",
+      {
+        "id": "e-mined-115",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-12",
+        "source_label": "O_Created",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 64835000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 9,
+        "cases_count": 9,
+        "frequency": 9
+      }
+    ],
+    [
+      "e-mined-116",
+      {
+        "id": "e-mined-116",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-23",
+        "source_label": "W_Call incomplete files",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 9123000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 15,
+        "cases_count": 15,
+        "frequency": 15
+      }
+    ],
+    [
+      "e-mined-117",
+      {
+        "id": "e-mined-117",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-15",
+        "source_label": "O_Created",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 83964000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 28,
+        "cases_count": 27,
+        "frequency": 28
+      }
+    ],
+    [
+      "e-mined-118",
+      {
+        "id": "e-mined-118",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-12",
+        "source_label": "O_Sent (online only)",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 148611000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 28,
+        "cases_count": 28,
+        "frequency": 28
+      }
+    ],
+    [
+      "e-mined-119",
+      {
+        "id": "e-mined-119",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-24",
+        "source_label": "W_Call incomplete files",
+        "target_label": "W_Assess potential fraud",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 13,
+        "cases_count": 13,
+        "frequency": 13
+      }
+    ],
+    [
+      "e-mined-120",
+      {
+        "id": "e-mined-120",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-24",
+        "target_id": "node-10",
+        "source_label": "W_Assess potential fraud",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 12,
+        "cases_count": 12,
+        "frequency": 12
+      }
+    ],
+    [
+      "e-mined-121",
+      {
+        "id": "e-mined-121",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-23",
+        "source_label": "W_Complete application",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 5200000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 16,
+        "cases_count": 16,
+        "frequency": 16
+      }
+    ],
+    [
+      "e-mined-122",
+      {
+        "id": "e-mined-122",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-9",
+        "source_label": "A_Complete",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 39000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 39,
+        "cases_count": 39,
+        "frequency": 39
+      }
+    ],
+    [
+      "e-mined-123",
+      {
+        "id": "e-mined-123",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-22",
+        "source_label": "W_Complete application",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 486120000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 40,
+        "cases_count": 40,
+        "frequency": 40
+      }
+    ],
+    [
+      "e-mined-124",
+      {
+        "id": "e-mined-124",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-16",
+        "target_id": "node-17",
+        "source_label": "A_Incomplete",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 195000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 19,
+        "cases_count": 19,
+        "frequency": 19
+      }
+    ],
+    [
+      "e-mined-125",
+      {
+        "id": "e-mined-125",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-14",
+        "source_label": "O_Returned",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 9722000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 16,
+        "cases_count": 16,
+        "frequency": 16
+      }
+    ],
+    [
+      "e-mined-126",
+      {
+        "id": "e-mined-126",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-3",
+        "target_id": "node-24",
+        "source_label": "W_Handle leads",
+        "target_label": "W_Assess potential fraud",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 22,
+        "cases_count": 22,
+        "frequency": 22
+      }
+    ],
+    [
+      "e-mined-127",
+      {
+        "id": "e-mined-127",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-24",
+        "target_id": "node-3",
+        "source_label": "W_Assess potential fraud",
+        "target_label": "W_Handle leads",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 22,
+        "cases_count": 22,
+        "frequency": 22
+      }
+    ],
+    [
+      "e-mined-128",
+      {
+        "id": "e-mined-128",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-25",
+        "source_label": "W_Call incomplete files",
+        "target_label": "W_Personal Loan collection",
+        "protocol": "Event Transition",
+        "latency_ms": 11525807000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-129",
+      {
+        "id": "e-mined-129",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-25",
+        "target_id": "node-25",
+        "source_label": "W_Personal Loan collection",
+        "target_label": "W_Personal Loan collection",
+        "protocol": "Event Transition",
+        "latency_ms": 1639566000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 19,
+        "cases_count": 2,
+        "frequency": 19
+      }
+    ],
+    [
+      "e-mined-130",
+      {
+        "id": "e-mined-130",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-21",
+        "source_label": "O_Sent (online only)",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 25728000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 27,
+        "cases_count": 27,
+        "frequency": 27
+      }
+    ],
+    [
+      "e-mined-131",
+      {
+        "id": "e-mined-131",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-10",
+        "source_label": "W_Call incomplete files",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 5,
+        "cases_count": 5,
+        "frequency": 5
+      }
+    ],
+    [
+      "e-mined-132",
+      {
+        "id": "e-mined-132",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-19",
+        "source_label": "A_Complete",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 512000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 15,
+        "cases_count": 15,
+        "frequency": 15
+      }
+    ],
+    [
+      "e-mined-133",
+      {
+        "id": "e-mined-133",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-14",
+        "source_label": "O_Cancelled",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 212496000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3,
+        "cases_count": 3,
+        "frequency": 3
+      }
+    ],
+    [
+      "e-mined-134",
+      {
+        "id": "e-mined-134",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-19",
+        "source_label": "O_Sent (online only)",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 72359000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-135",
+      {
+        "id": "e-mined-135",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-21",
+        "source_label": "O_Returned",
+        "target_label": "O_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 82000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-136",
+      {
+        "id": "e-mined-136",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-9",
+        "source_label": "O_Sent (online only)",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 13000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-137",
+      {
+        "id": "e-mined-137",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-24",
+        "source_label": "W_Complete application",
+        "target_label": "W_Assess potential fraud",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 13,
+        "cases_count": 13,
+        "frequency": 13
+      }
+    ],
+    [
+      "e-mined-138",
+      {
+        "id": "e-mined-138",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-24",
+        "target_id": "node-4",
+        "source_label": "W_Assess potential fraud",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 12,
+        "cases_count": 12,
+        "frequency": 12
+      }
+    ],
+    [
+      "e-mined-139",
+      {
+        "id": "e-mined-139",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-19",
+        "target_id": "node-10",
+        "source_label": "A_Denied",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 9,
+        "cases_count": 9,
+        "frequency": 9
+      }
+    ],
+    [
+      "e-mined-140",
+      {
+        "id": "e-mined-140",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-24",
+        "source_label": "W_Call after offers",
+        "target_label": "W_Assess potential fraud",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 18,
+        "cases_count": 17,
+        "frequency": 18
+      }
+    ],
+    [
+      "e-mined-141",
+      {
+        "id": "e-mined-141",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-23",
+        "source_label": "O_Cancelled",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 49000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 11,
+        "cases_count": 11,
+        "frequency": 11
+      }
+    ],
+    [
+      "e-mined-142",
+      {
+        "id": "e-mined-142",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-19",
+        "source_label": "W_Complete application",
+        "target_label": "A_Denied",
+        "protocol": "Event Transition",
+        "latency_ms": 16241000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 9,
+        "cases_count": 9,
+        "frequency": 9
+      }
+    ],
+    [
+      "e-mined-143",
+      {
+        "id": "e-mined-143",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-15",
+        "target_id": "node-9",
+        "source_label": "W_Call incomplete files",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 120914000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 8,
+        "cases_count": 8,
+        "frequency": 8
+      }
+    ],
+    [
+      "e-mined-144",
+      {
+        "id": "e-mined-144",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-7",
+        "source_label": "O_Returned",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 8321000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-145",
+      {
+        "id": "e-mined-145",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-22",
+        "target_id": "node-12",
+        "source_label": "A_Cancelled",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3,
+        "cases_count": 3,
+        "frequency": 3
+      }
+    ],
+    [
+      "e-mined-146",
+      {
+        "id": "e-mined-146",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-25",
+        "source_label": "W_Validate application",
+        "target_label": "W_Personal Loan collection",
+        "protocol": "Event Transition",
+        "latency_ms": 871191000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 2,
+        "cases_count": 1,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-147",
+      {
+        "id": "e-mined-147",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-25",
+        "target_id": "node-12",
+        "source_label": "W_Personal Loan collection",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-148",
+      {
+        "id": "e-mined-148",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-22",
+        "source_label": "O_Returned",
+        "target_label": "A_Cancelled",
+        "protocol": "Event Transition",
+        "latency_ms": 157316000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 4,
+        "cases_count": 4,
+        "frequency": 4
+      }
+    ],
+    [
+      "e-mined-149",
+      {
+        "id": "e-mined-149",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-17",
+        "source_label": "W_Call after offers",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 1236000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-150",
+      {
+        "id": "e-mined-150",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-18",
+        "target_id": "node-10",
+        "source_label": "A_Pending",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-151",
+      {
+        "id": "e-mined-151",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-23",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 41000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-152",
+      {
+        "id": "e-mined-152",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-23",
+        "target_id": "node-17",
+        "source_label": "O_Sent (online only)",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 113583000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3,
+        "cases_count": 3,
+        "frequency": 3
+      }
+    ],
+    [
+      "e-mined-153",
+      {
+        "id": "e-mined-153",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-19",
+        "target_id": "node-12",
+        "source_label": "A_Denied",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-154",
+      {
+        "id": "e-mined-154",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-17",
+        "source_label": "O_Cancelled",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 76269000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-155",
+      {
+        "id": "e-mined-155",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-23",
+        "source_label": "A_Complete",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 51000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-156",
+      {
+        "id": "e-mined-156",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-13",
+        "target_id": "node-7",
+        "source_label": "A_Validating",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 105000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-157",
+      {
+        "id": "e-mined-157",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-23",
+        "source_label": "W_Validate application",
+        "target_label": "O_Sent (online only)",
+        "protocol": "Event Transition",
+        "latency_ms": 25000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-158",
+      {
+        "id": "e-mined-158",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-4",
+        "target_id": "node-26",
+        "source_label": "W_Complete application",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 398169000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 25,
+        "cases_count": 22,
+        "frequency": 25
+      }
+    ],
+    [
+      "e-mined-159",
+      {
+        "id": "e-mined-159",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-26",
+        "source_label": "W_Shortened completion",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 21837000,
+        "requests_per_min": "23 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 116,
+        "cases_count": 74,
+        "frequency": 116
+      }
+    ],
+    [
+      "e-mined-160",
+      {
+        "id": "e-mined-160",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-4",
+        "source_label": "W_Shortened completion",
+        "target_label": "W_Complete application",
+        "protocol": "Event Transition",
+        "latency_ms": 40429000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 12,
+        "cases_count": 11,
+        "frequency": 12
+      }
+    ],
+    [
+      "e-mined-161",
+      {
+        "id": "e-mined-161",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-9",
+        "target_id": "node-17",
+        "source_label": "O_Sent (mail and online)",
+        "target_label": "O_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 189238000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-162",
+      {
+        "id": "e-mined-162",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-11",
+        "target_id": "node-26",
+        "source_label": "A_Complete",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 114000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 45,
+        "cases_count": 45,
+        "frequency": 45
+      }
+    ],
+    [
+      "e-mined-163",
+      {
+        "id": "e-mined-163",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-10",
+        "source_label": "W_Shortened completion",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 127564000,
+        "requests_per_min": "14 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 68,
+        "cases_count": 50,
+        "frequency": 68
+      }
+    ],
+    [
+      "e-mined-164",
+      {
+        "id": "e-mined-164",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-26",
+        "source_label": "W_Call after offers",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 599699000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": true,
+        "transition_count": 26,
+        "cases_count": 25,
+        "frequency": 26
+      }
+    ],
+    [
+      "e-mined-165",
+      {
+        "id": "e-mined-165",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-5",
+        "target_id": "node-26",
+        "source_label": "A_Concept",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 126555000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 14,
+        "cases_count": 14,
+        "frequency": 14
+      }
+    ],
+    [
+      "e-mined-166",
+      {
+        "id": "e-mined-166",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-6",
+        "source_label": "W_Shortened completion",
+        "target_label": "A_Accepted",
+        "protocol": "Event Transition",
+        "latency_ms": 23900000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 29,
+        "cases_count": 29,
+        "frequency": 29
+      }
+    ],
+    [
+      "e-mined-167",
+      {
+        "id": "e-mined-167",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-21",
+        "target_id": "node-26",
+        "source_label": "O_Cancelled",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 10397019000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-168",
+      {
+        "id": "e-mined-168",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-7",
+        "source_label": "W_Shortened completion",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 37629000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3,
+        "cases_count": 3,
+        "frequency": 3
+      }
+    ],
+    [
+      "e-mined-169",
+      {
+        "id": "e-mined-169",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-6",
+        "target_id": "node-26",
+        "source_label": "A_Accepted",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 194000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 5,
+        "cases_count": 5,
+        "frequency": 5
+      }
+    ],
+    [
+      "e-mined-170",
+      {
+        "id": "e-mined-170",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-8",
+        "target_id": "node-26",
+        "source_label": "O_Created",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 160000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3,
+        "cases_count": 3,
+        "frequency": 3
+      }
+    ],
+    [
+      "e-mined-171",
+      {
+        "id": "e-mined-171",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-12",
+        "target_id": "node-26",
+        "source_label": "W_Validate application",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 9306000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-172",
+      {
+        "id": "e-mined-172",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-12",
+        "source_label": "W_Shortened completion",
+        "target_label": "W_Validate application",
+        "protocol": "Event Transition",
+        "latency_ms": 1023000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-173",
+      {
+        "id": "e-mined-173",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-16",
+        "target_id": "node-26",
+        "source_label": "A_Incomplete",
+        "target_label": "W_Shortened completion",
+        "protocol": "Event Transition",
+        "latency_ms": 17000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-174",
+      {
+        "id": "e-mined-174",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-15",
+        "source_label": "W_Shortened completion",
+        "target_label": "W_Call incomplete files",
+        "protocol": "Event Transition",
+        "latency_ms": 30,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-175",
+      {
+        "id": "e-mined-175",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-16",
+        "target_id": "node-7",
+        "source_label": "A_Incomplete",
+        "target_label": "O_Create Offer",
+        "protocol": "Event Transition",
+        "latency_ms": 523000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 3,
+        "cases_count": 3,
+        "frequency": 3
+      }
+    ],
+    [
+      "e-mined-176",
+      {
+        "id": "e-mined-176",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-26",
+        "target_id": "node-9",
+        "source_label": "W_Shortened completion",
+        "target_label": "O_Sent (mail and online)",
+        "protocol": "Event Transition",
+        "latency_ms": 107000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 2,
+        "cases_count": 2,
+        "frequency": 2
+      }
+    ],
+    [
+      "e-mined-177",
+      {
+        "id": "e-mined-177",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-10",
+        "target_id": "node-14",
+        "source_label": "W_Call after offers",
+        "target_label": "O_Returned",
+        "protocol": "Event Transition",
+        "latency_ms": 66000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "4.2%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ],
+    [
+      "e-mined-178",
+      {
+        "id": "e-mined-178",
+        "workflow_id": "wf-mined-bpi2017",
+        "source_id": "node-14",
+        "target_id": "node-10",
+        "source_label": "O_Returned",
+        "target_label": "W_Call after offers",
+        "protocol": "Event Transition",
+        "latency_ms": 15900000,
+        "requests_per_min": "10 / min",
+        "failure_rate": "0.0%",
+        "propagation_type": "DIRECT",
+        "is_impact_path": false,
+        "transition_count": 1,
+        "cases_count": 1,
+        "frequency": 1
+      }
+    ]
+  ],
+  "riskEvents": [
+    [
+      "EVT-94021",
+      {
+        "id": "EVT-94021",
+        "timestamp": "14:32:04 UTC",
+        "detected_time": "Just now",
+        "event_type": "API Contract Drift",
+        "workflow_id": "wf-customer-verification",
+        "workflow_name": "Customer Verification & Approval",
+        "workflow_code": "WF-CVA-01",
+        "affected_component": "Customer Identity API (v2.5)",
+        "source_node": "customer-identity-api",
+        "severity": "critical",
+        "risk_score": 82,
+        "status": "action_required",
+        "recommended_action": "PAUSE",
+        "failure_rate": "68.0%",
+        "impact_radius": 3,
+        "root_cause": "Breaking schema contract drift: customer.identity.status payload modified from flat string enum to nested dictionary object without backward compatibility.",
+        "details": "Schema change in Customer Identity API (v2.4 → v2.5) altered identity verification response format. Deserialization exceptions spiking to 68%, propagating unverified fallback tokens into downstream fraud assessment and approval engines.",
+        "propagation_path": [
+          "Customer Identity API (v2.5)",
+          "Customer Verification Agent (Groq-Powered)",
+          "Fraud Assessment Agent",
+          "Approval API / Business System (gRPC)"
+        ],
+        "schema_diff": {
+          "before": "{\n  \"customer_id\": \"CUST-883910\",\n  \"status\": \"VERIFIED_ACTIVE\",\n  \"identity_score\": 0.98,\n  \"registry_code\": \"REG-US-CA\"\n}",
+          "after": "{\n  \"customer_id\": \"CUST-883910\",\n  \"status\": {\n    \"code\": \"VERIFIED\",\n    \"sub_status\": \"ACTIVE\",\n    \"tier\": \"TIER_A1\"\n  },\n  \"identity_score\": 0.98,\n  \"registry_code\": \"REG-US-CA\"\n}"
+        },
+        "telemetry_snapshot": {
+          "latency": "45 ms",
+          "error_rate": "68.0%",
+          "p99_latency": "180 ms",
+          "traffic": "18.4K / min"
+        },
+        "is_current_incident": true
+      }
+    ],
+    [
+      "EVT-94019",
+      {
+        "id": "EVT-94019",
+        "timestamp": "14:18:22 UTC",
+        "detected_time": "14 min ago",
+        "event_type": "Dependency Failure",
+        "workflow_id": "wf-loan-underwriting",
+        "workflow_name": "Loan Underwriting",
+        "workflow_code": "WF-LUW-04",
+        "affected_component": "Credit Bureau Integration",
+        "source_node": "credit-bureau-agent",
+        "severity": "high",
+        "risk_score": 74,
+        "status": "investigating",
+        "recommended_action": "WARN",
+        "failure_rate": "24.5%",
+        "impact_radius": 2,
+        "root_cause": "Upstream Equifax & Experian partner gateway timeout (HTTP 504 Gateway Timeout) on synchronous bureau score requests.",
+        "details": "External credit scoring telemetry gateway latency spiked above 2500ms SLA. Auto-engaged fallback synthetic scoring cache with reduced underwriting confidence score.",
+        "propagation_path": [
+          "Credit Bureau Integration",
+          "Loan Pricing Calculator API",
+          "Loan Origination Ledger"
+        ]
+      }
+    ],
+    [
+      "EVT-94015",
+      {
+        "id": "EVT-94015",
+        "timestamp": "14:00:10 UTC",
+        "detected_time": "32 min ago",
+        "event_type": "Agent Behavior Anomaly",
+        "workflow_id": "wf-payment-fraud",
+        "workflow_name": "Payment Fraud Detection",
+        "workflow_code": "WF-PFD-02",
+        "affected_component": "Velocity & Pattern Scorer (Groq-Powered)",
+        "source_node": "fraud-scorer-agent",
+        "severity": "high",
+        "risk_score": 68,
+        "status": "monitored",
+        "recommended_action": "WARN",
+        "failure_rate": "4.2%",
+        "impact_radius": 1,
+        "root_cause": "Non-ASCII character sets in international merchant category codes caused unexpected tool-call argument formatting drift in LLM output.",
+        "details": "Autonomous evaluation engine detected token serialization drift in payment velocity agent. Deterministic guardrail retry policy engaged with automatic payload normalization."
+      }
+    ],
+    [
+      "EVT-94008",
+      {
+        "id": "EVT-94008",
+        "timestamp": "13:38:45 UTC",
+        "detected_time": "54 min ago",
+        "event_type": "Elevated Error Rate",
+        "workflow_id": "wf-customer-onboarding",
+        "workflow_name": "Customer Onboarding",
+        "workflow_code": "WF-COB-03",
+        "affected_component": "Document Extraction Agent (GPT-4o Vision)",
+        "source_node": "doc-parser-agent",
+        "severity": "medium",
+        "risk_score": 48,
+        "status": "monitored",
+        "recommended_action": "WARN",
+        "failure_rate": "4.8%",
+        "impact_radius": 1,
+        "root_cause": "Binary multipart passport scan upload stream contained unescaped Unicode byte sequences during OCR extraction.",
+        "details": "Document extraction error rate temporarily elevated to 4.8% during batch onboarding cycle. Image sanitization pre-processing filter applied automatically."
+      }
+    ],
+    [
+      "EVT-93880",
+      {
+        "id": "EVT-93880",
+        "timestamp": "12:02:18 UTC",
+        "detected_time": "2.5 hours ago",
+        "event_type": "High-Risk Production Change",
+        "workflow_id": "wf-payment-fraud",
+        "workflow_name": "Payment Fraud Detection",
+        "workflow_code": "WF-PFD-02",
+        "affected_component": "Redis Feature Store (v7.2.4)",
+        "source_node": "feature-store",
+        "severity": "high",
+        "risk_score": 76,
+        "status": "resolved",
+        "recommended_action": "ALLOW",
+        "failure_rate": "0.0%",
+        "impact_radius": 2,
+        "root_cause": "Cluster partition rebalance during batch merchant settlement created connection pool contention (85% utilization spike).",
+        "details": "High-risk partition rebalance detected in Redis distributed state cluster. Autonomous connection recycling and read-replica failover restored nominal latency in 45s."
+      }
+    ],
+    [
+      "EVT-93850",
+      {
+        "id": "EVT-93850",
+        "timestamp": "10:30:00 UTC",
+        "detected_time": "4 hours ago",
+        "event_type": "Workflow Degradation",
+        "workflow_id": "wf-loan-underwriting",
+        "workflow_name": "Loan Underwriting",
+        "workflow_code": "WF-LUW-04",
+        "affected_component": "Loan Origination Ledger (CockroachDB)",
+        "source_node": "loan-ledger-db",
+        "severity": "low",
+        "risk_score": 28,
+        "status": "resolved",
+        "recommended_action": "ALLOW",
+        "failure_rate": "0.0%",
+        "impact_radius": 0,
+        "root_cause": "Database transaction lock contention on historical covenant audit ledger during simultaneous quarterly closing queries.",
+        "details": "p99 database write latency temporarily increased to 340ms. Autonomous query pool re-prioritization mitigated contention and recovered baseline latency to 25ms."
+      }
+    ],
+    [
+      "EVT-RUN-DS-3467",
+      {
+        "id": "EVT-RUN-DS-3467",
+        "timestamp": "06:03:04 UTC",
+        "detected_time": "Just now",
+        "event_type": "Operational Process Anomaly",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "affected_component": "W_Call after offers",
+        "source_node": "node-1",
+        "severity": "critical",
+        "risk_score": 75,
+        "status": "action_required",
+        "recommended_action": "WARN",
+        "details": "Average waiting time of 135.2h observed across 3756 cases (0% of total process transitions).",
+        "root_cause": "Bottleneck delays and rework iterations on W_Validate application → W_Validate application increase turnaround latency.",
+        "failure_rate": "0%",
+        "impact_radius": 26,
+        "propagation_path": [
+          "A_Create Application",
+          "A_Submitted",
+          "W_Handle leads",
+          "W_Complete application"
+        ],
+        "is_current_incident": true
+      }
+    ],
+    [
+      "EVT-RUN-DS-3780",
+      {
+        "id": "EVT-RUN-DS-3780",
+        "timestamp": "06:12:59 UTC",
+        "detected_time": "Just now",
+        "event_type": "Operational Process Anomaly",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "affected_component": "W_Call after offers",
+        "source_node": "node-1",
+        "severity": "critical",
+        "risk_score": 75,
+        "status": "action_required",
+        "recommended_action": "WARN",
+        "details": "Average waiting time of 135.2h observed across 3756 cases (0% of total process transitions).",
+        "root_cause": "Bottleneck delays and rework iterations on W_Validate application → W_Validate application increase turnaround latency.",
+        "failure_rate": "0%",
+        "impact_radius": 26,
+        "propagation_path": [
+          "A_Create Application",
+          "A_Submitted",
+          "W_Handle leads",
+          "W_Complete application"
+        ],
+        "is_current_incident": true
+      }
+    ],
+    [
+      "EVT-RUN-DS-1817",
+      {
+        "id": "EVT-RUN-DS-1817",
+        "timestamp": "06:13:03 UTC",
+        "detected_time": "Just now",
+        "event_type": "Operational Process Anomaly",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "affected_component": "W_Call after offers",
+        "source_node": "node-1",
+        "severity": "critical",
+        "risk_score": 75,
+        "status": "action_required",
+        "recommended_action": "WARN",
+        "details": "Average waiting time of 135.2h observed across 3756 cases (0% of total process transitions).",
+        "root_cause": "Bottleneck delays and rework iterations on W_Validate application → W_Validate application increase turnaround latency.",
+        "failure_rate": "0%",
+        "impact_radius": 26,
+        "propagation_path": [
+          "A_Create Application",
+          "A_Submitted",
+          "W_Handle leads",
+          "W_Complete application"
+        ],
+        "is_current_incident": true
+      }
+    ]
+  ],
+  "auditLogs": [
+    [
+      "AUD-89105",
+      {
+        "id": "AUD-89105",
+        "timestamp": "14:32:20 UTC",
+        "relative_time": "Just now",
+        "action": "Operator Decision",
+        "category": "operator_action",
+        "target": "Production Approval Gate",
+        "affected_component": "Approval API / Business System",
+        "workflow_id": "wf-customer-verification",
+        "workflow_name": "Customer Verification & Approval",
+        "workflow_code": "WF-CVA-01",
+        "actor": "Enterprise SRE Operator",
+        "result": "Awaiting operator decision (Advisory: PAUSE recommendation issued to mitigate 68% verification failure rate).",
+        "status": "pending",
+        "severity": "high",
+        "step_number": 6,
+        "details": "FlowTrace presented autonomous risk assessment (Risk Score 82, Failure Probability 68%) and recommended pausing the approval workflow. Operator notification dispatched; awaiting manual decision in Incident Analysis.",
+        "evidence": {
+          "riskScore": 82,
+          "failureProbability": "68%",
+          "affectedComponentsCount": 3,
+          "dependenciesTracedCount": 5,
+          "recommendedAction": "PAUSE WORKFLOW",
+          "operatorNote": "Operator review in progress via FlowTrace Incident Analysis command console."
+        },
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-89104",
+      {
+        "id": "AUD-89104",
+        "timestamp": "14:32:15 UTC",
+        "relative_time": "Just now",
+        "action": "Recommendation Generated",
+        "category": "recommendation",
+        "target": "Approval Workflow Guardrail",
+        "affected_component": "Customer Verification & Approval (WF-CVA-01)",
+        "workflow_id": "wf-customer-verification",
+        "workflow_name": "Customer Verification & Approval",
+        "workflow_code": "WF-CVA-01",
+        "actor": "FlowTrace Engine",
+        "result": "Recommendation: Pause affected approval workflow to prevent invalid risk score propagation.",
+        "status": "recommended",
+        "severity": "critical",
+        "step_number": 5,
+        "details": "Autonomous policy rule triggered: Predicted failure probability (68%) exceeds critical safety threshold (30%). Generated advisory recommending temporary pause of automated underwriting gate.",
+        "evidence": {
+          "riskScore": 82,
+          "failureProbability": "68%",
+          "affectedComponentsCount": 3,
+          "dependenciesTracedCount": 5,
+          "recommendedAction": "PAUSE WORKFLOW"
+        },
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-89103",
+      {
+        "id": "AUD-89103",
+        "timestamp": "14:32:09 UTC",
+        "relative_time": "Just now",
+        "action": "Risk Assessment",
+        "category": "analysis",
+        "target": "Customer Verification & Approval",
+        "affected_component": "Customer Identity API → Verification Chain",
+        "workflow_id": "wf-customer-verification",
+        "workflow_name": "Customer Verification & Approval",
+        "workflow_code": "WF-CVA-01",
+        "actor": "FlowTrace Engine",
+        "result": "Risk score calculated: 82/100. Failure probability: 68%. Severity: High Risk.",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 4,
+        "details": "Calculated composite risk score based on telemetry breach, downstream blast radius (3 services), and deserialization failure rates across verification reasoning agents.",
+        "evidence": {
+          "riskScore": 82,
+          "failureProbability": "68%",
+          "affectedComponentsCount": 3,
+          "dependenciesTracedCount": 5
+        },
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-89102",
+      {
+        "id": "AUD-89102",
+        "timestamp": "14:32:06 UTC",
+        "relative_time": "Just now",
+        "action": "Impact Prediction",
+        "category": "analysis",
+        "target": "3 Downstream Components",
+        "affected_component": "Customer Verification Agent, Fraud Assessment Agent, Approval API",
+        "workflow_id": "wf-customer-verification",
+        "workflow_name": "Customer Verification & Approval",
+        "workflow_code": "WF-CVA-01",
+        "actor": "FlowTrace Engine",
+        "result": "3 downstream components identified as potentially affected (68% failure rate predicted).",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 3,
+        "details": "Autonomous model identified direct deserialization impact on Customer Verification Agent (Groq-powered reasoning) cascading unverified fallback tokens into Fraud Assessment Agent and core Approval API.",
+        "evidence": {
+          "riskScore": 82,
+          "failureProbability": "68%",
+          "affectedComponentsCount": 3,
+          "dependenciesTracedCount": 5
+        },
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-89101",
+      {
+        "id": "AUD-89101",
+        "timestamp": "14:32:05 UTC",
+        "relative_time": "Just now",
+        "action": "Dependency Analysis",
+        "category": "analysis",
+        "target": "5 Workflow Dependency Links",
+        "affected_component": "Identity → Verification → Fraud → Approval & Audit Sink",
+        "workflow_id": "wf-customer-verification",
+        "workflow_name": "Customer Verification & Approval",
+        "workflow_code": "WF-CVA-01",
+        "actor": "FlowTrace Engine",
+        "result": "FlowTrace traced downstream dependencies. 5 dependencies traced from identity service to core underwriting.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 2,
+        "details": "Traversed live topology graph from Customer Identity API across REST, Agentic ToolCall, and gRPC protocol edges. Isolated 5 dependency paths.",
+        "evidence": {
+          "dependenciesTracedCount": 5,
+          "affectedComponentsCount": 3
+        },
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-89100",
+      {
+        "id": "AUD-89100",
+        "timestamp": "14:32:04 UTC",
+        "relative_time": "Just now",
+        "action": "Change Detected",
+        "category": "detection",
+        "target": "Customer Identity API (v2.4 → v2.5)",
+        "affected_component": "Customer Identity API",
+        "workflow_id": "wf-customer-verification",
+        "workflow_name": "Customer Verification & Approval",
+        "workflow_code": "WF-CVA-01",
+        "actor": "Production telemetry",
+        "result": "Customer Identity API schema change detected: customer.identity.status converted from string enum to nested object.",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 1,
+        "details": "Contract observation hook detected payload format alteration in GET /v2/identity/verify response. Status field converted from flat string enum to dictionary object without backward compatibility.",
+        "evidence": {
+          "schemaDiffSummary": "customer.identity.status: string enum -> nested dictionary object",
+          "affectedComponentsCount": 3
+        },
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-89085",
+      {
+        "id": "AUD-89085",
+        "timestamp": "14:00:00 UTC",
+        "relative_time": "32 min ago",
+        "action": "Operator Decision",
+        "category": "operator_action",
+        "target": "Velocity & Pattern Scorer (Groq-Powered)",
+        "affected_component": "Velocity & Pattern Scorer",
+        "workflow_id": "wf-payment-fraud",
+        "workflow_name": "Payment Fraud Detection",
+        "workflow_code": "WF-PFD-02",
+        "actor": "Enterprise SRE Operator",
+        "result": "Workflow parameters updated by operator: enabled automated Unicode payload normalization hook.",
+        "status": "action_taken",
+        "severity": "normal",
+        "details": "Operator reviewed minor token formatting anomaly and approved runtime schema sanitization hook. Telemetry error rate stabilized at 0.02%."
+      }
+    ],
+    [
+      "AUD-DS-4404-01",
+      {
+        "id": "AUD-DS-4404-01",
+        "timestamp": "06:03:04 UTC",
+        "relative_time": "Just now",
+        "action": "Dataset Ingestion",
+        "category": "detection",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Ingested 1,202,267 events across 31,509 cases from BPI2017.txt.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 1,
+        "details": "Ingested 1,202,267 events across 31,509 cases from BPI2017.txt.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-4404-02",
+      {
+        "id": "AUD-DS-4404-02",
+        "timestamp": "06:03:04 UTC",
+        "relative_time": "Just now",
+        "action": "Schema Validation",
+        "category": "detection",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Validated Case ID (case:concept:name), Activity (concept:name), and Timestamp (time:timestamp).",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 2,
+        "details": "Validated Case ID (case:concept:name), Activity (concept:name), and Timestamp (time:timestamp).",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-4404-03",
+      {
+        "id": "AUD-DS-4404-03",
+        "timestamp": "06:03:04 UTC",
+        "relative_time": "Just now",
+        "action": "Process Discovery",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Discovered DAG graph: 26 activities, 178 transitions.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 3,
+        "details": "Discovered DAG graph: 26 activities, 178 transitions.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-4404-04",
+      {
+        "id": "AUD-DS-4404-04",
+        "timestamp": "06:03:04 UTC",
+        "relative_time": "Just now",
+        "action": "Metrics & Anomaly Detection",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Computed 12975 variants, rework rate 0%, 11 deviations.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 4,
+        "details": "Computed 12975 variants, rework rate 0%, 11 deviations.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-4404-05",
+      {
+        "id": "AUD-DS-4404-05",
+        "timestamp": "06:03:04 UTC",
+        "relative_time": "Just now",
+        "action": "Groq LPU Reasoning",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "Groq LPU (openai/gpt-oss-120b)",
+        "result": "Groq LPU (openai/gpt-oss-120b) synthesized root cause and operational impact.",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 5,
+        "details": "Groq LPU (openai/gpt-oss-120b) synthesized root cause and operational impact.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-4404-06",
+      {
+        "id": "AUD-DS-4404-06",
+        "timestamp": "06:03:04 UTC",
+        "relative_time": "Just now",
+        "action": "Recommendation Generation",
+        "category": "recommendation",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Generated operator governance mitigation: WARN (Address process throughput congestion on W_Validate application → W_Validate application to prevent SLA breaches.).",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 6,
+        "details": "Generated operator governance mitigation: WARN (Address process throughput congestion on W_Validate application → W_Validate application to prevent SLA breaches.).",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-9428-01",
+      {
+        "id": "AUD-DS-9428-01",
+        "timestamp": "06:12:59 UTC",
+        "relative_time": "Just now",
+        "action": "Dataset Ingestion",
+        "category": "detection",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Ingested 1,202,267 events across 31,509 cases from BPI2017.txt.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 1,
+        "details": "Ingested 1,202,267 events across 31,509 cases from BPI2017.txt.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-9428-02",
+      {
+        "id": "AUD-DS-9428-02",
+        "timestamp": "06:12:59 UTC",
+        "relative_time": "Just now",
+        "action": "Schema Validation",
+        "category": "detection",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Validated Case ID (case:concept:name), Activity (concept:name), and Timestamp (time:timestamp).",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 2,
+        "details": "Validated Case ID (case:concept:name), Activity (concept:name), and Timestamp (time:timestamp).",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-9428-03",
+      {
+        "id": "AUD-DS-9428-03",
+        "timestamp": "06:12:59 UTC",
+        "relative_time": "Just now",
+        "action": "Process Discovery",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Discovered DAG graph: 26 activities, 178 transitions.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 3,
+        "details": "Discovered DAG graph: 26 activities, 178 transitions.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-9428-04",
+      {
+        "id": "AUD-DS-9428-04",
+        "timestamp": "06:12:59 UTC",
+        "relative_time": "Just now",
+        "action": "Metrics & Anomaly Detection",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Computed 12975 variants, rework rate 0%, 11 deviations.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 4,
+        "details": "Computed 12975 variants, rework rate 0%, 11 deviations.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-9428-05",
+      {
+        "id": "AUD-DS-9428-05",
+        "timestamp": "06:12:59 UTC",
+        "relative_time": "Just now",
+        "action": "Groq LPU Reasoning",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "Groq LPU (openai/gpt-oss-120b)",
+        "result": "Groq LPU (openai/gpt-oss-120b) synthesized root cause and operational impact.",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 5,
+        "details": "Groq LPU (openai/gpt-oss-120b) synthesized root cause and operational impact.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-9428-06",
+      {
+        "id": "AUD-DS-9428-06",
+        "timestamp": "06:12:59 UTC",
+        "relative_time": "Just now",
+        "action": "Recommendation Generation",
+        "category": "recommendation",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Generated operator governance mitigation: WARN (Address process throughput congestion on W_Validate application → W_Validate application to prevent SLA breaches.).",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 6,
+        "details": "Generated operator governance mitigation: WARN (Address process throughput congestion on W_Validate application → W_Validate application to prevent SLA breaches.).",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-3874-01",
+      {
+        "id": "AUD-DS-3874-01",
+        "timestamp": "06:13:03 UTC",
+        "relative_time": "Just now",
+        "action": "Dataset Ingestion",
+        "category": "detection",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Ingested 1,202,267 events across 31,509 cases from BPI2017.txt.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 1,
+        "details": "Ingested 1,202,267 events across 31,509 cases from BPI2017.txt.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-3874-02",
+      {
+        "id": "AUD-DS-3874-02",
+        "timestamp": "06:13:03 UTC",
+        "relative_time": "Just now",
+        "action": "Schema Validation",
+        "category": "detection",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Validated Case ID (case:concept:name), Activity (concept:name), and Timestamp (time:timestamp).",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 2,
+        "details": "Validated Case ID (case:concept:name), Activity (concept:name), and Timestamp (time:timestamp).",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-3874-03",
+      {
+        "id": "AUD-DS-3874-03",
+        "timestamp": "06:13:03 UTC",
+        "relative_time": "Just now",
+        "action": "Process Discovery",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Discovered DAG graph: 26 activities, 178 transitions.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 3,
+        "details": "Discovered DAG graph: 26 activities, 178 transitions.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-3874-04",
+      {
+        "id": "AUD-DS-3874-04",
+        "timestamp": "06:13:03 UTC",
+        "relative_time": "Just now",
+        "action": "Metrics & Anomaly Detection",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Computed 12975 variants, rework rate 0%, 11 deviations.",
+        "status": "completed",
+        "severity": "info",
+        "step_number": 4,
+        "details": "Computed 12975 variants, rework rate 0%, 11 deviations.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-3874-05",
+      {
+        "id": "AUD-DS-3874-05",
+        "timestamp": "06:13:03 UTC",
+        "relative_time": "Just now",
+        "action": "Groq LPU Reasoning",
+        "category": "analysis",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "Groq LPU (openai/gpt-oss-120b)",
+        "result": "Groq LPU (openai/gpt-oss-120b) synthesized root cause and operational impact.",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 5,
+        "details": "Groq LPU (openai/gpt-oss-120b) synthesized root cause and operational impact.",
+        "is_current_incident": true
+      }
+    ],
+    [
+      "AUD-DS-3874-06",
+      {
+        "id": "AUD-DS-3874-06",
+        "timestamp": "06:13:03 UTC",
+        "relative_time": "Just now",
+        "action": "Recommendation Generation",
+        "category": "recommendation",
+        "target": "BPI2017.txt",
+        "affected_component": "W_Call after offers",
+        "workflow_id": "wf-mined-bpi2017",
+        "workflow_name": "BPI2017 Process Workflow",
+        "workflow_code": "WF-BPI2-31509",
+        "actor": "FlowTrace Engine (LangGraph)",
+        "result": "Generated operator governance mitigation: WARN (Address process throughput congestion on W_Validate application → W_Validate application to prevent SLA breaches.).",
+        "status": "completed",
+        "severity": "high",
+        "step_number": 6,
+        "details": "Generated operator governance mitigation: WARN (Address process throughput congestion on W_Validate application → W_Validate application to prevent SLA breaches.).",
+        "is_current_incident": true
+      }
+    ]
+  ]
+}

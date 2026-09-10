@@ -35,3 +35,6 @@ credentials.json
 *.njsproj
 *.sln
 *.sw?
+
+# Generated local data stores
+data/workflows_store.json

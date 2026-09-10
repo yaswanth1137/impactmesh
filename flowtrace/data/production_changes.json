@@ -1,0 +1,21 @@
+[
+  {
+    "id": "chg-94021",
+    "timestamp": "14:32:04 UTC",
+    "workflowId": "wf-customer-verification",
+    "workflowCode": "WF-CVA-01",
+    "service": "Customer Identity API",
+    "componentId": "customer-identity-api",
+    "eventType": "API Contract / Schema Change",
+    "oldVersion": "v2.4.0",
+    "newVersion": "v2.5.0",
+    "changedField": "customer.identity.status",
+    "previousType": "string enum (e.g. 'VERIFIED_ACTIVE')",
+    "newType": "nested object (e.g. { 'code': 'VERIFIED', 'sub_status': 'ACTIVE', 'tier': 'TIER_A1' })",
+    "contractDiff": {
+      "before": "{\n  \"customer_id\": \"CUST-883910\",\n  \"status\": \"VERIFIED_ACTIVE\",\n  \"identity_score\": 0.98,\n  \"registry_code\": \"REG-US-CA\"\n}",
+      "after": "{\n  \"customer_id\": \"CUST-883910\",\n  \"status\": {\n    \"code\": \"VERIFIED\",\n    \"sub_status\": \"ACTIVE\",\n    \"tier\": \"TIER_A1\"\n  },\n  \"identity_score\": 0.98,\n  \"registry_code\": \"REG-US-CA\"\n}"
+    },
+    "reason": "Identity Platform upgrade v2.5 released with tiered verification metadata without backwards compatibility adapter."
+  }
+]

@@ -1,0 +1,6 @@
+dependency_id,workflow_id,source_id,source_label,target_id,target_label,relationship,protocol,throughput,failure_rate,propagation_type,is_impact_path
+dep-cva-01,wf-customer-verification,customer-identity-api,Customer Identity API,customer-verification-agent,Customer Verification Agent,CONSUMES_API,REST / JSON,18.4K req / min,6.8%,DIRECT,true
+dep-cva-02,wf-customer-verification,customer-verification-agent,Customer Verification Agent,fraud-assessment-agent,Fraud Assessment Agent,AGENT_TOOL_CALL,Agentic ToolCall,14.2K req / min,4.2%,CASCADE,true
+dep-cva-03,wf-customer-verification,fraud-assessment-agent,Fraud Assessment Agent,approval-api,Approval API / Business System,GRPC_INVOCATION,gRPC v2,8.6K req / min,1.8%,CASCADE,true
+dep-cva-04,wf-customer-verification,customer-identity-api,Customer Identity API,audit-telemetry-sink,Audit & Compliance Sink,EVENT_STREAM,Kafka Event,18.4K req / min,0.0%,NONE,false
+dep-cva-05,wf-customer-verification,customer-verification-agent,Customer Verification Agent,audit-telemetry-sink,Audit & Compliance Sink,EVENT_STREAM,Kafka Event,14.2K req / min,0.0%,NONE,false

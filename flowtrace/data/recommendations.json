@@ -1,0 +1,18 @@
+[
+  {
+    "id": "rec-94021",
+    "workflowId": "wf-customer-verification",
+    "workflowCode": "WF-CVA-01",
+    "incidentId": "INC-94021",
+    "recommendedAction": "PAUSE",
+    "target": "Customer Verification & Approval Workflow (WF-CVA-01)",
+    "reasoning": "Prevent potentially invalid verification results from reaching the approval system while the API contract is reviewed.",
+    "policyRuleTriggered": "High Failure Probability (>30%) on critical financial underwriting path",
+    "mitigationSteps": [
+      "Pause automated loan underwriting approval queue.",
+      "Deploy backward-compatible schema adapter for Customer Identity API v2.5.",
+      "Rerun automated guardrail regression tests."
+    ],
+    "generatedAt": "14:32:04 UTC"
+  }
+]

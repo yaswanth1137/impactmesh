@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { PixelBadge } from '../../components/pixel/PixelBadge.tsx';
 import { PixelButton } from '../../components/pixel/PixelButton.tsx';
 import { PixelIcon } from '../../components/pixel/PixelIcon.tsx';
 import { flowTraceAdapter } from '../../../server/services/flowtrace/flowtrace.adapter.ts';
 import { CANONICAL_EXECUTION_PLAN_ID } from '../../../server/services/flowtrace/blacktide-execution-plan.ts';
+import { executionPlanToFlowTraceWorkflow } from '../../../server/services/flowtrace/flowtrace-real-bridge.ts';
+import { WorkflowGraph } from '../../../flowtrace/src/components/WorkflowGraph.tsx';
 import type { ExecutionPlan, ExecutionStep } from '../../types/execution.ts';
 import type { DecisionEvent } from '../../types/events.ts';
 import type { StateDeltaChange } from '../../../server/services/state-transition/state-transition.interface.ts';
@@ -14,12 +16,19 @@ interface FlowTraceRouteProps {
 
 export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand }) => {
   const [plan, setPlan] = useState<ExecutionPlan>(() => {
-    return flowTraceAdapter.getExecutionPlan(CANONICAL_EXECUTION_PLAN_ID) ||
-      flowTraceAdapter.resetPlan(CANONICAL_EXECUTION_PLAN_ID);
+    return (
+      flowTraceAdapter.getExecutionPlan(CANONICAL_EXECUTION_PLAN_ID) ||
+      flowTraceAdapter.resetPlan(CANONICAL_EXECUTION_PLAN_ID)
+    );
   });
   const [executingStepId, setExecutingStepId] = useState<string | null>(null);
-  const [recentEvents, setRecentEvents] = useState<Array<{ event: DecisionEvent; changes: StateDeltaChange[] }>>([]);
+  const [recentEvents, setRecentEvents] = useState<
+    Array<{ event: DecisionEvent; changes: StateDeltaChange[] }>
+  >([]);
   const [isExecutingAll, setIsExecutingAll] = useState(false);
+  const [showGraph, setShowGraph] = useState(true);
+
+  const workflow = useMemo(() => executionPlanToFlowTraceWorkflow(plan), [plan]);
 
   const isApproved = plan.approvedAt !== null;
   const isCompleted = plan.status === 'completed';
@@ -62,7 +71,7 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
     for (const step of plan.steps) {
       if (step.status !== 'completed') {
         await handleExecuteStep(step.id);
-        // Small visual cadence between steps
+        // Visual cadence between steps
         await new Promise((resolve) => setTimeout(resolve, 350));
       }
     }
@@ -103,11 +112,43 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
               ALL STEPS COMPLETED
             </PixelBadge>
           )}
+          <PixelButton variant="ghost" size="sm" onClick={() => setShowGraph(!showGraph)}>
+            {showGraph ? '[ HIDE GRAPH ]' : '[ SHOW FLOWTRACE DAG ]'}
+          </PixelButton>
           <PixelButton variant="ghost" size="sm" onClick={handleReset}>
             [ RESET ]
           </PixelButton>
         </div>
       </div>
+
+      {/* Real FlowTrace DAG Visualization Canvas */}
+      {showGraph && (
+        <div className="border-2 border-[#2A333B] bg-[#0A0E13] p-3 pixel-shadow">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 px-1 border-b border-[#2A333B] mb-2 font-mono text-xs text-[#AFCBC2]">
+            <div className="flex items-center gap-2">
+              <PixelIcon name="route-marker" size={14} color="#D6A84F" />
+              <span className="font-pixel text-[10px] text-[#D6A84F] tracking-wider uppercase">
+                REAL FLOWTRACE WORKFLOW GRAPH // REACT FLOW DAG (4 DEPARTMENTS)
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-[10px] text-[#66727C]">
+              <span>NODES: {workflow.nodes.length}</span>
+              <span>•</span>
+              <span>COUPLING: {workflow.edges.length} EDGES</span>
+              <span>•</span>
+              <span className="text-[#59A66A]">HEALTH: {workflow.healthScore}%</span>
+            </div>
+          </div>
+
+          <div className="h-[280px] w-full bg-[#0D131A] rounded overflow-hidden relative border border-[#1C242C]">
+            <WorkflowGraph
+              nodesData={workflow.nodes}
+              edgesData={workflow.edges}
+              readOnly
+            />
+          </div>
+        </div>
+      )}
 
       {/* Main Execution Plan Box */}
       <div className="p-4 md:p-6 bg-[#141A20] border-2 border-[#D6A84F] pixel-shadow-raised select-none">
@@ -288,7 +329,10 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
 
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {recentEvents.map(({ event, changes }, idx) => (
-              <div key={event.id || idx} className="p-2 bg-[#0D131A] border border-[#2A333B] text-[11px] flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <div
+                key={event.id || idx}
+                className="p-2 bg-[#0D131A] border border-[#2A333B] text-[11px] flex flex-col md:flex-row md:items-center justify-between gap-2"
+              >
                 <div>
                   <span className="text-[#D6A84F] font-bold">[{event.department.toUpperCase()}]</span>{' '}
                   <span className="text-[#E8E4D8]">{event.event_type}</span>{' '}
@@ -297,7 +341,13 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
                 <div className="text-[#AFCBC2]">
                   Deltas:{' '}
                   {changes
-                    .filter((c) => c.metric === 'engineering_demand' || c.metric === 'engineering_capacity' || c.metric === 'capacity_utilization' || c.metric === 'committed_budget')
+                    .filter(
+                      (c) =>
+                        c.metric === 'engineering_demand' ||
+                        c.metric === 'engineering_capacity' ||
+                        c.metric === 'capacity_utilization' ||
+                        c.metric === 'committed_budget'
+                    )
                     .map((c) => `${c.metric}: ${c.delta > 0 ? '+' : ''}${c.delta}`)
                     .join(' • ') || 'State updated'}
                 </div>
