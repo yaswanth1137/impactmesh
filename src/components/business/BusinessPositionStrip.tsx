@@ -1,5 +1,4 @@
 import React from 'react';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
 import type { RealtimeConnectionState } from '../../lib/realtime/subscription-manager.ts';
 
 export interface OperationalMetrics {
@@ -31,25 +30,23 @@ export const BusinessPositionStrip: React.FC<BusinessPositionStripProps> = ({
   connectionState = 'CONNECTED',
 }) => {
   const prodCap = operationalMetrics?.productionCapacity ?? (isSimulatingCascade ? 70 : 100);
-  const prevProdCap = operationalMetrics?.previousProductionCapacity ?? (prodCap === 70 ? 100 : 70);
   const capHours = operationalMetrics?.capacityHours ?? (isSimulatingCascade ? 300 : 420);
   const invUnits = operationalMetrics?.inventoryUnits ?? (isSimulatingCascade ? 860 : 1240);
-  const prevInvUnits = operationalMetrics?.previousInventoryUnits ?? (invUnits === 860 ? 1240 : 860);
 
   return (
     <div
-      className={`bg-[#141A20] border border-[#2A333B] shadow-sm select-none ${className}`}
+      className={`bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-2xs select-none ${className}`}
     >
-      {/* Tactical strip top bar */}
-      <div className="px-3 py-1.5 bg-[#101419] border-b border-[#2A333B] flex items-center justify-between text-[10px] font-mono text-[#A9ADA8]">
+      {/* Editorial strip top bar */}
+      <div className="px-3.5 py-2 bg-[#F3EFE5] border-b border-[#DDD5C5] flex items-center justify-between text-[10px] font-mono text-[#576560]">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 bg-[#D6A84F]" />
-          <span className="font-pixel text-[10px] text-[#E8E4D8] uppercase tracking-wider">
-            CEO COMMAND // ENTERPRISE TACTICAL GAUGES
+          <span className="w-1.5 h-1.5 rounded-full bg-[#C89638]" />
+          <span className="font-mono text-[10px] text-[#18201D] font-bold uppercase tracking-wider">
+            ORGANIZATIONAL POSITION // CORE OPERATING METRICS
           </span>
           {operationalMetrics?.lastUpdatedTime && (
-            <span className="hidden sm:inline text-[9px] text-[#59A66A] bg-[#142017] px-1.5 py-0.5 border border-[#2A333B]">
-              OPS SYNC: {operationalMetrics.lastUpdatedTime}
+            <span className="hidden sm:inline text-[9px] text-[#2D5A40] bg-[#5B8D70]/10 px-1.5 py-0.5 border border-[#5B8D70]/30 rounded-2xs">
+              SYNC: {operationalMetrics.lastUpdatedTime}
             </span>
           )}
         </div>
@@ -58,104 +55,101 @@ export const BusinessPositionStrip: React.FC<BusinessPositionStripProps> = ({
             <span
               className={`w-1.5 h-1.5 rounded-full ${
                 connectionState === 'CONNECTED'
-                  ? 'bg-[#59A66A] animate-pulse'
+                  ? 'bg-[#5B8D70] animate-pulse'
                   : connectionState === 'CONNECTING'
-                  ? 'bg-[#D6A84F] animate-ping'
-                  : 'bg-[#D05A4A]'
+                  ? 'bg-[#C89638] animate-ping'
+                  : 'bg-[#C86150]'
               }`}
             />
             <span
               className={
                 connectionState === 'CONNECTED'
-                  ? 'text-[#59A66A]'
+                  ? 'text-[#2D5A40] font-semibold'
                   : connectionState === 'CONNECTING'
-                  ? 'text-[#D6A84F]'
-                  : 'text-[#D05A4A]'
+                  ? 'text-[#8B651B]'
+                  : 'text-[#C86150]'
               }
             >
               REALTIME: {connectionState}
             </span>
           </div>
-          <PixelBadge variant={isSimulatingCascade ? 'danger' : 'seaFoam'} size="sm">
-            {isSimulatingCascade ? 'CASCADE STRESS' : 'STABLE COURSE'}
-          </PixelBadge>
+          <span
+            className={`px-2 py-0.5 rounded-2xs font-bold text-[9px] uppercase border ${
+              isSimulatingCascade
+                ? 'bg-[#C86150]/10 text-[#C86150] border-[#C86150]/30'
+                : 'bg-[#5B8D70]/10 text-[#2D5A40] border-[#5B8D70]/30'
+            }`}
+          >
+            {isSimulatingCascade ? 'CAPACITY DEFICIT' : 'STABLE POSITION'}
+          </span>
         </div>
       </div>
 
-      {/* Unified 4-Column Instrument Strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#2A333B]">
-        {/* 1. REVENUE (Commercial/Sales) */}
-        <div className="p-3">
-          <div className="flex items-center justify-between text-[9px] font-mono text-[#66727C] uppercase">
+      {/* 4-Column Business Metric Strip */}
+      <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#DDD5C5]">
+        {/* 1. REVENUE */}
+        <div className="p-3.5">
+          <div className="flex items-center justify-between text-[9px] font-mono text-[#718894] uppercase">
             <span>REVENUE PIPELINE</span>
-            <span className="text-[#59A66A] font-bold">▲ +8.4%</span>
+            <span className="text-[#5B8D70] font-bold">▲ +8.4%</span>
           </div>
-          <div className="font-mono font-bold text-xl text-[#E8E4D8] mt-1">
+          <div className="font-mono font-bold text-xl text-[#18201D] mt-1">
             ₹50.0L
           </div>
-          <div className="text-[10px] text-[#A9ADA8] font-sans mt-0.5">
+          <div className="text-[11px] text-[#576560] font-sans mt-0.5">
             ARR Expansion Target
           </div>
         </div>
 
-        {/* 2. RISK */}
-        <div className="p-3">
-          <div className="flex items-center justify-between text-[9px] font-mono text-[#66727C] uppercase">
-            <span>ORGANIZATIONAL RISK</span>
-            <span className={isSimulatingCascade ? 'text-[#D05A4A] font-bold' : 'text-[#AFCBC2]'}>
-              {isSimulatingCascade ? '0.82 CRITICAL' : '0.28 STABLE'}
-            </span>
+        {/* 2. BUDGET ALLOCATION */}
+        <div className="p-3.5">
+          <div className="flex items-center justify-between text-[9px] font-mono text-[#718894] uppercase">
+            <span>AVAILABLE BUDGET</span>
+            <span className="text-[#C86150] font-bold">▼ -38.8%</span>
           </div>
-          <div
-            className={`font-mono font-bold text-xl mt-1 ${
-              isSimulatingCascade ? 'text-[#D05A4A]' : 'text-[#E8E4D8]'
-            }`}
-          >
-            {isSimulatingCascade ? 'HIGH' : 'LOW'}
+          <div className="font-mono font-bold text-xl text-[#C86150] mt-1">
+            ₹11.0L
           </div>
-          <div className="text-[10px] text-[#A9ADA8] font-sans mt-0.5">
-            {isSimulatingCascade ? 'Multi-hop cascade stress' : 'Risk threshold safe'}
+          <div className="text-[11px] text-[#576560] font-sans mt-0.5">
+            Reduced from ₹18.0L (-₹7.0L)
           </div>
         </div>
 
-        {/* 3. OPERATIONS: CAPACITY & INVENTORY */}
-        <div className="p-3" id="command-production-capacity">
-          <div className="flex items-center justify-between text-[9px] font-mono text-[#66727C] uppercase">
-            <span>OPERATIONS // MOBILE SYNC</span>
-            <span className={prodCap <= 70 || invUnits < 1000 ? 'text-[#D05A4A] font-bold' : 'text-[#59A66A]'}>
-              {invUnits < 1000
-                ? `▼ ${prevInvUnits} → ${invUnits}u`
-                : prodCap < 100
-                ? `▼ ${prevProdCap}% → ${prodCap}%`
-                : '▲ 100% NOMINAL'}
+        {/* 3. ENGINEERING CAPACITY */}
+        <div className="p-3.5">
+          <div className="flex items-center justify-between text-[9px] font-mono text-[#718894] uppercase">
+            <span>PRODUCTION CAPACITY</span>
+            <span className={prodCap <= 70 ? 'text-[#C86150] font-bold' : 'text-[#5B8D70] font-bold'}>
+              {prodCap <= 70 ? '▼ 40% DEFICIT' : '▲ 100%'}
             </span>
           </div>
-          <div
-            id="command-operations-value-display"
-            className={`font-mono font-bold text-xl mt-1 ${
-              prodCap <= 70 || invUnits < 1000 ? 'text-[#D05A4A]' : 'text-[#E8E4D8]'
-            }`}
-          >
-            {invUnits} <span className="text-xs font-normal text-[#A9ADA8]">UNITS</span> ({prodCap}%)
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <span className={`font-mono font-bold text-xl ${prodCap <= 70 ? 'text-[#C86150]' : 'text-[#18201D]'}`}>
+              {capHours}h
+            </span>
+            <span className="font-mono text-xs text-[#718894]">/ 420h required</span>
           </div>
-          <div className="text-[10px] text-[#A9ADA8] font-sans mt-0.5">
-            {capHours}h cap // Status: {operationalMetrics?.shipmentStatus ?? 'On Track'}
+          <div className="text-[11px] text-[#576560] font-sans mt-0.5">
+            {prodCap <= 70 ? `${420 - capHours}h capacity deficit` : 'Demand matches capacity'}
           </div>
         </div>
 
-        {/* 4. BUDGET (Finance) */}
-        <div className="p-3">
-          <div className="flex items-center justify-between text-[9px] font-mono text-[#66727C] uppercase">
-            <span>AVAILABLE CAPITAL</span>
-            <span className={isSimulatingCascade ? 'text-[#D6A84F] font-bold' : 'text-[#AFCBC2]'}>
-              {isSimulatingCascade ? '-39% CUT' : 'Q1 ALLOCATION'}
+        {/* 4. INVENTORY & INTAKE */}
+        <div className="p-3.5">
+          <div className="flex items-center justify-between text-[9px] font-mono text-[#718894] uppercase">
+            <span>INVENTORY UNITS</span>
+            <span className={invUnits < 1000 ? 'text-[#C86150] font-bold' : 'text-[#5B8D70] font-bold'}>
+              {invUnits < 1000 ? '▼ -30.6%' : '▲ OPTIMAL'}
             </span>
           </div>
-          <div className="font-mono font-bold text-xl text-[#E8E4D8] mt-1">
-            {isSimulatingCascade ? '₹11.0L' : '₹18.0L'}
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <span className={`font-mono font-bold text-xl ${invUnits < 1000 ? 'text-[#C86150]' : 'text-[#18201D]'}`}>
+              {invUnits}
+            </span>
+            <span className="font-mono text-xs text-[#718894]">units</span>
           </div>
-          <div className="text-[10px] text-[#A9ADA8] font-sans mt-0.5">
-            {isSimulatingCascade ? 'Committed: ₹8.7L (79% Pressure)' : 'Committed: ₹8.7L'}
+          <div className="text-[11px] text-[#576560] font-sans mt-0.5">
+            {invUnits < 1000 ? 'Low safety stock buffer' : '1,240 baseline units'}
           </div>
         </div>
       </div>

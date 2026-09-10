@@ -145,7 +145,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090B0F] text-[#E8E4D8] flex flex-col font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#F3EFE5] text-[#18201D] flex flex-col font-sans antialiased overflow-x-hidden">
       {/* 1. TOP HEADER BAR */}
       <HeaderBar systemOnline={realtimeState !== 'ERROR'} />
 
@@ -159,17 +159,17 @@ export function App() {
         />
 
         {/* Mobile-Only Navigation Bar: Exactly the 4 Department Screens (OPER, SALE, PROD, FIN) */}
-        <div className="md:hidden fixed bottom-8 left-0 right-0 z-40 px-2 py-1.5 flex items-center justify-around bg-[#101419]/98 border-t border-[#2A333B] backdrop-blur-md shadow-2xl">
+        <div className="md:hidden fixed bottom-8 left-0 right-0 z-40 px-2 py-1.5 flex items-center justify-around bg-[#FAF8F1]/95 border-t border-[#DDD5C5] backdrop-blur-md shadow-md">
           {MOBILE_DEPT_ROUTES.map((dept) => {
             const isActive = currentRoute === dept.id;
             return (
               <button
                 key={dept.id}
                 onClick={() => navigateTo(dept.id)}
-                className={`flex-1 mx-1 py-2 px-1 text-center font-pixel text-[10px] uppercase cursor-pointer border transition-all ${
+                className={`flex-1 mx-1 py-2 px-1 text-center font-mono text-[10px] uppercase cursor-pointer rounded-xs border transition-all ${
                   isActive
-                    ? 'bg-[#D6A84F] text-[#090B0F] border-[#D6A84F] font-bold shadow-md shadow-[#D6A84F]/20'
-                    : 'bg-[#141A20] text-[#A9ADA8] border-[#2A333B] hover:text-[#E8E4D8] hover:border-[#3E4954]'
+                    ? 'bg-[#C89638] text-[#FAF8F1] border-[#C89638] font-bold shadow-2xs'
+                    : 'bg-[#F3EFE5] text-[#576560] border-[#DDD5C5] hover:text-[#18201D] hover:border-[#C89638]'
                 }`}
               >
                 {dept.label}

@@ -132,7 +132,7 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
           onClick={onBackToCommand}
           icon={<PixelIcon name="helm" size={12} />}
         >
-          [ ← RETURN TO COMMAND DECK ]
+          [ ← RETURN TO DECISION DESK ]
         </PixelButton>
 
         <div className="flex items-center gap-2">

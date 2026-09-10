@@ -2,50 +2,64 @@
 @import "./styles/pixel.css";
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --font-pixel: 'Silkscreen', 'VT323', monospace;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'Space Mono', monospace;
 
   font-family: var(--font-sans);
-  background-color: #090B0F;
-  color: #E8E4D8;
+  background-color: #F3EFE5;
+  color: #18201D;
+
+  /* Theme tokens */
+  --color-paper: #F3EFE5;
+  --color-paper-light: #FAF8F1;
+  --color-paper-border: #DDD5C5;
+  --color-ink: #18201D;
+  --color-ink-deep: #27312E;
+  --color-ink-muted: #576560;
+  --color-brass: #C89638;
+  --color-muted-sea: #6F8F87;
+  --color-nav-blue: #718894;
+  --color-soft-clay: #B97B63;
+  --color-success: #5B8D70;
+  --color-danger: #C86150;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #090B0F;
-  color: #E8E4D8;
+  background-color: #F3EFE5;
+  color: #18201D;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Nautical selection highlight */
+/* Warm nautical selection highlight */
 ::selection {
-  background-color: #D6A84F;
-  color: #090B0F;
+  background-color: #C89638;
+  color: #FAF8F1;
 }
 
-/* Custom Mechanical Scrollbar */
+/* Editorial Chart Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #101419;
-  border-left: 1px solid #1C242C;
+  background: #EFE9DC;
+  border-left: 1px solid #DDD5C5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A333B;
-  border: 1px solid #141A20;
+  background: #C8BFAC;
+  border: 1px solid #B8AE99;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D6A84F;
+  background: #C89638;
 }
 
 /* Utility font classes */

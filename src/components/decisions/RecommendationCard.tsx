@@ -1,15 +1,4 @@
-/**
- * IMPACTMESH - Recommended Course Component
- * Primary executive recommendation card. Answers:
- * - WHAT DO YOU RECOMMEND?
- * - EXPECTED EFFECT
- * - WHY THIS MATTERS (traceable 6-step causal chain)
- * - Actions: [ SIMULATE ] and [ PLOT EXECUTION ROUTE ]
- */
-
 import React from 'react';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
-import { PixelIcon } from '../pixel/PixelIcon.tsx';
 import type { Recommendation, DecisionOption } from '../../types/domain.ts';
 
 interface RecommendationCardProps {
@@ -30,128 +19,130 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   return (
     <div
       id="recommendation-course-card"
-      className={`p-5 bg-gradient-to-b from-[#161C24] to-[#101419] border-2 border-[#D6A84F] shadow-xl select-none ${className}`}
+      className={`p-5 md:p-6 bg-[#FAF8F1] border-2 border-[#C89638] rounded-xs shadow-sm space-y-5 select-none ${className}`}
     >
       {/* Header Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2A333B] pb-3 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DDD5C5] pb-3">
         <div className="flex items-center gap-2">
-          <PixelIcon name="helm" size={18} color="#D6A84F" />
-          <span className="font-pixel text-sm text-[#D6A84F] uppercase tracking-wider">
-            RECOMMENDED COURSE
+          <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
+            STEP 07 // SYSTEM VIEW
           </span>
+          <span className="text-[#718894]">/</span>
+          <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
+            SYSTEM RECOMMENDATION
+          </h3>
         </div>
+
         <div className="flex items-center gap-2">
-          <PixelBadge variant="seaFoam" size="sm">
+          <span className="px-2.5 py-0.5 font-mono text-[10px] font-bold bg-[#C89638]/10 text-[#8B651B] border border-[#C89638]/30 rounded-2xs uppercase">
             CONFIDENCE: {Math.round(recommendation.confidence_score * 100)}%
-          </PixelBadge>
-          <PixelBadge variant="brass" size="sm">
-            SCORE: {topOption.feasibility_score}
-          </PixelBadge>
+          </span>
+          <span className="px-2.5 py-0.5 font-mono text-[10px] font-bold bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30 rounded-2xs uppercase">
+            FEASIBILITY: {topOption.feasibility_score}
+          </span>
         </div>
       </div>
 
-      {/* Main Course Action Title */}
-      <div className="mb-4">
-        <h3 className="font-sans font-bold text-xl md:text-2xl text-[#F4F1EA] tracking-tight">
+      {/* Main Course Action Title & Explanation */}
+      <div>
+        <div className="font-mono text-[10px] text-[#718894] uppercase font-bold">
+          RECOMMENDED COURSE:
+        </div>
+        <h4 className="font-sans font-bold text-xl md:text-2xl text-[#18201D] tracking-tight mt-0.5">
           {topOption.title}
-        </h3>
-        <p className="text-sm text-[#CDC9BE] font-sans mt-1.5 leading-relaxed">
-          Preserve the ₹50.0L customer opportunity while removing non-critical scope.
+        </h4>
+        <p className="text-sm text-[#576560] font-sans mt-1 leading-relaxed">
+          Preserves the ₹50L enterprise customer contract while removing non-critical scope, keeping the team within acceptable delivery tolerances.
         </p>
       </div>
 
-      {/* EXPECTED EFFECT STRIP (4 crisp deltas) */}
-      <div className="mb-5">
-        <div className="text-[10px] font-mono text-[#A9ADA8] uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 bg-[#59A66A]" />
-          <span>EXPECTED EFFECT IF EXECUTED</span>
+      {/* Business Justification Bullets: WHY THIS RECOMMENDATION */}
+      <div className="p-4 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs">
+        <div className="font-mono text-[10px] text-[#718894] uppercase font-bold mb-2">
+          WHY THE SYSTEM RECOMMENDS THIS:
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          <div className="p-2.5 bg-[#0D1217] border border-[#2A333B]">
-            <span className="font-mono text-[9px] text-[#A9ADA8] uppercase block">Capacity Deficit</span>
-            <div className="font-mono font-bold text-sm text-[#59A66A] mt-0.5">
+        <ul className="space-y-1.5 font-sans text-xs md:text-sm text-[#18201D]">
+          <li className="flex items-start gap-2">
+            <span className="text-[#5B8D70] font-bold mt-0.5">✓</span>
+            <span><strong>Preserves highest-value customer commitment:</strong> Keeps Apex Global contract on track without breaching scope clauses.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-[#5B8D70] font-bold mt-0.5">✓</span>
+            <span><strong>Removes 88% of engineering deficit:</strong> Closes the capacity gap from 120 hours down to a manageable 15 hours.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-[#5B8D70] font-bold mt-0.5">✓</span>
+            <span><strong>Avoids a material delivery delay:</strong> Reduces schedule slippage from +8 days down to +1 day (inside SLA tolerance).</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-[#5B8D70] font-bold mt-0.5">✓</span>
+            <span><strong>Reduces capital pressure:</strong> Realizes approximately ₹2.4L in contractor overtime savings.</span>
+          </li>
+        </ul>
+      </div>
+
+      {/* EXPECTED EFFECT DELTA GRID */}
+      <div>
+        <div className="font-mono text-[10px] text-[#718894] uppercase font-bold mb-2">
+          EXPECTED EFFECT IF APPROVED:
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+          <div className="p-3 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs">
+            <span className="font-mono text-[9px] text-[#718894] uppercase block">Capacity Gap</span>
+            <div className="font-mono font-bold text-sm text-[#5B8D70] mt-0.5">
               120h → 15h
             </div>
-            <span className="text-[10px] text-[#66727C] font-sans">Eliminates bottleneck</span>
+            <span className="text-[10px] text-[#576560] font-sans">Eliminates deficit</span>
           </div>
 
-          <div className="p-2.5 bg-[#0D1217] border border-[#2A333B]">
-            <span className="font-mono text-[9px] text-[#A9ADA8] uppercase block">Delivery Schedule</span>
-            <div className="font-mono font-bold text-sm text-[#59A66A] mt-0.5">
+          <div className="p-3 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs">
+            <span className="font-mono text-[9px] text-[#718894] uppercase block">Delivery Schedule</span>
+            <div className="font-mono font-bold text-sm text-[#5B8D70] mt-0.5">
               +8d → +1d
             </div>
-            <span className="text-[10px] text-[#66727C] font-sans">Inside customer SLA</span>
+            <span className="text-[10px] text-[#576560] font-sans">Inside customer SLA</span>
           </div>
 
-          <div className="p-2.5 bg-[#0D1217] border border-[#2A333B]">
-            <span className="font-mono text-[9px] text-[#A9ADA8] uppercase block">Risk Level</span>
-            <div className="font-mono font-bold text-sm text-[#D6A84F] mt-0.5">
+          <div className="p-3 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs">
+            <span className="font-mono text-[9px] text-[#718894] uppercase block">Risk Level</span>
+            <div className="font-mono font-bold text-sm text-[#C89638] mt-0.5">
               HIGH → MEDIUM
             </div>
-            <span className="text-[10px] text-[#66727C] font-sans">0.82 → 0.45 score</span>
+            <span className="text-[10px] text-[#576560] font-sans">Controlled exposure</span>
           </div>
 
-          <div className="p-2.5 bg-[#0D1217] border border-[#2A333B]">
-            <span className="font-mono text-[9px] text-[#A9ADA8] uppercase block">Realized Savings</span>
-            <div className="font-mono font-bold text-sm text-[#59A66A] mt-0.5">
+          <div className="p-3 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs">
+            <span className="font-mono text-[9px] text-[#718894] uppercase block">Capital Saved</span>
+            <div className="font-mono font-bold text-sm text-[#5B8D70] mt-0.5">
               ₹2.4L
             </div>
-            <span className="text-[10px] text-[#66727C] font-sans">Contractor overtime cut</span>
+            <span className="text-[10px] text-[#576560] font-sans">Overtime variance cut</span>
           </div>
         </div>
       </div>
 
-      {/* WHY THIS MATTERS // TRACEABLE CAUSAL CHAIN */}
-      <div className="p-3.5 bg-[#0D1217] border border-[#2A333B] mb-5">
-        <div className="text-[10px] font-mono text-[#D6A84F] uppercase tracking-wider mb-2.5 font-bold flex items-center gap-2">
-          <PixelIcon name="anchor" size={13} color="#D6A84F" />
-          <span>WHY THIS MATTERS // CAUSAL EVIDENCE CHAIN</span>
-        </div>
-        <ol className="space-y-1.5 text-xs text-[#E8E4D8] font-sans list-none pl-0">
-          <li className="flex items-start gap-2">
-            <span className="font-mono text-[#D6A84F] font-bold shrink-0">1.</span>
-            <span>Budget fell by <strong>₹7.0L</strong> (₹18L → ₹11L) in Finance allocation.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-mono text-[#D6A84F] font-bold shrink-0">2.</span>
-            <span>Current platform engineering demand is <strong>420h</strong> across 3 committed features.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-mono text-[#D6A84F] font-bold shrink-0">3.</span>
-            <span>Available team engineering capacity is <strong>300h</strong>.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-mono text-[#D05A4A] font-bold shrink-0">4.</span>
-            <span>Therefore the organization has an acute <strong>120h deficit (140% load)</strong>.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-mono text-[#D05A4A] font-bold shrink-0">5.</span>
-            <span>That deficit threatens delivery schedule by <strong>+8 days slippage</strong> (breaching 5-day SLA).</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-mono text-[#59A66A] font-bold shrink-0">6.</span>
-            <span>Delivery directly affects the <strong>₹50.0L Apex customer expansion commitment</strong>.</span>
-          </li>
-        </ol>
-      </div>
+      {/* Action Footer */}
+      <div className="pt-2 border-t border-[#DDD5C5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p className="font-sans text-xs text-[#576560]">
+          The human executive retains complete authority. You can accept this course or select an alternative.
+        </p>
 
-      {/* Action Footer Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#2A333B]">
-        {onSimulate && (
+        <div className="flex items-center gap-2">
+          {onSimulate && (
+            <button
+              onClick={onSimulate}
+              className="px-3.5 py-2 bg-[#F3EFE5] hover:bg-[#FAF8F1] text-[#18201D] font-sans text-xs font-semibold border border-[#DDD5C5] rounded-xs transition-colors cursor-pointer"
+            >
+              SIMULATE IMPACT
+            </button>
+          )}
           <button
-            onClick={onSimulate}
-            className="w-full sm:w-auto px-4 py-2 border border-[#2A333B] hover:border-[#D6A84F] bg-[#141A20] text-[#CDC9BE] hover:text-[#F4F1EA] font-pixel text-xs tracking-wider uppercase transition-colors cursor-pointer"
+            onClick={onPlotRoute}
+            className="px-5 py-2 bg-[#C89638] hover:bg-[#B3832B] text-[#FAF8F1] font-sans text-xs font-bold rounded-xs transition-colors cursor-pointer shadow-2xs"
           >
-            [ SIMULATE ]
+            PROCEED TO HUMAN DECISION →
           </button>
-        )}
-        <button
-          onClick={onPlotRoute}
-          className="w-full sm:w-auto px-6 py-2.5 bg-[#D6A84F] hover:bg-[#C2953E] active:bg-[#AA8030] text-[#0D131A] font-pixel text-xs tracking-wider uppercase transition-all shadow-md font-bold flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <span>[ PLOT EXECUTION ROUTE ]</span>
-          <span className="font-mono text-sm">→</span>
-        </button>
+        </div>
       </div>
     </div>
   );

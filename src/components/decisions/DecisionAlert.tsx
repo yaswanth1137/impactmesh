@@ -1,11 +1,4 @@
-/**
- * IMPACTMESH - Decision Alert Component
- * Primary tactical alert placed immediately below the Command Deck header.
- * Instantly answers "WHAT CHANGED?" and "HOW SERIOUS IS IT?" for executives.
- */
-
 import React from 'react';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
 
 interface DecisionAlertProps {
   department?: string;
@@ -16,86 +9,96 @@ interface DecisionAlertProps {
   deliveryExposureDays?: number;
   financialExposure?: string;
   onReviewImpact?: () => void;
+  onViewDetails?: () => void;
   className?: string;
 }
 
 export const DecisionAlert: React.FC<DecisionAlertProps> = ({
   department = 'FINANCE',
-  actionTitle = 'Budget reduced',
-  changeDetail = '₹18L → ₹11L',
+  actionTitle = 'A BUDGET CHANGE MAY AFFECT A CUSTOMER COMMITMENT',
+  changeDetail = 'Finance reduced the project budget from ₹18L to ₹11L.',
   effectsCount = 7,
   capacityDeficitHours = 120,
   deliveryExposureDays = 8,
   financialExposure = '₹50L',
   onReviewImpact,
+  onViewDetails,
   className = '',
 }) => {
   return (
     <div
       id="decision-alert-banner"
-      className={`bg-gradient-to-r from-[#17130E] via-[#1A1813] to-[#12161A] border-2 border-[#D6A84F] shadow-lg p-4 md:p-5 relative overflow-hidden ${className}`}
+      className={`bg-[#FAF8F1] border-2 border-[#C89638] rounded-xs shadow-xs p-5 md:p-6 relative overflow-hidden ${className}`}
     >
-      {/* Decorative maritime accent corner */}
-      <div className="absolute top-0 right-0 w-24 h-24 bg-[#D6A84F]/5 rotate-45 transform translate-x-12 -translate-y-12 pointer-events-none" />
+      {/* Decorative chart coordinate mark */}
+      <div className="absolute top-2 right-3 font-mono text-[9px] text-[#718894]/40 select-none">
+        REF: DEC-2026-Q3-01 // FINANCE → REVENUE
+      </div>
 
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 relative z-10">
-        {/* Left: Tactical Alert Identification */}
-        <div className="space-y-1.5 flex-1">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative z-10">
+        <div className="space-y-2 flex-1">
+          {/* Eyebrow */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-block w-2.5 h-2.5 bg-[#D6A84F] animate-pulse" />
-            <span className="font-pixel text-[11px] text-[#D6A84F] tracking-wider uppercase">
-              A DECISION NEEDS ATTENTION
+            <span className="inline-block w-2 h-2 rounded-full bg-[#C89638] animate-pulse" />
+            <span className="font-mono text-[10px] text-[#C89638] font-bold tracking-widest uppercase">
+              PRIMARY DECISION IN REVIEW
             </span>
-            <PixelBadge variant="brass" size="sm">
-              {department}
-            </PixelBadge>
-            <PixelBadge variant="danger" size="sm">
+            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-[#F3EFE5] text-[#576560] border border-[#DDD5C5] rounded-2xs uppercase">
+              DEPT: {department}
+            </span>
+            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-[#C86150]/10 text-[#C86150] border border-[#C86150]/30 rounded-2xs uppercase">
               ACTION REQUIRED
-            </PixelBadge>
-          </div>
-
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h2 className="font-sans font-bold text-xl md:text-2xl text-[#F4F1EA] tracking-tight">
-              {actionTitle}
-            </h2>
-            <span className="font-mono text-lg md:text-xl text-[#D6A84F] font-semibold">
-              {changeDetail}
-            </span>
-            <span className="text-xs text-[#A9ADA8] font-mono">
-              (-₹7.0L Capital Allocation)
             </span>
           </div>
 
-          {/* Core downstream executive facts */}
-          <div className="flex items-center gap-4 text-xs md:text-sm text-[#CDC9BE] flex-wrap pt-1">
-            <div className="flex items-center gap-1.5 font-mono">
-              <span className="text-[#D6A84F] font-bold">●</span>
-              <span><strong>{effectsCount}</strong> downstream effects detected</span>
+          {/* Editorial Headline */}
+          <h2 className="font-sans font-bold text-xl md:text-2xl text-[#18201D] tracking-tight max-w-3xl leading-snug">
+            {actionTitle}
+          </h2>
+
+          {/* Plain Language Description */}
+          <p className="font-sans text-sm text-[#576560] leading-relaxed max-w-2xl">
+            {changeDetail}
+          </p>
+
+          {/* Supporting Executive Metrics Grid */}
+          <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-mono text-[#576560]">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#C89638] font-bold">●</span>
+              <span><strong>{effectsCount}</strong> downstream effects</span>
             </div>
-            <div className="flex items-center gap-1.5 font-mono">
-              <span className="text-[#D05A4A] font-bold">●</span>
-              <span><strong>{capacityDeficitHours}h</strong> engineering deficit</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#C86150] font-bold">●</span>
+              <span><strong>{capacityDeficitHours}h</strong> capacity gap</span>
             </div>
-            <div className="flex items-center gap-1.5 font-mono">
-              <span className="text-[#D05A4A] font-bold">●</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#C86150] font-bold">●</span>
               <span>Delivery exposure: <strong>+{deliveryExposureDays} days</strong></span>
             </div>
-            <div className="flex items-center gap-1.5 font-mono hidden sm:flex">
-              <span className="text-[#AFCBC2] font-bold">●</span>
-              <span>Opportunity at risk: <strong>{financialExposure} ARR</strong></span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#5B8D70] font-bold">●</span>
+              <span>Customer opportunity: <strong>{financialExposure}</strong></span>
             </div>
           </div>
         </div>
 
-        {/* Right: Direct CTA to review impact */}
-        <div className="shrink-0 pt-2 lg:pt-0 w-full sm:w-auto">
+        {/* Action CTAs */}
+        <div className="shrink-0 flex items-center gap-2.5 w-full sm:w-auto pt-2 lg:pt-0">
           <button
             onClick={onReviewImpact}
-            className="w-full sm:w-auto px-5 py-2.5 bg-[#D6A84F] hover:bg-[#C2953E] active:bg-[#AA8030] text-[#0D131A] font-pixel text-xs tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 sm:flex-initial px-5 py-2.5 bg-[#C89638] hover:bg-[#B3832B] text-[#FAF8F1] font-sans text-xs font-bold tracking-wide uppercase transition-all shadow-2xs rounded-xs cursor-pointer flex items-center justify-center gap-1.5"
           >
-            <span>[ REVIEW IMPACT ]</span>
-            <span className="font-mono text-xs">▼</span>
+            <span>REVIEW DECISION</span>
+            <span className="font-mono text-[10px]">▼</span>
           </button>
+          {onViewDetails && (
+            <button
+              onClick={onViewDetails}
+              className="px-3.5 py-2.5 bg-[#F3EFE5] hover:bg-[#FAF8F1] text-[#18201D] font-sans text-xs font-semibold border border-[#DDD5C5] transition-all rounded-xs cursor-pointer"
+            >
+              VIEW DETAILS
+            </button>
+          )}
         </div>
       </div>
     </div>

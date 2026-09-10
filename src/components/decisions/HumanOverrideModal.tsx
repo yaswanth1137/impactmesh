@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
-import { PixelButton } from '../pixel/PixelButton.tsx';
 import { PixelIcon } from '../pixel/PixelIcon.tsx';
 
 export interface OverrideOptionItem {
@@ -47,7 +45,7 @@ export const HumanOverrideModal: React.FC<HumanOverrideModalProps> = ({
 
   const handleConfirm = () => {
     if (isOverride && !overrideReason.trim()) {
-      setError('Human override requires a documented business rationale.');
+      setError('A human override requires a documented business rationale.');
       return;
     }
     setError('');
@@ -56,43 +54,47 @@ export const HumanOverrideModal: React.FC<HumanOverrideModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs select-none animate-in fade-in">
-      <div className="w-full max-w-xl bg-[#101419] border-2 border-[#D6A84F] pixel-shadow-raised p-5 space-y-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18201D]/60 backdrop-blur-xs select-none animate-in fade-in">
+      <div className="w-full max-w-xl bg-[#FAF8F1] border-2 border-[#C89638] rounded-xs shadow-xl p-5 md:p-6 space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2A333B] pb-3">
+        <div className="flex items-center justify-between border-b border-[#DDD5C5] pb-3">
           <div className="flex items-center gap-2">
-            <PixelIcon name="helm" size={16} color="#D6A84F" />
-            <span className="font-pixel text-xs text-[#D6A84F] uppercase tracking-wider">
-              HUMAN EXECUTIVE DECISION AUTHORITY
+            <PixelIcon name="helm" size={16} color="#C89638" />
+            <span className="font-mono text-xs text-[#C89638] font-bold uppercase tracking-widest">
+              YOUR DECISION // HUMAN EXECUTIVE AUTHORITY
             </span>
           </div>
           <button
             onClick={onClose}
-            className="font-mono text-xs text-[#66727C] hover:text-[#E8E4D8] px-2 py-1"
+            className="font-sans text-xs font-semibold text-[#576560] hover:text-[#18201D] px-2 py-1 cursor-pointer"
           >
-            [ ✕ CANCEL ]
+            ✕ CANCEL
           </button>
         </div>
 
-        {/* System Recommendation vs Human Choice */}
-        <div className="p-3 bg-[#0D131A] border border-[#2A333B] space-y-2 font-mono text-xs">
+        {/* System Recommendation Banner */}
+        <div className="p-3.5 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[#66727C]">SYSTEM RECOMMENDATION:</span>
-            <PixelBadge variant="brass" size="sm">
+            <span className="font-mono text-[10px] text-[#718894] uppercase font-bold">
+              SYSTEM RECOMMENDATION:
+            </span>
+            <span className="px-2 py-0.5 font-mono text-[10px] font-bold bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30 rounded-2xs uppercase">
               SCORE: {recommendedOpt?.score ?? recommendedOpt?.feasibility_score ?? 88}
-            </PixelBadge>
+            </span>
           </div>
-          <div className="font-bold text-[#D6A84F] text-sm">
-            {recommendedOpt?.title.toUpperCase()}
+          <div className="font-sans font-bold text-sm text-[#18201D]">
+            {recommendedOpt?.title}
           </div>
-          <p className="text-[#A9ADA8] text-[11px] font-sans">
+          <p className="text-[#576560] text-xs font-sans">
             {recommendedOpt?.description}
           </p>
         </div>
 
-        {/* Option Selector */}
-        <div className="space-y-2 font-mono text-xs">
-          <span className="text-[#AFCBC2] font-bold block">SELECT FINAL EXECUTIVE ACTION:</span>
+        {/* Action Selection List */}
+        <div className="space-y-2">
+          <span className="font-sans text-xs font-bold text-[#18201D] block">
+            CHOOSE YOUR ACTION:
+          </span>
           <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
             {options.map((opt) => {
               const isSelected = opt.id === chosenId;
@@ -105,72 +107,87 @@ export const HumanOverrideModal: React.FC<HumanOverrideModalProps> = ({
                     setChosenId(opt.id);
                     setError('');
                   }}
-                  className={`p-2.5 border cursor-pointer transition-colors flex items-center justify-between ${
+                  className={`p-3 border rounded-xs cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-[#1A2128] border-[#D6A84F] text-[#E8E4D8]'
-                      : 'bg-[#090B0F] border-[#1C242C] text-[#A9ADA8] hover:border-[#2A333B]'
+                      ? 'bg-[#FAF8F1] border-[#C89638] ring-1 ring-[#C89638]/40 shadow-xs'
+                      : 'bg-[#FAF8F1] border-[#DDD5C5] hover:border-[#C89638]'
                   }`}
                 >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs">{opt.title}</span>
-                      {isRecommended && (
-                        <span className="text-[9px] px-1 bg-[#231B0E] text-[#D6A84F] border border-[#D6A84F]">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="font-sans font-bold text-xs text-[#18201D]">
+                      {opt.title}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {isRecommended ? (
+                        <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30 rounded-2xs uppercase">
                           RECOMMENDED
                         </span>
+                      ) : (
+                        <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 bg-[#DDD5C5] text-[#576560] rounded-2xs uppercase">
+                          OVERRIDE
+                        </span>
                       )}
-                    </div>
-                    <div className="text-[10px] text-[#66727C] mt-0.5">
-                      Score: {opt.score ?? opt.feasibility_score ?? 80} • {opt.feasible !== false ? 'Feasible' : 'Infeasible'}
+                      <span className="font-mono text-xs font-semibold text-[#576560]">
+                        {opt.score ?? opt.feasibility_score ?? 70}
+                      </span>
                     </div>
                   </div>
-                  <div className="font-pixel text-xs text-[#D6A84F]">
-                    {isSelected ? '✓ SELECTED' : '[ SELECT ]'}
-                  </div>
+                  <p className="text-[11px] text-[#576560] font-sans mt-0.5">
+                    {opt.description}
+                  </p>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Override Justification Field (Mandatory if overriding) */}
+        {/* Override Justification Field (Mandatory if selecting non-recommended option) */}
         {isOverride && (
-          <div className="p-3 bg-[#1A1012] border border-[#D05A4A] space-y-2 font-mono text-xs">
-            <div className="flex items-center gap-2 text-[#D05A4A] font-bold">
-              <span>⚠</span>
-              <span>HUMAN OVERRIDE ACTIVE</span>
+          <div className="p-3 bg-[#FAF8F1] border border-[#C89638] rounded-xs space-y-1.5 animate-in fade-in">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold">
+                MANDATORY HUMAN OVERRIDE REASON:
+              </span>
+              <span className="font-mono text-[9px] text-[#C86150] uppercase font-bold">REQUIRED</span>
             </div>
-            <p className="text-[#AFCBC2] text-[11px] font-sans">
-              You are overriding the system recommendation ({recommendedOpt?.title}) in favor of{' '}
-              <strong className="text-[#E8E4D8]">{currentChosenOpt?.title}</strong>. Please state your business rationale for the audit record.
-            </p>
             <textarea
-              rows={2}
               value={overrideReason}
               onChange={(e) => {
                 setOverrideReason(e.target.value);
-                if (e.target.value.trim()) setError('');
+                if (error) setError('');
               }}
-              placeholder="e.g. Customer contract requires full feature scope; deferring timeline instead."
-              className="w-full bg-[#090B0F] border border-[#2A333B] p-2 text-xs font-mono text-[#E8E4D8] placeholder-[#55606A] focus:outline-none focus:border-[#D05A4A]"
+              placeholder="Explain why this alternative course was selected over the system recommendation (e.g. Customer contract requires full scope)..."
+              rows={2}
+              className="w-full p-2 text-xs font-sans bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs text-[#18201D] placeholder:text-[#718894] focus:outline-none focus:border-[#C89638]"
             />
-            {error && <div className="text-[#D05A4A] text-[11px] font-bold">{error}</div>}
+            {error && (
+              <span className="font-sans text-xs text-[#C86150] font-semibold block">
+                {error}
+              </span>
+            )}
           </div>
         )}
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2A333B]">
-          <PixelButton variant="secondary" size="md" onClick={onClose}>
-            [ CANCEL ]
-          </PixelButton>
-          <PixelButton
-            variant={isOverride ? 'outline' : 'primary'}
-            size="md"
-            onClick={handleConfirm}
-            icon={<PixelIcon name="emblem-blacktide" size={14} />}
-          >
-            {isOverride ? '[ CONFIRM OVERRIDE & PROCEED ]' : '[ APPROVE RECOMMENDATION ]'}
-          </PixelButton>
+        {/* Confirmation & Dispatch Controls */}
+        <div className="pt-2 border-t border-[#DDD5C5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="font-sans text-xs text-[#576560]">
+            Selected: <strong className="text-[#18201D]">{currentChosenOpt.title}</strong>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="px-3 py-1.5 font-sans text-xs text-[#576560] hover:text-[#18201D] cursor-pointer"
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={handleConfirm}
+              className="px-4 py-2 font-sans text-xs font-bold bg-[#C89638] hover:bg-[#B3832B] text-[#FAF8F1] rounded-xs transition-colors cursor-pointer shadow-2xs"
+            >
+              {isOverride ? 'CONFIRM OVERRIDE & PLOT EXECUTION →' : 'ACCEPT RECOMMENDATION & PLOT →'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

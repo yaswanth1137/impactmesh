@@ -1,19 +1,21 @@
 /* =============================================================================
-   IMPACTMESH — Blacktide Maritime Command Styling (Refined)
-   Balanced: 65% modern editorial, 25% maritime navigation, 10% selective pixel art
+   IMPACTMESH — Story-First Executive Visual System (Light Theme)
+   Palette: Warm Aged Paper (#F3EFE5), Light Paper (#FAF8F1), Deep Ink (#18201D)
+   Accents: Brass (#C89638), Muted Sea (#6F8F87), Nav Blue (#718894), Soft Clay (#B97B63)
+   90% Clean Editorial Sans-Serif Typography, 10% Selective Pixel Art Identity
    ============================================================================= */
 
-/* Nautical Chart Low-Contrast Technical Grid */
+/* Nautical Chart Faint Technical Grid */
 .chart-grid-bg {
-  background-color: #090B0F;
+  background-color: #F3EFE5;
   background-image:
-    linear-gradient(to right, rgba(42, 51, 59, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(42, 51, 59, 0.12) 1px, transparent 1px),
-    radial-gradient(rgba(214, 168, 79, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(24, 32, 29, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 32, 29, 0.04) 1px, transparent 1px),
+    radial-gradient(rgba(200, 150, 56, 0.12) 1px, transparent 1px);
   background-size: 32px 32px, 32px 32px, 64px 64px;
 }
 
-/* Subtle corner cuts (refined and crisp, not jagged) */
+/* Subtle corner cuts (crisp and refined) */
 .subtle-cut {
   clip-path: polygon(
     0 3px, 3px 0,
@@ -23,22 +25,35 @@
   );
 }
 
-/* Restrained Structural Panels */
+/* Warm Light Paper Panels */
 .technical-panel {
-  background-color: #141A20;
-  border: 1px solid #2A333B;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  background-color: #FAF8F1;
+  border: 1px solid #DDD5C5;
+  box-shadow: 0 1px 3px rgba(24, 32, 29, 0.04);
 }
 
 .technical-panel:hover {
-  border-color: #3B4752;
+  border-color: #C89638;
 }
 
-/* Mechanical Button Affordance (Crisp, subtle tactile click) */
+/* Editorial Paper Card */
+.paper-card {
+  background-color: #FAF8F1;
+  border: 1px solid #DDD5C5;
+  box-shadow: 0 1px 3px rgba(24, 32, 29, 0.03);
+}
+
+.paper-card-highlight {
+  background-color: #FAF8F1;
+  border: 1px solid #C89638;
+  box-shadow: 0 2px 6px rgba(200, 150, 56, 0.08);
+}
+
+/* Tactile Button Affordance */
 .tactical-btn {
-  font-family: var(--font-mono);
-  letter-spacing: 0.04em;
-  transition: all 80ms ease;
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
+  transition: all 120ms ease;
   user-select: none;
 }
 
@@ -50,14 +65,14 @@
 @keyframes routePulseBrass {
   0% {
     stroke-dashoffset: 36;
-    opacity: 0.3;
+    opacity: 0.4;
   }
   50% {
     opacity: 1;
   }
   100% {
     stroke-dashoffset: 0;
-    opacity: 0.3;
+    opacity: 0.4;
   }
 }
 
@@ -67,16 +82,16 @@
 
 @keyframes nodeHazardPulse {
   0% {
-    border-color: #D05A4A;
-    box-shadow: 0 0 0px rgba(208, 90, 74, 0);
+    border-color: #C86150;
+    box-shadow: 0 0 0px rgba(200, 97, 80, 0);
   }
   50% {
-    border-color: #D6A84F;
-    box-shadow: 0 0 6px rgba(214, 168, 79, 0.35);
+    border-color: #C89638;
+    box-shadow: 0 0 6px rgba(200, 150, 56, 0.35);
   }
   100% {
-    border-color: #D05A4A;
-    box-shadow: 0 0 0px rgba(208, 90, 74, 0);
+    border-color: #C86150;
+    box-shadow: 0 0 0px rgba(200, 97, 80, 0);
   }
 }
 

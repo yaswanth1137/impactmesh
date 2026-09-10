@@ -1,6 +1,5 @@
 import React from 'react';
 import { PixelIcon } from '../pixel/PixelIcon.tsx';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
 
 interface HeaderBarProps {
   systemOnline?: boolean;
@@ -14,21 +13,21 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   nodeId = 'BLACKTIDE-01',
 }) => {
   return (
-    <header className="h-13 bg-[#101419] border-b border-[#2A333B] px-4 md:px-6 flex items-center justify-between gap-4 select-none z-30">
-      {/* Left: Brand Identity */}
-      <div className="flex items-center gap-3">
-        <div className="p-1 bg-[#1A2128] border border-[#2A333B]">
-          <PixelIcon name="emblem-blacktide" size={18} />
+    <header className="h-14 bg-[#FAF8F1] border-b border-[#DDD5C5] px-4 md:px-8 flex items-center justify-between gap-4 select-none z-30 shadow-xs">
+      {/* Left: Brand Identity (Editorial & Clean) */}
+      <div className="flex items-center gap-3.5">
+        <div className="p-1.5 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs">
+          <PixelIcon name="emblem-blacktide" size={20} />
         </div>
         <div className="leading-tight">
-          <div className="font-pixel text-[11px] text-[#D6A84F] tracking-widest uppercase">
+          <div className="font-mono text-[10px] text-[#C89638] font-bold tracking-widest uppercase">
             BLACKTIDE SYSTEMS
           </div>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="font-mono font-bold text-xs text-[#E8E4D8]">
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="font-sans font-bold text-sm text-[#18201D] tracking-tight">
               IMPACTMESH
             </span>
-            <span className="text-[9px] text-[#66727C] font-mono tracking-wider">
+            <span className="text-[10px] text-[#6F8F87] font-mono tracking-wider">
               // DECISION IMPACT INTELLIGENCE
             </span>
           </div>
@@ -37,18 +36,29 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
       {/* Right: Telemetry & Status */}
       <div className="flex items-center gap-3 font-mono text-xs">
-        <div className="hidden lg:flex items-center gap-1.5 text-[10px] text-[#66727C] border border-[#1C242C] px-2 py-0.5 bg-[#090B0F]">
-          <span>NODE:</span>
-          <span className="text-[#AFCBC2]">{nodeId}</span>
+        <div className="hidden lg:flex items-center gap-1.5 text-[10px] text-[#576560] border border-[#DDD5C5] px-2.5 py-1 bg-[#F3EFE5] rounded-xs">
+          <span className="text-[#718894]">NODE:</span>
+          <span className="text-[#18201D] font-bold">{nodeId}</span>
         </div>
 
-        <div className="hidden sm:block text-[10px] text-[#A9ADA8]">
+        <div className="hidden sm:block text-[11px] text-[#576560]">
           {timestamp}
         </div>
 
-        <PixelBadge variant={systemOnline ? 'seaFoam' : 'danger'} size="sm" pulse={systemOnline}>
-          {systemOnline ? '● SYSTEM ONLINE' : 'OFFLINE'}
-        </PixelBadge>
+        <div
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xs border text-[10px] font-mono font-bold tracking-wide ${
+            systemOnline
+              ? 'bg-[#5B8D70]/10 border-[#5B8D70]/30 text-[#2D5A40]'
+              : 'bg-[#C86150]/10 border-[#C86150]/30 text-[#8B2D20]'
+          }`}
+        >
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              systemOnline ? 'bg-[#5B8D70] animate-pulse' : 'bg-[#C86150]'
+            }`}
+          />
+          {systemOnline ? 'SYSTEM ONLINE' : 'OFFLINE'}
+        </div>
       </div>
     </header>
   );

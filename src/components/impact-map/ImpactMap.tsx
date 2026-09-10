@@ -1,8 +1,4 @@
 import React, { useState } from 'react';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
-import { PixelButton } from '../pixel/PixelButton.tsx';
-import { PixelIcon } from '../pixel/PixelIcon.tsx';
-import { BearingIndicator } from '../business/BearingIndicator.tsx';
 import type { BusinessEntity, Dependency } from '../../types/domain.ts';
 
 export interface ImpactMapProps {
@@ -118,32 +114,36 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col bg-[#0D1217] border border-[#2A333B] shadow-sm select-none overflow-hidden">
-      {/* 1. Header: Metadata, Bearing, and Simulation Trigger */}
-      <div className="px-4 py-2.5 bg-[#101419] border-b border-[#2A333B] flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <PixelIcon name="compass" size={15} color="#D6A84F" />
-          <span className="font-pixel text-xs text-[#E8E4D8] uppercase tracking-wider">
-            BUSINESS NAVIGATION CHART // IMPACT MAP
+    <div className="p-4 md:p-5 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs space-y-3 select-none">
+      {/* Chart Plotter Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#DDD5C5] pb-2.5">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
+            STEP 04 // TOPOLOGY
           </span>
+          <span className="text-[#718894]">/</span>
+          <h3 className="font-sans font-bold text-base md:text-lg text-[#18201D] tracking-tight">
+            ORGANIZATIONAL DEPENDENCY MAP
+          </h3>
           {isAnalyzing && (
-            <PixelBadge variant="danger" size="sm" pulse>
-              ANALYZING CASCADE...
-            </PixelBadge>
+            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-[#C86150]/10 text-[#C86150] border border-[#C86150]/30 rounded-2xs animate-pulse uppercase">
+              ANALYZING...
+            </span>
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Department Filter Tabs */}
-          <div className="hidden sm:flex items-center gap-1 border border-[#2A333B] p-0.5 bg-[#141A20]">
-            {(['all', 'sales', 'product', 'engineering', 'finance'] as const).map((dept) => (
+          {/* Filter by Department */}
+          <div className="flex items-center gap-1 text-xs font-mono">
+            <span className="text-[#718894] text-[10px] mr-1 uppercase">FILTER:</span>
+            {['all', 'sales', 'product', 'engineering', 'finance'].map((dept) => (
               <button
                 key={dept}
                 onClick={() => setFilterDept(dept)}
-                className={`px-2 py-0.5 font-mono text-[9px] uppercase cursor-pointer transition-colors ${
+                className={`px-2 py-0.5 uppercase text-[10px] rounded-2xs transition-colors cursor-pointer ${
                   filterDept === dept
-                    ? 'bg-[#D6A84F] text-[#090B0F] font-bold'
-                    : 'text-[#A9ADA8] hover:text-white'
+                    ? 'bg-[#C89638] text-[#FAF8F1] font-bold'
+                    : 'text-[#576560] hover:text-[#18201D] hover:bg-[#F3EFE5]'
                 }`}
               >
                 {dept}
@@ -152,32 +152,26 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
           </div>
 
           {onTriggerSimulation && (
-            <PixelButton
-              variant={isSimulatingCascade ? 'secondary' : 'primary'}
-              size="sm"
+            <button
               onClick={onTriggerSimulation}
-              icon={<PixelIcon name="flare-red" size={12} />}
+              className="px-2.5 py-1 text-xs font-sans font-semibold bg-[#F3EFE5] border border-[#DDD5C5] text-[#18201D] hover:bg-[#FAF8F1] rounded-xs transition-colors cursor-pointer"
             >
-              {isSimulatingCascade ? '[ RESET CHART ]' : '[ SIMULATE BUDGET CUT ]'}
-            </PixelButton>
+              {isSimulatingCascade ? 'RESET' : 'SIMULATE'}
+            </button>
           )}
         </div>
       </div>
 
-      {/* 2. Top Bearing & Grid Indicator Strip */}
-      <div className="px-4 py-1.5 bg-[#0A0E13] border-b border-[#1C242C] flex items-center justify-between text-[10px] font-mono text-[#66727C]">
-        <div className="flex items-center gap-4">
-          <span>GRID SECTOR: 04-A</span>
-          <span>CHART PROJECTION: ORTHOGONAL</span>
-        </div>
-        <BearingIndicator isSimulating={isSimulatingCascade} />
-      </div>
-
-      {/* 3. SVG Navigation Canvas */}
-      <div className="relative w-full h-[480px] chart-grid-bg overflow-hidden">
-        <svg viewBox="0 0 840 460" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      {/* SVG Canvas Container */}
+      <div className="relative w-full h-[460px] bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs overflow-hidden chart-grid-bg">
+        <svg
+          viewBox="0 0 800 460"
+          className="w-full h-full"
+          style={{ imageRendering: 'crisp-edges' }}
+        >
+          {/* Definitions for Markers & Gradients */}
           <defs>
-            {/* Neutral Route Arrow */}
+            {/* Subtle Neutral Edge Arrowhead */}
             <marker
               id="edge-arrow"
               viewBox="0 0 8 8"
@@ -187,10 +181,10 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
               markerHeight="5"
               orient="auto-start-reverse"
             >
-              <polygon points="0,1 8,4 0,7" fill="#3B4752" />
+              <polygon points="0,1 8,4 0,7" fill="#DDD5C5" />
             </marker>
 
-            {/* Active Brass Propagation Arrow */}
+            {/* Active Brass Edge Arrowhead */}
             <marker
               id="edge-arrow-brass"
               viewBox="0 0 8 8"
@@ -200,10 +194,10 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
               markerHeight="5"
               orient="auto-start-reverse"
             >
-              <polygon points="0,1 8,4 0,7" fill="#D6A84F" />
+              <polygon points="0,1 8,4 0,7" fill="#C89638" />
             </marker>
 
-            {/* Restrained Red Hazard Arrow (Used selectively only on direct critical links) */}
+            {/* Restrained Red Hazard Arrow */}
             <marker
               id="edge-arrow-hazard"
               viewBox="0 0 8 8"
@@ -213,7 +207,7 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
               markerHeight="5"
               orient="auto-start-reverse"
             >
-              <polygon points="0,1 8,4 0,7" fill="#D05A4A" />
+              <polygon points="0,1 8,4 0,7" fill="#C86150" />
             </marker>
           </defs>
 
@@ -250,10 +244,10 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
                   y2={y2}
                   stroke={
                     isCriticalLink
-                      ? '#8F2823'
+                      ? '#C86150'
                       : isSourceLink || isAffectedLink
-                      ? '#D6A84F'
-                      : '#2A333B'
+                      ? '#C89638'
+                      : '#DDD5C5'
                   }
                   strokeWidth={isCriticalLink ? 2 : isAffectedLink ? 1.5 : 1}
                   markerEnd={
@@ -272,7 +266,7 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
                     y1={y1}
                     x2={x2}
                     y2={y2}
-                    stroke="#D6A84F"
+                    stroke="#C89638"
                     strokeWidth="1.5"
                     strokeDasharray="4,8"
                     className="route-pulse-brass"
@@ -284,9 +278,8 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
                   x={midX}
                   y={midY - 4}
                   textAnchor="middle"
-                  fill={isCriticalLink ? '#D05A4A' : isAffectedLink ? '#D6A84F' : '#66727C'}
-                  className="font-mono text-[8px] uppercase tracking-wider"
-                  style={{ textShadow: '0 1px 2px #090B0F' }}
+                  fill={isCriticalLink ? '#C86150' : isAffectedLink ? '#C89638' : '#718894'}
+                  className="font-mono text-[8px] uppercase tracking-wider font-semibold"
                 >
                   {dep.relation_type}
                 </text>
@@ -309,26 +302,26 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
                 ? '◎'
                 : '◇';
 
-            // Clean colors
-            let borderColor = '#2A333B';
-            let bgFill = '#141A20';
-            let titleColor = '#E8E4D8';
+            // Clean light theme colors
+            let borderColor = '#DDD5C5';
+            let bgFill = '#FAF8F1';
+            let titleColor = '#18201D';
 
             if (isSource) {
-              borderColor = '#D6A84F';
-              bgFill = '#231B0E';
-              titleColor = '#D6A84F';
+              borderColor = '#C89638';
+              bgFill = '#FAF8F1';
+              titleColor = '#C89638';
             } else if (isCritical) {
-              borderColor = '#D05A4A';
-              bgFill = '#241416';
-              titleColor = '#E8E4D8';
+              borderColor = '#C86150';
+              bgFill = '#FAF8F1';
+              titleColor = '#C86150';
             } else if (isAffected) {
-              borderColor = '#D6A84F';
-              bgFill = '#1C1811';
+              borderColor = '#C89638';
+              bgFill = '#FAF8F1';
             }
 
             if (isSelected) {
-              borderColor = '#FFFFFF';
+              borderColor = '#18201D';
             }
 
             return (
@@ -350,12 +343,12 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
                   height="44"
                   fill={bgFill}
                   stroke={borderColor}
-                  strokeWidth={isSelected ? 1.5 : 1}
+                  strokeWidth={isSelected ? 2 : 1}
                   className="subtle-cut"
                 />
 
                 {/* Header Tag Bar */}
-                <rect x="-68" y="-22" width="136" height="14" fill="#0E1217" />
+                <rect x="-68" y="-22" width="136" height="14" fill="#F3EFE5" />
 
                 {/* Node Class Symbol & Type */}
                 <text
@@ -410,46 +403,47 @@ export const ImpactMap: React.FC<ImpactMapProps> = ({
 
         {/* Selected Entity Inspector Panel (Bottom Left Overlay) */}
         {selectedEntity && (
-          <div className="absolute bottom-3 left-3 max-w-sm bg-[#101419]/95 border border-[#2A333B] p-3 shadow-md backdrop-blur-sm">
-            <div className="flex items-center justify-between gap-2 border-b border-[#2A333B] pb-1.5 mb-1.5">
-              <span className="font-mono text-[9px] text-[#D6A84F] uppercase">
+          <div className="absolute bottom-3 left-3 max-w-sm bg-[#FAF8F1]/95 border border-[#DDD5C5] p-3 shadow-md rounded-xs backdrop-blur-xs">
+            <div className="flex items-center justify-between gap-2 border-b border-[#DDD5C5] pb-1.5 mb-1.5">
+              <span className="font-mono text-[9px] text-[#C89638] uppercase font-bold">
                 INSPECTOR // {selectedEntity.entity_type} ({selectedEntity.department})
               </span>
-              <PixelBadge
-                variant={
-                  affectedEntityIds.includes(selectedEntity.id) ? 'danger' : 'seaFoam'
-                }
-                size="sm"
+              <span
+                className={`font-mono text-[8px] font-bold px-1.5 py-0.5 rounded-2xs uppercase ${
+                  affectedEntityIds.includes(selectedEntity.id)
+                    ? 'bg-[#C86150]/10 text-[#C86150] border border-[#C86150]/30'
+                    : 'bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30'
+                }`}
               >
                 {affectedEntityIds.includes(selectedEntity.id) ? 'AFFECTED' : 'STABLE'}
-              </PixelBadge>
+              </span>
             </div>
-            <h4 className="font-sans font-bold text-xs text-[#E8E4D8]">
+            <h4 className="font-sans font-bold text-xs text-[#18201D]">
               {selectedEntity.name}
             </h4>
-            <p className="text-[11px] text-[#A9ADA8] font-sans mt-1 leading-snug">
+            <p className="text-[11px] text-[#576560] font-sans mt-1 leading-snug">
               {selectedEntity.description}
             </p>
           </div>
         )}
 
-        {/* Tactical Legend (Bottom Right Overlay) */}
-        <div className="absolute bottom-3 right-3 hidden md:flex items-center gap-4 bg-[#101419]/90 border border-[#2A333B] px-3 py-1.5 text-[9px] font-mono text-[#A9ADA8]">
+        {/* Legend (Bottom Right Overlay) */}
+        <div className="absolute bottom-3 right-3 hidden md:flex items-center gap-4 bg-[#FAF8F1]/90 border border-[#DDD5C5] px-3 py-1.5 text-[9px] font-mono text-[#576560] rounded-xs shadow-2xs">
           <div className="flex items-center gap-1.5">
-            <span className="text-[#A9ADA8] font-bold">◇</span>
+            <span className="text-[#718894] font-bold">◇</span>
             <span>ENTITY</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[#D6A84F] font-bold">◆</span>
+            <span className="text-[#C89638] font-bold">◆</span>
             <span>DECISION</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[#AFCBC2] font-bold">◎</span>
+            <span className="text-[#718894] font-bold">◎</span>
             <span>OUTCOME</span>
           </div>
-          <div className="flex items-center gap-1.5 border-l border-[#2A333B] pl-3">
-            <span className="w-1.5 h-1.5 bg-[#D05A4A] inline-block" />
-            <span>CRITICAL HAZARD</span>
+          <div className="flex items-center gap-1.5 border-l border-[#DDD5C5] pl-3">
+            <span className="w-1.5 h-1.5 bg-[#C86150] inline-block rounded-full" />
+            <span className="text-[#C86150] font-bold">CRITICAL DEFICIT</span>
           </div>
         </div>
       </div>

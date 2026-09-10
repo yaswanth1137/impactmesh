@@ -1,5 +1,4 @@
 import React from 'react';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
 
 interface BusinessCoursePoint {
   time: string;
@@ -21,42 +20,42 @@ const COURSE_HISTORY: BusinessCoursePoint[] = [
 
 export const BusinessCourse: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
-    <div className={`p-4 bg-[#141A20] border border-[#2A333B] pixel-shadow select-none ${className}`}>
+    <div className={`p-5 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs select-none ${className}`}>
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2A333B] pb-2 mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DDD5C5] pb-2.5 mb-3">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 bg-[#D6A84F] inline-block" />
-          <span className="font-pixel text-xs text-[#E8E4D8] uppercase tracking-wider">
-            BUSINESS COURSE // ORGANIZATIONAL HEALTH & CAPACITY TRAJECTORY
+          <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
+            HISTORICAL TIMELINE
           </span>
+          <span className="text-[#718894]">/</span>
+          <h3 className="font-sans font-bold text-base md:text-lg text-[#18201D] tracking-tight">
+            ORGANIZATIONAL HEALTH & CAPACITY TRAJECTORY
+          </h3>
         </div>
         <div className="flex items-center gap-3 text-xs font-mono">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-1 bg-[#AFCBC2] inline-block" />
-            <span className="text-[#A9ADA8]">HEALTH (64)</span>
+            <span className="w-2.5 h-1 bg-[#6F8F87] inline-block" />
+            <span className="text-[#576560]">HEALTH (64%)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-1 bg-[#D05A4A] inline-block" />
-            <span className="text-[#D05A4A]">UTILIZATION (140%)</span>
+            <span className="w-2.5 h-1 bg-[#C86150] inline-block" />
+            <span className="text-[#C86150]">CAPACITY DEFICIT (140%)</span>
           </div>
-          <PixelBadge variant="danger" size="sm">
-            COURSE DEFLECTION
-          </PixelBadge>
         </div>
       </div>
 
       {/* SVG Chart Visualization */}
-      <div className="relative w-full h-44 chart-grid-bg border border-[#1C242C] p-2">
+      <div className="relative w-full h-44 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs p-2 chart-grid-bg">
         <svg viewBox="0 0 700 150" className="w-full h-full" preserveAspectRatio="none">
           {/* Grid lines */}
-          <line x1="0" y1="30" x2="700" y2="30" stroke="#1C242C" strokeWidth="1" strokeDasharray="3,3" />
-          <line x1="0" y1="75" x2="700" y2="75" stroke="#1C242C" strokeWidth="1" strokeDasharray="3,3" />
-          <line x1="0" y1="120" x2="700" y2="120" stroke="#1C242C" strokeWidth="1" strokeDasharray="3,3" />
+          <line x1="0" y1="30" x2="700" y2="30" stroke="#DDD5C5" strokeWidth="1" strokeDasharray="3,3" />
+          <line x1="0" y1="75" x2="700" y2="75" stroke="#DDD5C5" strokeWidth="1" strokeDasharray="3,3" />
+          <line x1="0" y1="120" x2="700" y2="120" stroke="#DDD5C5" strokeWidth="1" strokeDasharray="3,3" />
 
-          {/* Health Trajectory Line (Cyan/Sea Foam) */}
+          {/* Health Trajectory Line (Muted Sea) */}
           <polyline
             fill="none"
-            stroke="#AFCBC2"
+            stroke="#6F8F87"
             strokeWidth="2.5"
             points="20,40 120,36 240,30 360,35 460,55 560,45 660,95"
           />
@@ -64,7 +63,7 @@ export const BusinessCourse: React.FC<{ className?: string }> = ({ className = '
           {/* Capacity Burn Line (Red) */}
           <polyline
             fill="none"
-            stroke="#D05A4A"
+            stroke="#C86150"
             strokeWidth="2"
             strokeDasharray="4,2"
             points="20,110 120,105 240,90 360,70 460,50 560,65 660,25"
@@ -78,30 +77,20 @@ export const BusinessCourse: React.FC<{ className?: string }> = ({ className = '
 
             return (
               <g key={idx}>
-                <line x1={x} y1="10" x2={x} y2="140" stroke="#475664" strokeWidth="1" strokeDasharray="2,2" />
-                <rect
-                  x={x - 4}
-                  y={y - 4}
-                  width="8"
-                  height="8"
-                  fill={pt.isHazard ? '#D05A4A' : '#D6A84F'}
-                  className="rotate-45"
-                />
-                <rect
-                  x={x - 55}
-                  y={y > 80 ? y - 32 : y + 10}
-                  width="110"
-                  height="18"
-                  fill="#101419"
-                  stroke={pt.isHazard ? '#D05A4A' : '#D6A84F'}
-                  strokeWidth="1"
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={5}
+                  fill={pt.isHazard ? '#C86150' : '#C89638'}
+                  stroke="#FAF8F1"
+                  strokeWidth="2"
                 />
                 <text
                   x={x}
-                  y={y > 80 ? y - 20 : y + 22}
+                  y={y - 10}
                   textAnchor="middle"
-                  fill={pt.isHazard ? '#D05A4A' : '#D6A84F'}
-                  className="font-pixel text-[8px] uppercase tracking-wider"
+                  fill={pt.isHazard ? '#C86150' : '#18201D'}
+                  className="font-mono text-[9px] font-bold uppercase tracking-wider"
                 >
                   {pt.decisionLabel}
                 </text>
@@ -109,6 +98,11 @@ export const BusinessCourse: React.FC<{ className?: string }> = ({ className = '
             );
           })}
         </svg>
+      </div>
+
+      <div className="flex items-center justify-between text-[11px] font-sans text-[#576560] pt-2.5">
+        <span>Timeline spans recent operational events leading to the current budget variance.</span>
+        <span className="font-mono text-[10px]">LATEST STATE: HASH-3C4E64F7</span>
       </div>
     </div>
   );

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { PixelBadge } from '../pixel/PixelBadge.tsx';
-import { PixelButton } from '../pixel/PixelButton.tsx';
-import { PixelIcon } from '../pixel/PixelIcon.tsx';
+import { PixelCharacter } from '../pixel/PixelCharacter.tsx';
 import type { Signal } from '../../../server/engines/signal-engine/signal.interface.ts';
 
 interface DecisionDeskProps {
@@ -26,7 +24,6 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
   onDismissSignal,
   onRequestContext,
   onConvertToDecision,
-  onToggleFullGraph,
   selectedSignalId,
 }) => {
   const [reviewingSignalId, setReviewingSignalId] = useState<string | null>(selectedSignalId || null);
@@ -49,32 +46,40 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* 1. EXECUTIVE BANNER HEADER */}
-      <div className="p-4 bg-[#101419] border-2 border-[#D6A84F] pixel-shadow flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <PixelIcon name="helm" size={16} color="#D6A84F" />
-            <span className="font-pixel text-[11px] text-[#D6A84F] uppercase tracking-wider">
-              EXECUTIVE DECISION DESK // TODAY
-            </span>
+      {/* 1. EXECUTIVE BANNER HEADER (Warm Paper & Editorial Asymmetry) */}
+      <div className="p-4 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="shrink-0 p-1.5 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs">
+            <PixelCharacter role="captain" size={44} />
           </div>
-          <h2 className="font-mono text-base md:text-lg font-bold text-[#E8E4D8] mt-1">
-            {activeSignals.length > 0
-              ? `${activeSignals.length} ITEM${activeSignals.length > 1 ? 'S' : ''} NEED YOUR ATTENTION`
-              : 'ALL STATIONS NOMINAL // NO PENDING ITEMS'}
-          </h2>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] text-[#C89638] font-bold tracking-widest uppercase">
+                BLACKTIDE SYSTEMS // DECISION DESK
+              </span>
+            </div>
+            <h2 className="font-sans text-xl md:text-2xl font-bold text-[#18201D] tracking-tight mt-0.5">
+              WHAT NEEDS YOUR ATTENTION?
+            </h2>
+            <p className="font-sans text-xs text-[#576560] mt-0.5">
+              {activeSignals.length > 0
+                ? `${activeSignals.length} business decision${activeSignals.length > 1 ? 's' : ''} require executive review today.`
+                : 'All operational parameters within normal tolerance. No pending decisions.'}
+            </p>
+          </div>
         </div>
 
-        {/* Role Perspective Switcher */}
-        <div className="flex items-center gap-1.5 bg-[#090B0F] p-1 border border-[#2A333B]">
+        {/* Role Perspective Selector */}
+        <div className="flex items-center gap-1 bg-[#F3EFE5] p-1 border border-[#DDD5C5] rounded-xs shrink-0 self-start md:self-auto">
+          <span className="font-mono text-[9px] text-[#718894] uppercase font-bold px-2">ROLE:</span>
           {(['ALL', 'CEO', 'CFO', 'COO'] as const).map((role) => (
             <button
               key={role}
               onClick={() => onSelectRole(role)}
-              className={`px-2.5 py-1 text-[10px] font-pixel transition-colors ${
+              className={`px-3 py-1 text-xs font-sans font-semibold rounded-xs transition-colors cursor-pointer ${
                 activeRole === role
-                  ? 'bg-[#D6A84F] text-[#090B0F] font-bold'
-                  : 'text-[#A9ADA8] hover:text-[#E8E4D8] hover:bg-[#1A2128]'
+                  ? 'bg-[#C89638] text-[#FAF8F1] shadow-2xs'
+                  : 'text-[#576560] hover:text-[#18201D] hover:bg-[#FAF8F1]'
               }`}
             >
               {role}
@@ -86,8 +91,8 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
       {/* 2. ACTIVE SIGNALS LIST */}
       <div className="space-y-3">
         {activeSignals.length === 0 ? (
-          <div className="p-6 bg-[#101419] border border-[#2A333B] text-center font-mono text-xs text-[#AFCBC2]">
-            ✓ No unhandled signals requiring executive attention. All operational metrics within tolerance.
+          <div className="p-8 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs text-center font-sans text-sm text-[#576560]">
+            ✓ No unhandled signals requiring executive attention. All operational indicators nominal.
           </div>
         ) : (
           activeSignals.map((signal) => {
@@ -97,86 +102,89 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
             return (
               <div
                 key={signal.id}
-                className={`p-4 border transition-all ${
+                className={`p-4 md:p-5 border rounded-xs transition-all ${
                   isSelected
-                    ? 'bg-[#182028] border-[#D6A84F] pixel-shadow-raised'
+                    ? 'bg-[#FAF8F1] border-[#C89638] shadow-sm ring-1 ring-[#C89638]/30'
                     : isCritical
-                    ? 'bg-[#141012] border-[#4A2024] hover:border-[#D05A4A]'
-                    : 'bg-[#101419] border-[#2A333B] hover:border-[#3A4550]'
+                    ? 'bg-[#FAF8F1] border-[#C86150]/40 hover:border-[#C86150]'
+                    : 'bg-[#FAF8F1] border-[#DDD5C5] hover:border-[#C89638]'
                 }`}
               >
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                  <div className="space-y-1">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="space-y-1.5">
                     <div className="flex items-center gap-2">
-                      <PixelBadge variant={isCritical ? 'danger' : 'warning'} size="sm">
+                      <span
+                        className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded-2xs uppercase border ${
+                          isCritical
+                            ? 'bg-[#C86150]/10 text-[#C86150] border-[#C86150]/30'
+                            : 'bg-[#C89638]/10 text-[#8B651B] border-[#C89638]/30'
+                        }`}
+                      >
                         {signal.priorityRank} // {signal.severity}
-                      </PixelBadge>
-                      <span className="font-mono text-[10px] text-[#66727C] uppercase tracking-wider">
+                      </span>
+                      <span className="font-mono text-[10px] text-[#718894] uppercase">
                         SCOPE: {signal.scopeName} ({signal.scope})
                       </span>
                       {signal.state === 'REVIEWING' && (
-                        <PixelBadge variant="seaFoam" size="sm">
+                        <span className="font-mono text-[9px] px-1.5 py-0.5 bg-[#718894]/10 text-[#718894] border border-[#718894]/30 rounded-2xs uppercase">
                           UNDER REVIEW
-                        </PixelBadge>
+                        </span>
                       )}
                       {signal.state === 'ACKNOWLEDGED' && (
-                        <PixelBadge variant="info" size="sm">
+                        <span className="font-mono text-[9px] px-1.5 py-0.5 bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30 rounded-2xs uppercase">
                           ACKNOWLEDGED
-                        </PixelBadge>
+                        </span>
                       )}
                     </div>
 
-                    <h3 className="font-mono font-bold text-sm md:text-base text-[#E8E4D8]">
-                      {signal.title.toUpperCase()}
+                    <h3 className="font-sans font-bold text-base md:text-lg text-[#18201D] tracking-tight">
+                      {signal.title}
                     </h3>
 
-                    <p className="font-sans text-xs text-[#A9ADA8]">
+                    <p className="font-sans text-xs md:text-sm text-[#576560] leading-relaxed max-w-3xl">
                       {signal.summary}
                     </p>
 
-                    {/* Quick Metric strip */}
-                    <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] font-mono text-[#AFCBC2]">
+                    {/* Metric Fact Strip */}
+                    <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-mono text-[#576560]">
                       {signal.evidence.affectedCapacityHours ? (
                         <span>
-                          <strong className="text-[#E8E4D8]">Deficit:</strong> {signal.evidence.affectedCapacityHours}h
+                          <strong className="text-[#18201D]">Deficit:</strong> {signal.evidence.affectedCapacityHours}h
                         </span>
                       ) : null}
                       {signal.evidence.deliveryDelayDays ? (
                         <span>
-                          <strong className="text-[#E8E4D8]">Delivery:</strong> +{signal.evidence.deliveryDelayDays} days
+                          <strong className="text-[#18201D]">Delivery Pressure:</strong> +{signal.evidence.deliveryDelayDays} days
                         </span>
                       ) : null}
                       {signal.evidence.financialExposureINR ? (
                         <span>
-                          <strong className="text-[#D6A84F]">Exposure:</strong> ₹{(signal.evidence.financialExposureINR / 100000).toFixed(1)}L
+                          <strong className="text-[#C89638]">Customer Exposure:</strong> ₹{(signal.evidence.financialExposureINR / 100000).toFixed(1)}L
                         </span>
                       ) : null}
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
+                  {/* Editorial Actions */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <PixelButton
-                      variant="primary"
-                      size="sm"
+                    <button
                       onClick={() => handleOpenReview(signal.id)}
+                      className="px-3.5 py-1.5 font-sans font-semibold text-xs bg-[#FAF8F1] border border-[#C89638] text-[#18201D] hover:bg-[#F3EFE5] rounded-xs transition-colors cursor-pointer shadow-2xs"
                     >
-                      [ REVIEW ]
-                    </PixelButton>
-                    <PixelButton
-                      variant="secondary"
-                      size="sm"
+                      REVIEW DECISION
+                    </button>
+                    <button
                       onClick={() => onAcknowledgeSignal(signal.id)}
+                      className="px-2.5 py-1.5 font-sans text-xs bg-[#F3EFE5] border border-[#DDD5C5] text-[#576560] hover:text-[#18201D] hover:bg-[#FAF8F1] rounded-xs transition-colors cursor-pointer"
                     >
-                      [ ACK ]
-                    </PixelButton>
-                    <PixelButton
-                      variant="ghost"
-                      size="sm"
+                      ACK
+                    </button>
+                    <button
                       onClick={() => onDismissSignal(signal.id)}
+                      className="px-2.5 py-1.5 font-sans text-xs text-[#718894] hover:text-[#C86150] transition-colors cursor-pointer"
                     >
-                      [ DISMISS ]
-                    </PixelButton>
+                      DISMISS
+                    </button>
                   </div>
                 </div>
               </div>
@@ -185,142 +193,112 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
         )}
       </div>
 
-      {/* 3. SIGNAL REVIEW DRAWER / MODAL (Progressive Disclosure) */}
+      {/* 3. SIGNAL REVIEW DRAWER (Editorial Progressive Disclosure) */}
       {reviewingSignal && (
-        <div className="p-5 bg-[#141A20] border-2 border-[#D6A84F] pixel-shadow-raised space-y-5 animate-in fade-in">
-          <div className="flex items-center justify-between border-b border-[#2A333B] pb-3">
+        <div className="p-5 md:p-6 bg-[#FAF8F1] border-2 border-[#C89638] rounded-xs shadow-md space-y-5 animate-in fade-in">
+          <div className="flex items-center justify-between border-b border-[#DDD5C5] pb-3">
             <div>
-              <span className="font-pixel text-[10px] text-[#D6A84F] uppercase tracking-wider block">
+              <span className="font-mono text-[10px] text-[#C89638] uppercase tracking-widest font-bold block">
                 HUMAN REVIEW // {reviewingSignal.scopeName}
               </span>
-              <h3 className="font-mono font-bold text-base text-[#E8E4D8]">
+              <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight mt-0.5">
                 {reviewingSignal.title}
               </h3>
             </div>
             <button
               onClick={handleCloseReview}
-              className="font-mono text-xs text-[#66727C] hover:text-[#E8E4D8] px-2 py-1"
+              className="font-sans text-xs font-semibold text-[#576560] hover:text-[#18201D] px-2.5 py-1 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs cursor-pointer"
             >
-              [ ✕ CLOSE ]
+              ✕ CLOSE REVIEW
             </button>
           </div>
 
-          {/* Causal Chain: Why this matters */}
+          {/* Plain Language Rationale: WHY THIS MATTERS */}
           <div className="space-y-2">
-            <div className="font-pixel text-[10px] text-[#AFCBC2] uppercase">
-              // WHY THIS MATTERS
+            <div className="font-mono text-[10px] text-[#718894] uppercase font-bold tracking-wider">
+              WHY THIS MATTERS
             </div>
-            <p className="font-sans text-xs text-[#E8E4D8] bg-[#0D131A] p-3 border border-[#2A333B] leading-relaxed">
+            <p className="font-sans text-sm text-[#18201D] bg-[#F3EFE5] p-3.5 border border-[#DDD5C5] rounded-xs leading-relaxed">
               {reviewingSignal.evidence.explanation}
             </p>
 
-            {/* Simplified Visual Causal Chain */}
-            <div className="p-3 bg-[#090B0F] border border-[#2A333B]">
-              <div className="text-[10px] font-mono text-[#66727C] mb-2 uppercase">
-                CAUSAL PROGRESSION:
+            {/* Simple Causal Chain Summary */}
+            <div className="p-3.5 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs">
+              <div className="text-[10px] font-mono text-[#718894] mb-2 uppercase font-bold">
+                CAUSAL PROPAGATION:
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[#E8E4D8]">
-                <span className="px-2 py-1 bg-[#1A2128] border border-[#2A333B] text-[#D6A84F]">
-                  BUDGET CUT
+              <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#18201D]">
+                <span className="px-2 py-1 bg-[#F3EFE5] border border-[#DDD5C5] rounded-2xs font-semibold">
+                  1. {reviewingSignal.scopeName} Event
                 </span>
-                <span className="text-[#66727C]">→</span>
-                <span className="px-2 py-1 bg-[#1A2128] border border-[#2A333B]">
-                  300h CAPACITY
+                <span className="text-[#718894]">→</span>
+                <span className="px-2 py-1 bg-[#F3EFE5] border border-[#DDD5C5] rounded-2xs font-semibold">
+                  2. {reviewingSignal.evidence.affectedCapacityHours || 120}h Capacity Deficit
                 </span>
-                <span className="text-[#66727C]">→</span>
-                <span className="px-2 py-1 bg-[#1A2128] border border-[#D05A4A] text-[#D05A4A]">
-                  120h DEFICIT
+                <span className="text-[#718894]">→</span>
+                <span className="px-2 py-1 bg-[#F3EFE5] border border-[#DDD5C5] rounded-2xs font-semibold">
+                  3. +{reviewingSignal.evidence.deliveryDelayDays || 8} Days Delivery Slip
                 </span>
-                <span className="text-[#66727C]">→</span>
-                <span className="px-2 py-1 bg-[#1A2128] border border-[#2A333B]">
-                  +8d SLIPPAGE
-                </span>
-                <span className="text-[#66727C]">→</span>
-                <span className="px-2 py-1 bg-[#1A2128] border border-[#D6A84F] text-[#D6A84F]">
-                  ₹50L APEX GLOBAL
+                <span className="text-[#718894]">→</span>
+                <span className="px-2 py-1 bg-[#C89638]/10 text-[#8B651B] border border-[#C89638]/30 rounded-2xs font-bold">
+                  4. ₹{((reviewingSignal.evidence.financialExposureINR || 5000000) / 100000).toFixed(1)}L Revenue Risk
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Missing Context Alert if applicable */}
+          {/* Missing Context Request Form */}
           {reviewingSignal.evidence.missingContextFields && reviewingSignal.evidence.missingContextFields.length > 0 && (
-            <div className="p-3 bg-[#1A1810] border border-[#D6A84F]/40 text-xs font-mono space-y-2">
-              <div className="text-[#D6A84F] font-bold flex items-center gap-1.5">
-                <span>⚠</span>
-                <span>ADDITIONAL CONTEXT REQUESTED:</span>
+            <div className="p-3 bg-[#FAF8F1] border border-[#C89638]/40 rounded-xs space-y-1 text-xs">
+              <div className="font-mono text-[9px] text-[#C89638] uppercase font-bold">
+                MISSING CONTEXT REQUESTED:
               </div>
-              <ul className="list-disc list-inside text-[#AFCBC2] text-[11px]">
-                {reviewingSignal.evidence.missingContextFields.map((field) => (
-                  <li key={field}>{field}</li>
-                ))}
-              </ul>
+              <div className="font-sans text-[#576560]">
+                {reviewingSignal.evidence.missingContextFields.join(', ')}
+              </div>
             </div>
           )}
 
-          {/* Human Review Decision Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#2A333B]">
+          {/* Action Row */}
+          <div className="pt-2 border-t border-[#DDD5C5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Request context (e.g. contractor rates)..."
+                placeholder="Request missing field (e.g. Contractor availability)..."
                 value={requestedContextField}
                 onChange={(e) => setRequestedContextField(e.target.value)}
-                className="bg-[#090B0F] border border-[#2A333B] text-xs font-mono px-3 py-1.5 text-[#E8E4D8] placeholder-[#55606A] focus:outline-none focus:border-[#D6A84F]"
+                className="px-3 py-1.5 text-xs font-sans bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs text-[#18201D] placeholder:text-[#718894] w-64"
               />
-              <PixelButton
-                variant="secondary"
-                size="sm"
+              <button
                 onClick={() => {
                   if (requestedContextField.trim()) {
                     onRequestContext(reviewingSignal.id, [requestedContextField.trim()]);
                     setRequestedContextField('');
                   }
                 }}
+                className="px-2.5 py-1.5 text-xs font-sans font-semibold bg-[#F3EFE5] border border-[#DDD5C5] text-[#18201D] hover:bg-[#FAF8F1] rounded-xs cursor-pointer transition-colors"
               >
-                [ REQUEST CONTEXT ]
-              </PixelButton>
+                REQUEST CONTEXT
+              </button>
             </div>
 
             <div className="flex items-center gap-2">
-              {onToggleFullGraph && (
-                <PixelButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={onToggleFullGraph}
-                >
-                  [ VIEW FULL DEPENDENCY MAP ]
-                </PixelButton>
-              )}
-              <PixelButton
-                variant="primary"
-                size="md"
-                onClick={() => onConvertToDecision(reviewingSignal.id)}
-                icon={<PixelIcon name="emblem-blacktide" size={14} />}
+              <button
+                onClick={() => onDismissSignal(reviewingSignal.id)}
+                className="px-3 py-1.5 text-xs font-sans text-[#576560] hover:text-[#C86150] cursor-pointer"
               >
-                [ ANALYZE OPTIONS / CREATE DECISION ]
-              </PixelButton>
+                DISMISS
+              </button>
+              <button
+                onClick={() => onConvertToDecision(reviewingSignal.id)}
+                className="px-4 py-2 font-sans text-xs font-bold bg-[#C89638] text-[#FAF8F1] hover:bg-[#B3832B] rounded-xs transition-colors cursor-pointer shadow-2xs"
+              >
+                CONVERT TO DECISION →
+              </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* 4. RECENTLY RESOLVED SECTION */}
-      <div className="p-3 bg-[#0D131A] border border-[#1C242C] text-xs font-mono space-y-2">
-        <div className="text-[#66727C] font-pixel text-[9px] uppercase tracking-wider">
-          // RECENTLY RESOLVED (AUDIT LOG)
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
-          <div className="flex items-center gap-2 text-[#AFCBC2]">
-            <span className="text-[#59A66A]">✓</span>
-            <span>Customer commitment preserved (Apex Global scope phased)</span>
-          </div>
-          <div className="flex items-center gap-2 text-[#AFCBC2]">
-            <span className="text-[#59A66A]">✓</span>
-            <span>Capacity reallocated to 100% platform ceiling</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

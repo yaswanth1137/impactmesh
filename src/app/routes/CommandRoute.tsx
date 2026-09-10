@@ -9,6 +9,9 @@ import { DecisionOptionList } from '../../components/decisions/DecisionOptionLis
 import { RecommendationCard } from '../../components/decisions/RecommendationCard.tsx';
 import { BusinessCourse } from '../../components/course/BusinessCourse.tsx';
 import { LiveEventStream } from '../../components/decisions/LiveEventStream.tsx';
+import { CausalChain } from '../../components/editorial/CausalChain.tsx';
+import { AnalysisQualityCard } from '../../components/editorial/AnalysisQualityCard.tsx';
+import { OutcomeStrip } from '../../components/editorial/OutcomeStrip.tsx';
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../../lib/realtime/subscription-manager.ts';
 import { signalService } from '../../../server/engines/signal-engine/signal.service.ts';
 import type { Signal } from '../../../server/engines/signal-engine/signal.interface.ts';
@@ -317,45 +320,45 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     MOCK_DECISION_OPTIONS[0];
 
   return (
-    <div className="space-y-6 pb-16 max-w-6xl mx-auto">
-      {/* 0. Realtime Link Status Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-[#101419] border border-[#2A333B] text-xs font-mono shadow-sm">
+    <div className="space-y-6 pb-20 max-w-6xl mx-auto">
+      {/* 0. Realtime Link Status Bar (Light Theme) */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 bg-[#FAF8F1] border border-[#DDD5C5] text-xs font-mono shadow-2xs rounded-xs">
         <div className="flex items-center gap-2">
           <span
             className={`w-2 h-2 rounded-full ${
               connectionState === 'CONNECTED'
-                ? 'bg-[#4ADE80] animate-pulse'
+                ? 'bg-[#5B8D70] animate-pulse'
                 : connectionState === 'CONNECTING'
-                ? 'bg-[#E5A93C] animate-ping'
-                : 'bg-[#F87171]'
+                ? 'bg-[#C89638] animate-ping'
+                : 'bg-[#C86150]'
             }`}
           />
-          <span className="text-[#A9ADA8]">REALTIME MESH:</span>
+          <span className="text-[#718894]">EVENT MESH:</span>
           <span
-            className={`font-semibold ${
+            className={`font-bold ${
               connectionState === 'CONNECTED'
-                ? 'text-[#4ADE80]'
+                ? 'text-[#2D5A40]'
                 : connectionState === 'CONNECTING'
-                ? 'text-[#E5A93C]'
-                : 'text-[#F87171]'
+                ? 'text-[#8B651B]'
+                : 'text-[#C86150]'
             }`}
           >
             {connectionState}
           </span>
-          <span className="text-[#6C727A] hidden sm:inline">|</span>
-          <span className="text-[#6C727A] hidden sm:inline">ROLE:</span>
-          <span className="text-[#D6A84F] font-bold hidden sm:inline">CEO / COMMAND CENTER (FULL ACCESS)</span>
+          <span className="text-[#DDD5C5] hidden sm:inline">|</span>
+          <span className="text-[#718894] hidden sm:inline">PERSPECTIVE:</span>
+          <span className="text-[#C89638] font-bold hidden sm:inline">EXECUTIVE DECISION DESK</span>
         </div>
-        <div className="flex items-center gap-3 text-[11px] text-[#A9ADA8]">
-          <span>OPS SYNC: <strong className="text-[#E8E4D8]">{operationalMetrics.productionCapacity}% CAP / {operationalMetrics.inventoryUnits ?? 860}U</strong></span>
+        <div className="flex items-center gap-3 text-[11px] text-[#576560]">
+          <span>OPS SYNC: <strong className="text-[#18201D]">{operationalMetrics.productionCapacity}% CAP / {operationalMetrics.inventoryUnits ?? 860}U</strong></span>
           {operationalMetrics.lastUpdatedTime && (
-            <span className="text-[#6C727A]">({operationalMetrics.lastUpdatedTime})</span>
+            <span className="text-[#718894]">({operationalMetrics.lastUpdatedTime})</span>
           )}
         </div>
       </div>
 
-      {/* 1. DECISION DESK: Primary executive entry point ("WHAT NEEDS MY ATTENTION?") */}
-      <section>
+      {/* 1. STEP 01 // WHAT NEEDS YOUR ATTENTION? */}
+      <section id="decision-desk-section">
         <DecisionDesk
           signals={filteredSignals}
           activeRole={activeRole}
@@ -370,33 +373,80 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 2. DECISION ALERT: Top executive banner immediately below desk */}
-      <section>
+      {/* 2. STEP 02 // DECISION INTRODUCTION */}
+      <section id="decision-alert-section">
         <DecisionAlert
           department={operationalMetrics.productionCapacity <= 70 ? 'OPERATIONS' : 'FINANCE'}
           actionTitle={
             (operationalMetrics.inventoryUnits ?? 1240) < 1000
-              ? `Operations update: Inventory reduced`
+              ? 'OPERATIONS UPDATE: INVENTORY DEFICIT REQUIRES ACTION'
               : operationalMetrics.productionCapacity <= 70
-              ? 'Operations update: Production capacity reduced'
-              : 'Budget reduced'
+              ? 'OPERATIONS UPDATE: PRODUCTION CAPACITY REDUCED'
+              : 'A BUDGET CHANGE MAY AFFECT A CUSTOMER COMMITMENT'
           }
           changeDetail={
             (operationalMetrics.inventoryUnits ?? 1240) < 1000
-              ? `${operationalMetrics.previousInventoryUnits ?? 1240} → ${operationalMetrics.inventoryUnits ?? 860} units`
+              ? `Safety buffer fell from ${operationalMetrics.previousInventoryUnits ?? 1240} to ${operationalMetrics.inventoryUnits ?? 860} units.`
               : operationalMetrics.productionCapacity <= 70
-              ? `${operationalMetrics.previousProductionCapacity ?? 100}% → ${operationalMetrics.productionCapacity}% (${operationalMetrics.capacityHours}h)`
-              : '₹18L → ₹11L'
+              ? `Production capacity reduced from ${operationalMetrics.previousProductionCapacity ?? 100}% to ${operationalMetrics.productionCapacity}% (${operationalMetrics.capacityHours}h).`
+              : 'Finance reduced the project budget from ₹18L to ₹11L.'
           }
           effectsCount={7}
           capacityDeficitHours={120}
           deliveryExposureDays={8}
           financialExposure="₹50L"
           onReviewImpact={scrollToImpact}
+          onViewDetails={scrollToImpact}
         />
       </section>
 
-      {/* 3. BUSINESS POSITION: Concise executive metric strip with realtime updates */}
+      {/* 3. STEP 03 & STEP 05 // WHY DOES THIS MATTER? & HOW SERIOUS IS IT? */}
+      <section id="impact-map-section">
+        <ImpactSummary
+          event={MOCK_ACTIVE_DECISION_EVENT}
+          impact={MOCK_IMPACT_RESULT}
+        />
+      </section>
+
+      {/* 4. STEP 04 // WHAT DOES THIS AFFECT? (Causal Chain + Progressive Disclosure) */}
+      <section className="p-5 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs space-y-4">
+        <div className="flex items-center justify-between pb-2 border-b border-[#DDD5C5]">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
+              STEP 04 // DOWNSTREAM EFFECTS
+            </span>
+            <span className="text-[#718894]">/</span>
+            <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
+              WHAT DOES THIS AFFECT?
+            </h3>
+          </div>
+          <span className="font-mono text-xs text-[#576560]">
+            5 LINKED STATIONS
+          </span>
+        </div>
+
+        {/* Simplified 5-Step Causal Chain */}
+        <CausalChain
+          showFullGraph={showFullGraph}
+          onToggleFullGraph={() => setShowFullGraph((prev) => !prev)}
+        />
+
+        {/* Progressive Disclosure: Advanced Full Impact Map */}
+        {showFullGraph && (
+          <div className="pt-2 animate-in fade-in">
+            <ImpactMap
+              entities={MOCK_ENTITIES}
+              dependencies={MOCK_DEPENDENCIES}
+              affectedEntityIds={affectedEntityIds}
+              isAnalyzing={isAnalyzing}
+              isSimulatingCascade={isSimulatingCascade}
+              onTriggerSimulation={handleTriggerSimulation}
+            />
+          </div>
+        )}
+      </section>
+
+      {/* 5. ORGANIZATIONAL POSITION (Business Health & Capacity Gauges) */}
       <section>
         <BusinessPositionStrip
           isSimulatingCascade={isSimulatingCascade}
@@ -405,29 +455,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 4. IMPACT SUMMARY: What changed, affected, at risk, financial exposure */}
-      <section id="impact-map-section">
-        <ImpactSummary
-          event={MOCK_ACTIVE_DECISION_EVENT}
-          impact={MOCK_IMPACT_RESULT}
-        />
-      </section>
-
-      {/* 5. IMPACT MAP: What does this decision affect? (Progressive Disclosure) */}
-      {showFullGraph && (
-        <section>
-          <ImpactMap
-            entities={MOCK_ENTITIES}
-            dependencies={MOCK_DEPENDENCIES}
-            affectedEntityIds={affectedEntityIds}
-            isAnalyzing={isAnalyzing}
-            isSimulatingCascade={isSimulatingCascade}
-            onTriggerSimulation={handleTriggerSimulation}
-          />
-        </section>
-      )}
-
-      {/* 6. DECISION ALTERNATIVES: What can we do? */}
+      {/* 6. STEP 06 // WHAT CAN WE DO? (Candidate Alternatives) */}
       <section>
         <DecisionOptionList
           options={MOCK_DECISION_OPTIONS}
@@ -436,7 +464,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 7. RECOMMENDED COURSE: Visually dominant recommendation card */}
+      {/* 7. STEP 07 // SYSTEM VIEW (Recommended Course) */}
       <section>
         <RecommendationCard
           recommendation={MOCK_RECOMMENDATION}
@@ -446,12 +474,30 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 8. BUSINESS COURSE: Secondary organizational trajectory */}
+      {/* 8. STEP 09 // CONFIDENCE & TRUST (Analysis Quality) */}
+      <section>
+        <AnalysisQualityCard
+          quality="GOOD"
+          dataCoverage={92}
+          dependencyCoverage={87}
+          constraintCoverage={100}
+        />
+      </section>
+
+      {/* 9. STEP 11 // WHAT ACTUALLY HAPPENED? (Closed-Loop Outcome) */}
+      <section>
+        <OutcomeStrip
+          decisionTitle={topOption.title}
+          outcomeStatus="DECISION COMPLETED // CLOSED-LOOP VERIFIED"
+        />
+      </section>
+
+      {/* 10. HISTORICAL TRAJECTORY */}
       <section>
         <BusinessCourse />
       </section>
 
-      {/* 9. LIVE EVENT LOG: Secondary auditability stream */}
+      {/* 11. RECENT OPERATIONAL ACTIVITY STREAM */}
       <section>
         <LiveEventStream
           events={events}
@@ -459,7 +505,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 10. HUMAN OVERRIDE MODAL: Mandatory human governance before FlowTrace dispatch */}
+      {/* 12. STEP 08 // YOUR DECISION & EXECUTION (Human Authority Modal) */}
       <HumanOverrideModal
         isOpen={isOverrideModalOpen}
         onClose={() => setIsOverrideModalOpen(false)}
