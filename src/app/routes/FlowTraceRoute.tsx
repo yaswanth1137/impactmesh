@@ -28,7 +28,44 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
   const [isExecutingAll, setIsExecutingAll] = useState(false);
   const [showGraph, setShowGraph] = useState(true);
 
-  const workflow = useMemo(() => executionPlanToFlowTraceWorkflow(plan), [plan]);
+  const workflow = useMemo(() => {
+    if (!plan) return { id: 'empty', name: 'Empty', version: '1.0', nodes: [], edges: [], telemetry: [], healthScore: 100 };
+    try {
+      return executionPlanToFlowTraceWorkflow(plan);
+    } catch (e) {
+      console.error('Workflow mapping error:', e);
+      return { id: 'error', name: 'Error', version: '1.0', nodes: [], edges: [], telemetry: [], healthScore: 0 };
+    }
+  }, [plan]);
+
+  if (!plan) {
+    return (
+      <div className="space-y-6 pb-12 max-w-5xl mx-auto">
+        <div className="flex items-center justify-between">
+          <PixelButton variant="secondary" size="sm" onClick={onBackToCommand} icon={<PixelIcon name="helm" size={12} />}>
+            [ ← RETURN TO COMMAND DECK ]
+          </PixelButton>
+        </div>
+        <div className="p-8 text-center bg-[#101419] border border-[#2A333B] max-w-md mx-auto my-12 space-y-4">
+          <div className="font-pixel text-xs text-[#D05A4A] tracking-wider uppercase">
+            FLOWTRACE UNAVAILABLE
+          </div>
+          <p className="font-mono text-xs text-[#AFCBC2]">
+            Unable to initialize execution interface.
+          </p>
+          <PixelButton
+            variant="primary"
+            onClick={() => {
+              const fresh = flowTraceAdapter.resetPlan(CANONICAL_EXECUTION_PLAN_ID);
+              setPlan({ ...fresh });
+            }}
+          >
+            [ RETRY ]
+          </PixelButton>
+        </div>
+      </div>
+    );
+  }
 
   const isApproved = plan.approvedAt !== null;
   const isCompleted = plan.status === 'completed';

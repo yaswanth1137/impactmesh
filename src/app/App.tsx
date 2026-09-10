@@ -14,9 +14,43 @@ import { SimulatorRoute } from './routes/SimulatorRoute.tsx';
 
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../lib/realtime/subscription-manager.ts';
 
+const pathToRoute = (pathname: string): NavRoute => {
+  const clean = pathname.replace(/^\//, '').toLowerCase().split('/')[0];
+  if (clean === 'sales') return 'sales';
+  if (clean === 'product') return 'product';
+  if (clean === 'operations' || clean === 'ops') return 'operations';
+  if (clean === 'finance') return 'finance';
+  if (clean === 'flowtrace') return 'flowtrace';
+  if (clean === 'simulator') return 'simulator';
+  return 'command';
+};
+
 export function App() {
-  const [currentRoute, setCurrentRoute] = useState<NavRoute>('command');
+  const [currentRoute, setCurrentRouteState] = useState<NavRoute>(() => {
+    if (typeof window !== 'undefined') {
+      return pathToRoute(window.location.pathname);
+    }
+    return 'command';
+  });
   const [realtimeState, setRealtimeState] = useState<RealtimeConnectionState>('CONNECTED');
+
+  const setCurrentRoute = (route: NavRoute) => {
+    setCurrentRouteState(route);
+    if (typeof window !== 'undefined') {
+      const targetPath = route === 'command' ? '/command' : `/${route}`;
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({}, '', targetPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRouteState(pathToRoute(window.location.pathname));
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     realtimeSubscriptionManager.initializeChannels();
