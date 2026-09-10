@@ -131,6 +131,71 @@ describe('IMPACTMESH Connector Hub', () => {
       }
     });
 
+    it('STRICT NUMERIC: rejects standalone { amount: "5000000" } without coercion', () => {
+      expect(() => {
+        salesforceConnector.normalize({ amount: '5000000' } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        salesforceConnector.normalize({ amount: '5000000' } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('INVALID_NUMERIC_VALUE');
+        expect(error.field).toBe('amount');
+      }
+    });
+
+    it('rejects Salesforce payload missing required id/Id', () => {
+      expect(() => {
+        salesforceConnector.normalize({
+          stage: 'Closed Won',
+          amount: 5000000,
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        salesforceConnector.normalize({ stage: 'Closed Won', amount: 5000000 } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('MISSING_FIELD');
+        expect(error.field).toBe('id');
+      }
+    });
+
+    it('rejects Salesforce payload missing required stage/StageName', () => {
+      expect(() => {
+        salesforceConnector.normalize({
+          id: '006-demo-001',
+          amount: 5000000,
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        salesforceConnector.normalize({ id: '006-demo-001', amount: 5000000 } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('MISSING_FIELD');
+        expect(error.field).toBe('stage');
+      }
+    });
+
+    it('rejects Salesforce payload missing required amount/Amount', () => {
+      expect(() => {
+        salesforceConnector.normalize({
+          id: '006-demo-001',
+          stage: 'Closed Won',
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        salesforceConnector.normalize({ id: '006-demo-001', stage: 'Closed Won' } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('MISSING_FIELD');
+        expect(error.field).toBe('amount');
+      }
+    });
+
     it('rejects malformed or empty Salesforce payload', () => {
       expect(() => {
         salesforceConnector.normalize(mockSalesforceOpportunityMalformed as any);
@@ -227,6 +292,44 @@ describe('IMPACTMESH Connector Hub', () => {
         n8nConnector.normalize(mockN8nMalformed as any);
       }).toThrow(NormalizationError);
     });
+
+    it('rejects n8n payload missing identifier', () => {
+      expect(() => {
+        n8nConnector.normalize({
+          event: 'deal.accepted',
+          value: 5000000,
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        n8nConnector.normalize({ event: 'deal.accepted', value: 5000000 } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('MISSING_FIELD');
+        expect(error.field).toBe('id');
+      }
+    });
+
+    it('rejects unsupported n8n event type explicitly', () => {
+      expect(() => {
+        n8nConnector.normalize({
+          event: 'invoice.generated',
+          id: 'n8n-invoice-01',
+          value: 100000,
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        n8nConnector.normalize({
+          event: 'invoice.generated',
+          id: 'n8n-invoice-01',
+          value: 100000,
+        } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('UNSUPPORTED_EVENT_TYPE');
+      }
+    });
   });
 
   // ===========================================================================
@@ -302,6 +405,95 @@ describe('IMPACTMESH Connector Hub', () => {
         genericWebhookConnector.normalize(mockGenericWebhookMalformed as any);
       }).toThrow(NormalizationError);
     });
+
+    it('rejects generic webhook missing source', () => {
+      expect(() => {
+        genericWebhookConnector.normalize({
+          eventType: 'deal_accepted',
+          externalId: 'ext-01',
+          payload: { final_value: 5000000 },
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        genericWebhookConnector.normalize({
+          eventType: 'deal_accepted',
+          externalId: 'ext-01',
+          payload: { final_value: 5000000 },
+        } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('MISSING_FIELD');
+        expect(error.field).toBe('source');
+      }
+    });
+
+    it('rejects generic webhook missing eventType', () => {
+      expect(() => {
+        genericWebhookConnector.normalize({
+          source: 'external-crm',
+          externalId: 'ext-01',
+          payload: { final_value: 5000000 },
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        genericWebhookConnector.normalize({
+          source: 'external-crm',
+          externalId: 'ext-01',
+          payload: { final_value: 5000000 },
+        } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('MISSING_FIELD');
+        expect(error.field).toBe('eventType');
+      }
+    });
+
+    it('rejects generic webhook missing externalId', () => {
+      expect(() => {
+        genericWebhookConnector.normalize({
+          source: 'external-crm',
+          eventType: 'deal_accepted',
+          payload: { final_value: 5000000 },
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        genericWebhookConnector.normalize({
+          source: 'external-crm',
+          eventType: 'deal_accepted',
+          payload: { final_value: 5000000 },
+        } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('MISSING_FIELD');
+        expect(error.field).toBe('externalId');
+      }
+    });
+
+    it('rejects generic webhook with unsupported eventType', () => {
+      expect(() => {
+        genericWebhookConnector.normalize({
+          source: 'external-crm',
+          eventType: 'unsupported_event_xyz',
+          externalId: 'ext-01',
+          payload: { some_data: true },
+        } as any);
+      }).toThrow(NormalizationError);
+
+      try {
+        genericWebhookConnector.normalize({
+          source: 'external-crm',
+          eventType: 'unsupported_event_xyz',
+          externalId: 'ext-01',
+          payload: { some_data: true },
+        } as any);
+      } catch (err) {
+        const error = err as NormalizationError;
+        expect(error.code).toBe('UNSUPPORTED_EVENT_TYPE');
+      }
+    });
   });
 
   // ===========================================================================
@@ -351,6 +543,27 @@ describe('IMPACTMESH Connector Hub', () => {
       expect(registry.findHandler(mockN8nDealAccepted)?.id).toBe('n8n');
       expect(registry.findHandler(mockGenericWebhookDealAccepted)?.id).toBe('generic-webhook');
       expect(registry.findHandler({ unknown: true })).toBeUndefined();
+    });
+
+    it('supports has method and handles duplicate registrations cleanly', () => {
+      registry.register(salesforceConnector);
+      expect(registry.has('salesforce')).toBe(true);
+      expect(registry.has('unknown')).toBe(false);
+
+      // Re-registering existing connector updates cleanly
+      registry.register(salesforceConnector);
+      expect(registry.size()).toBe(1);
+      expect(registry.get('salesforce')).toBe(salesforceConnector);
+    });
+
+    it('returns false when unregistering a non-existent connector ID', () => {
+      expect(registry.unregister('does-not-exist')).toBe(false);
+    });
+
+    it('throws when registering an invalid connector without ID', () => {
+      expect(() => {
+        registry.register({} as any);
+      }).toThrow(/Cannot register invalid connector/);
     });
   });
 
@@ -477,6 +690,69 @@ describe('IMPACTMESH Connector Hub', () => {
 
       if (response.body.success) {
         expect(response.body.nextState.metrics.available_budget).toBe(1100000);
+      }
+    });
+
+    it('rejects stale connector event in pipeline with 409 conflict without mutating state', async () => {
+      const initialState = createInitialState(); // available_budget is 1800000
+
+      // External event expected budget was 2500000 (mismatches current 1800000)
+      const staleExternalPayload = {
+        source: 'sap-erp-gateway',
+        eventType: 'budget_changed',
+        externalId: 'erp-stale-001',
+        payload: {
+          previous_budget: 2500000, // Stale!
+          new_budget: 1500000,
+        },
+      };
+
+      const [staleEvent] = genericWebhookConnector.normalize(staleExternalPayload, {
+        organizationId: initialState.organization_id,
+      });
+
+      const response = await handleEventIngestion({
+        event: staleEvent,
+        currentState: initialState,
+      });
+
+      expect(response.statusCode).toBe(409);
+      expect(response.body.success).toBe(false);
+      if (!response.body.success) {
+        expect(response.body.code).toBe('STALE_STATE');
+      }
+    });
+
+    it('handles duplicate connector event idempotently through pipeline without double mutation', async () => {
+      const initialState = createInitialState();
+
+      const [dealEvent] = salesforceConnector.normalize(mockSalesforceOpportunityClosedWon, {
+        organizationId: initialState.organization_id,
+      });
+
+      // First ingestion
+      const res1 = await handleEventIngestion({
+        event: dealEvent,
+        currentState: initialState,
+      });
+      expect(res1.statusCode).toBe(200);
+      expect(res1.body.success).toBe(true);
+      if (res1.body.success) {
+        expect(res1.body.idempotent).toBe(false);
+        expect(res1.body.nextState.metrics.revenue_pipeline).toBe(5000000);
+      }
+
+      // Second ingestion with same event ID
+      const res2 = await handleEventIngestion({
+        event: dealEvent,
+        currentState: initialState,
+      });
+      expect(res2.statusCode).toBe(200);
+      expect(res2.body.success).toBe(true);
+      if (res2.body.success) {
+        expect(res2.body.idempotent).toBe(true);
+        // Revenue pipeline was not doubled!
+        expect(res2.body.nextState.metrics.revenue_pipeline).toBe(5000000);
       }
     });
   });

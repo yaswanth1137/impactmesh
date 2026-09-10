@@ -119,6 +119,20 @@ export class SalesforceConnector implements Connector<SalesforceOpportunityPaylo
       });
     }
 
+    const rawAmount = input.amount !== undefined ? input.amount : input.Amount;
+    // CRITICAL: Reject string coercion! "5000000" must be rejected, not silently parsed.
+    if (typeof rawAmount === 'string') {
+      throw new NormalizationError(
+        `Salesforce amount must be a number, not a string (received: "${rawAmount}"). Coercion is forbidden.`,
+        {
+          code: 'INVALID_NUMERIC_VALUE',
+          connectorId: this.id,
+          field: 'amount',
+          received: rawAmount,
+        }
+      );
+    }
+
     const rawId = input.id ?? input.Id;
     if (!rawId || typeof rawId !== 'string' || rawId.trim() === '') {
       throw new NormalizationError('Salesforce Opportunity missing required field: id/Id.', {
@@ -138,26 +152,12 @@ export class SalesforceConnector implements Connector<SalesforceOpportunityPaylo
       });
     }
 
-    const rawAmount = input.amount !== undefined ? input.amount : input.Amount;
     if (rawAmount === undefined || rawAmount === null) {
       throw new NormalizationError('Salesforce Opportunity missing required field: amount/Amount.', {
         code: 'MISSING_FIELD',
         connectorId: this.id,
         field: 'amount',
       });
-    }
-
-    // CRITICAL: Reject string coercion! "5000000" must be rejected, not silently parsed.
-    if (typeof rawAmount === 'string') {
-      throw new NormalizationError(
-        `Salesforce amount must be a number, not a string (received: "${rawAmount}"). Coercion is forbidden.`,
-        {
-          code: 'INVALID_NUMERIC_VALUE',
-          connectorId: this.id,
-          field: 'amount',
-          received: rawAmount,
-        }
-      );
     }
 
     if (typeof rawAmount !== 'number' || isNaN(rawAmount) || !isFinite(rawAmount) || rawAmount < 0) {

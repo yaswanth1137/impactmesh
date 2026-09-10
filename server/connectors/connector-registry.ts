@@ -26,6 +26,13 @@ export class ConnectorRegistry {
   }
 
   /**
+   * Checks if a connector is registered with the given ID.
+   */
+  public has(id: string): boolean {
+    return this.connectors.has(id);
+  }
+
+  /**
    * Retrieves a registered connector by its unique identifier.
    */
   public get(id: string): Connector | undefined {
