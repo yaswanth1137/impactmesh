@@ -275,6 +275,15 @@ export type EventPayloadMap = {
 
 import type { ExecutionContext } from './execution.ts';
 
+export interface SourceMetadata {
+  source: string;
+  externalId?: string;
+  eventType?: string;
+  receivedAt?: string;
+  rawPayloadHash?: string;
+  [key: string]: unknown;
+}
+
 export interface DecisionEvent<K extends ImpactMeshEventType = ImpactMeshEventType> {
   id: string;
   organization_id: string;
@@ -288,4 +297,8 @@ export interface DecisionEvent<K extends ImpactMeshEventType = ImpactMeshEventTy
   // Phase 3 FlowTrace provenance tracking
   execution_context?: ExecutionContext;
   executionContext?: ExecutionContext;
+
+  // Connector Hub provenance tracking
+  source_metadata?: SourceMetadata;
 }
+
