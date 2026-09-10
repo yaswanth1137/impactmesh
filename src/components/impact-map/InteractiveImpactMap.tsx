@@ -178,13 +178,17 @@ const FlowCanvas: React.FC<{
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
 
   // Initial nodes and edges
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(() =>
-    buildFlowNodes(entities, showFullMapDefault, 'all', null, affectedEntityIds, isSimulatingCascade)
+  const initialNodes = useMemo(
+    () => buildFlowNodes(entities, showFullMapDefault, 'all', null, affectedEntityIds, isSimulatingCascade),
+    [entities, showFullMapDefault, affectedEntityIds, isSimulatingCascade]
   );
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(() => {
-    const initialNodes = buildFlowNodes(entities, showFullMapDefault, 'all', null, affectedEntityIds, isSimulatingCascade);
-    return buildFlowEdges(dependencies, showFullMapDefault, new Set(initialNodes.map((n) => n.id)), isSimulatingCascade);
-  });
+  const initialEdges = useMemo(
+    () => buildFlowEdges(dependencies, showFullMapDefault, new Set(initialNodes.map((n) => n.id)), isSimulatingCascade),
+    [dependencies, showFullMapDefault, initialNodes, isSimulatingCascade]
+  );
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
 
   // Re-synchronize when display parameters change
   useEffect(() => {
