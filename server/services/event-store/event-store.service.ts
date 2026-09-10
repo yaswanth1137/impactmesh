@@ -118,6 +118,15 @@ export class EventStore implements IEventStore {
     this.eventsByOrg.clear();
     this.cachedResults.clear();
   }
+
+  public clearOrg(organizationId: string): void {
+    const orgEvents = this.eventsByOrg.get(organizationId) || [];
+    for (const evt of orgEvents) {
+      this.eventsById.delete(evt.id);
+      this.cachedResults.delete(evt.id);
+    }
+    this.eventsByOrg.delete(organizationId);
+  }
 }
 
 export const eventStore = new EventStore();

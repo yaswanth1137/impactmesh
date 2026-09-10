@@ -24,4 +24,5 @@ export interface IEventStore {
   getCachedResult(eventId: string): StateTransitionResult | null;
   cacheResult(eventId: string, result: StateTransitionResult): void;
   clear(): void;
+  clearOrg(organizationId: string): void;
 }

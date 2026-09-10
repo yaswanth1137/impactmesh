@@ -322,6 +322,19 @@ export class RealtimeSubscriptionManager {
   }
 
   /**
+   * Emits a state update to all local state listeners.
+   */
+  public emitStateUpdate(state: BusinessState): void {
+    this.stateChangeListeners.forEach((listener) => {
+      try {
+        listener(state);
+      } catch (err) {
+        console.error('[RealtimeManager] Error in state listener:', err);
+      }
+    });
+  }
+
+  /**
    * Subscribe to deterministic Impact Result computations.
    */
   public onImpactResult(callback: EventCallback<ImpactResult>): UnsubscribeFn {
