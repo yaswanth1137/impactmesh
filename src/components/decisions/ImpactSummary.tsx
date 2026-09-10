@@ -1,3 +1,13 @@
+/**
+ * IMPACTMESH - Impact Summary Component
+ * Clearly answers:
+ * - WHAT CHANGED?
+ * - WHAT WAS AFFECTED?
+ * - WHAT IS AT RISK?
+ * - FINANCIAL EXPOSURE / WHY IT MATTERS
+ * In non-technical executive language.
+ */
+
 import React from 'react';
 import { PixelBadge } from '../pixel/PixelBadge.tsx';
 import { PixelIcon } from '../pixel/PixelIcon.tsx';
@@ -16,76 +26,95 @@ export const ImpactSummary: React.FC<ImpactSummaryProps> = ({
   className = '',
 }) => {
   const affectedCount = impact ? impact.affected_entities.length : 7;
-  const cascadeDepth = impact ? impact.cascade_depth : 4;
   const deptName = event ? event.department.toUpperCase() : 'FINANCE';
 
   return (
     <div
-      className={`p-4 bg-[#141A20] border border-[#2A333B] shadow-sm select-none ${className}`}
+      id="impact-summary-card"
+      className={`p-4 md:p-5 bg-[#141A20] border border-[#2A333B] shadow-sm select-none ${className}`}
     >
-      {/* Alert Header */}
-      <div className="flex items-center justify-between gap-2 border-b border-[#2A333B] pb-2 mb-3">
+      {/* Executive Header */}
+      <div className="flex items-center justify-between gap-2 border-b border-[#2A333B] pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <PixelIcon name="hazard" size={15} />
-          <span className="font-pixel text-xs text-[#E8E4D8] uppercase tracking-wider">
-            DECISION IMPACT DETECTED
+          <PixelIcon name="hazard" size={16} />
+          <span className="font-pixel text-xs md:text-sm text-[#E8E4D8] uppercase tracking-wider">
+            IMPACT ASSESSMENT // EXECUTIVE SUMMARY
           </span>
         </div>
         <div className="flex items-center gap-2">
           <PixelBadge variant="danger" size="sm">
-            CRITICAL IMPACT
+            CRITICAL EXPOSURE
           </PixelBadge>
-          <span className="font-mono text-[9px] text-[#66727C]">
-            {cascadeDepth} DEPENDENCY HOPS
+          <span className="font-mono text-[10px] text-[#A9ADA8]">
+            4 DEPARTMENTS
           </span>
         </div>
       </div>
 
-      {/* Primary Trigger Readout */}
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <div>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-[#66727C]">
-            {deptName} DECISION
-          </span>
-          <div className="font-mono font-bold text-sm text-[#E8E4D8] mt-0.5">
-            BUDGET REDUCED
+      {/* 4 Clear Executive Sections */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* 1. WHAT CHANGED */}
+        <div className="p-3.5 bg-[#101419] border border-[#2A333B] flex flex-col justify-between">
+          <div>
+            <div className="text-[10px] font-mono text-[#A9ADA8] uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-[#D6A84F]" />
+              <span>WHAT CHANGED</span>
+            </div>
+            <div className="font-sans font-bold text-base text-[#F4F1EA] mt-1.5">
+              Budget reduced by ₹7.0L
+            </div>
+          </div>
+          <div className="font-mono text-xs text-[#D6A84F] mt-2 pt-2 border-t border-[#1C242C]">
+            ₹18.0L → ₹11.0L ({deptName})
           </div>
         </div>
 
-        <div className="text-right font-mono">
-          <span className="text-[10px] text-[#66727C] block uppercase">CAPITAL CHANGE</span>
-          <div className="text-sm font-bold text-[#D05A4A]">
-            ₹18.0L → ₹11.0L (-₹7.0L)
+        {/* 2. WHAT WAS AFFECTED */}
+        <div className="p-3.5 bg-[#101419] border border-[#2A333B] flex flex-col justify-between">
+          <div>
+            <div className="text-[10px] font-mono text-[#A9ADA8] uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-[#D6A84F]" />
+              <span>AFFECTED</span>
+            </div>
+            <div className="font-sans font-bold text-base text-[#F4F1EA] mt-1.5">
+              {affectedCount} operational entities
+            </div>
+          </div>
+          <div className="font-sans text-xs text-[#A9ADA8] mt-2 pt-2 border-t border-[#1C242C]">
+            Across Sales, Product, Ops, Finance
           </div>
         </div>
-      </div>
 
-      {/* Impact Downstream Summary Readouts */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3 pt-3 border-t border-[#2A333B]">
-        <div className="p-2.5 bg-[#101419] border border-[#1C242C]">
-          <span className="font-mono text-[9px] text-[#66727C] uppercase block">CAPACITY LOAD</span>
-          <span className="font-mono font-bold text-xs text-[#D05A4A] mt-0.5 block">
-            120h Deficit (140%)
-          </span>
-          <span className="font-sans text-[10px] text-[#A9ADA8]">Overtime required</span>
+        {/* 3. WHAT IS AT RISK */}
+        <div className="p-3.5 bg-[#101419] border border-[#2A333B] flex flex-col justify-between">
+          <div>
+            <div className="text-[10px] font-mono text-[#A9ADA8] uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-[#D05A4A]" />
+              <span>AT RISK</span>
+            </div>
+            <div className="font-sans font-bold text-base text-[#D05A4A] mt-1.5">
+              Capacity & Delivery SLA
+            </div>
+          </div>
+          <div className="font-mono text-xs text-[#CDC9BE] mt-2 pt-2 border-t border-[#1C242C]">
+            120h deficit • +8 days slippage
+          </div>
         </div>
 
-        <div className="p-2.5 bg-[#101419] border border-[#1C242C]">
-          <span className="font-mono text-[9px] text-[#66727C] uppercase block">DELIVERY RISK</span>
-          <span className="font-mono font-bold text-xs text-[#D05A4A] mt-0.5 block">
-            +8 Days Slippage
-          </span>
-          <span className="font-sans text-[10px] text-[#A9ADA8]">SLA contract pressure</span>
-        </div>
-
-        <div className="p-2.5 bg-[#101419] border border-[#1C242C]">
-          <span className="font-mono text-[9px] text-[#66727C] uppercase block">CUSTOMER EXPOSURE</span>
-          <span className="font-mono font-bold text-xs text-[#D6A84F] mt-0.5 block">
-            ₹50.0L Exposure
-          </span>
-          <span className="font-sans text-[10px] text-[#A9ADA8]">
-            {affectedCount} downstream entities
-          </span>
+        {/* 4. FINANCIAL EXPOSURE */}
+        <div className="p-3.5 bg-[#101419] border border-[#2A333B] flex flex-col justify-between">
+          <div>
+            <div className="text-[10px] font-mono text-[#A9ADA8] uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-[#59A66A]" />
+              <span>FINANCIAL EXPOSURE</span>
+            </div>
+            <div className="font-sans font-bold text-base text-[#59A66A] mt-1.5">
+              ₹50.0L Opportunity
+            </div>
+          </div>
+          <div className="font-sans text-xs text-[#A9ADA8] mt-2 pt-2 border-t border-[#1C242C]">
+            Apex Enterprise contract on critical path
+          </div>
         </div>
       </div>
     </div>

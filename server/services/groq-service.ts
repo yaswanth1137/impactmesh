@@ -179,9 +179,7 @@ Analyze this evidence and provide strategic synthesis and recommended course of 
       perspective,
       synthesis: {
         executive_summary: `[Phase 1 Synthesis] Evaluation for ${evidence.triggeringEvent.event_type} through ${perspective.toUpperCase()} policy lens.`,
-        strategic_rationale: topOption
-          ? topOption.rationale
-          : 'Deterministic evaluation shows sustainable path with proactive scope management.',
+        strategic_rationale: topOption?.rationale || topOption?.description || 'Deterministic evaluation shows sustainable path with proactive scope management.',
         tradeoff_assessment: `Identified ${evidence.affectedEntities.length} affected entities across ${evidence.deterministicImpact.cascade_depth} dependency tiers.`,
         counterfactual_analysis:
           'Failing to resolve this dependency creates a cascading delivery delay across dependent customer commitments.',

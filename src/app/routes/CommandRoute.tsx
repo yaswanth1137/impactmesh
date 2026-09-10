@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { DecisionAlert } from '../../components/decisions/DecisionAlert.tsx';
 import { BusinessPositionStrip } from '../../components/business/BusinessPositionStrip.tsx';
-import { ImpactMap } from '../../components/impact-map/ImpactMap.tsx';
 import { ImpactSummary } from '../../components/decisions/ImpactSummary.tsx';
-import { RecommendationCard } from '../../components/decisions/RecommendationCard.tsx';
+import { ImpactMap } from '../../components/impact-map/ImpactMap.tsx';
 import { DecisionOptionList } from '../../components/decisions/DecisionOptionList.tsx';
-import { LiveEventStream } from '../../components/decisions/LiveEventStream.tsx';
+import { RecommendationCard } from '../../components/decisions/RecommendationCard.tsx';
 import { BusinessCourse } from '../../components/course/BusinessCourse.tsx';
-import { CaptainLog } from '../../components/decisions/CaptainLog.tsx';
+import { LiveEventStream } from '../../components/decisions/LiveEventStream.tsx';
 import { realtimeSubscriptionManager } from '../../lib/realtime/subscription-manager.ts';
 import type { DecisionEvent } from '../../types/events.ts';
 import {
@@ -28,12 +28,6 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [selectedOptionId, setSelectedOptionId] = useState<string>('opt-scope-reduction');
   const [events, setEvents] = useState<any[]>(MOCK_EVENT_LOG);
-  const [captainHeadline, setCaptainHeadline] = useState<string>(
-    'NEW DECISION REQUIRES REVIEW // BUDGET CONTRACTION'
-  );
-  const [captainEntry, setCaptainEntry] = useState<string>(
-    'Finance reduced available capital allocation from ₹18.0L to ₹11.0L. The action immediately stresses platform engineering bandwidth and cascades into customer contract deadlines.'
-  );
 
   useEffect(() => {
     const unsubscribe = realtimeSubscriptionManager.onEvent((incomingEvent: DecisionEvent) => {
@@ -60,21 +54,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         const payload = incomingEvent.payload as any;
         const isCut = (payload?.new_budget ?? 0) <= 1100000;
         setIsSimulatingCascade(isCut);
-        setCaptainHeadline(
-          isCut
-            ? 'NEW DECISION DETECTED // BUDGET CONTRACTION (₹18L → ₹11L)'
-            : 'BUDGET RESTORATION DETECTED // CAPITAL STABILIZED (₹18.0L)'
-        );
-        setCaptainEntry(
-          isCut
-            ? 'Finance (Device #4) transmitted capital reduction to ₹11.0L. Downstream cascade stresses 420h committed engineering velocity and risks Apex Global delivery SLA.'
-            : 'Finance (Device #4) restored capital ceiling to ₹18.0L. Baseline contractor allocation reinstated across engineering tracks.'
-        );
       } else if (incomingEvent.event_type === 'deal_accepted') {
-        setCaptainHeadline('COMMERCIAL EXPANSION SEALED // APEX GLOBAL ₹50L');
-        setCaptainEntry(
-          'Sales (Device #1) committed Apex Global annual expansion license. Requires 420h engineering allocation across 3 custom modules.'
-        );
         setIsSimulatingCascade(true);
       }
 
@@ -94,6 +74,13 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     }, 800);
   };
 
+  const scrollToImpact = () => {
+    const el = document.getElementById('impact-map-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const affectedEntityIds = isSimulatingCascade
     ? MOCK_IMPACT_RESULT.affected_entities.map((e) => e.entity_id)
     : [];
@@ -103,14 +90,36 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     MOCK_DECISION_OPTIONS[0];
 
   return (
-    <div className="space-y-5 pb-12 max-w-7xl mx-auto">
-      {/* 1. TOP: Compact Tactical Business Position Strip */}
-      <section className="w-full">
+    <div className="space-y-6 pb-16 max-w-6xl mx-auto">
+      {/* 1. DECISION ALERT: Top executive banner immediately below header */}
+      <section>
+        <DecisionAlert
+          department="FINANCE"
+          actionTitle="Budget reduced"
+          changeDetail="₹18L → ₹11L"
+          effectsCount={7}
+          capacityDeficitHours={120}
+          deliveryExposureDays={8}
+          financialExposure="₹50L"
+          onReviewImpact={scrollToImpact}
+        />
+      </section>
+
+      {/* 2. BUSINESS POSITION: Concise executive 4-metric strip */}
+      <section>
         <BusinessPositionStrip isSimulatingCascade={isSimulatingCascade} />
       </section>
 
-      {/* 2. CENTERPIECE: Impact Map // Business Navigation Chart */}
-      <section className="w-full">
+      {/* 3. IMPACT SUMMARY: What changed, affected, at risk, financial exposure */}
+      <section>
+        <ImpactSummary
+          event={MOCK_ACTIVE_DECISION_EVENT}
+          impact={MOCK_IMPACT_RESULT}
+        />
+      </section>
+
+      {/* 4. IMPACT MAP: What does this decision affect? */}
+      <section id="impact-map-section">
         <ImpactMap
           entities={MOCK_ENTITIES}
           dependencies={MOCK_DEPENDENCIES}
@@ -121,49 +130,36 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 3. DECISION & STRATEGIC REASONING GRID */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column: Captain's Log, Decision Impact, and Ranked Alternatives (7 cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <CaptainLog
-            headline={captainHeadline}
-            entry={captainEntry}
-            summary="7 downstream effects detected across 4 operational tiers."
-            onAction={handleTriggerSimulation}
-            actionLabel={isSimulatingCascade ? '[ RESET SIMULATION ]' : '[ SIMULATE CASCADE ]'}
-          />
-
-          <ImpactSummary
-            event={MOCK_ACTIVE_DECISION_EVENT}
-            impact={MOCK_IMPACT_RESULT}
-          />
-
-          <DecisionOptionList
-            options={MOCK_DECISION_OPTIONS}
-            selectedOptionId={selectedOptionId}
-            onSelectOption={(opt) => setSelectedOptionId(opt.id)}
-          />
-        </div>
-
-        {/* Right Column: Strategic Recommendation & Live Event Stream (5 cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          <RecommendationCard
-            recommendation={MOCK_RECOMMENDATION}
-            topOption={topOption}
-            onPlotRoute={onPlotRoute}
-            onSimulate={handleTriggerSimulation}
-          />
-
-          <LiveEventStream
-            events={events}
-            isAnalyzing={isAnalyzing}
-          />
-        </div>
+      {/* 5. DECISION ALTERNATIVES: What can we do? */}
+      <section>
+        <DecisionOptionList
+          options={MOCK_DECISION_OPTIONS}
+          selectedOptionId={selectedOptionId}
+          onSelectOption={(opt) => setSelectedOptionId(opt.id)}
+        />
       </section>
 
-      {/* 4. HISTORICAL TRAJECTORY: Business Course */}
-      <section className="w-full">
+      {/* 6. RECOMMENDED COURSE: Visually dominant recommendation card */}
+      <section>
+        <RecommendationCard
+          recommendation={MOCK_RECOMMENDATION}
+          topOption={topOption}
+          onPlotRoute={onPlotRoute}
+          onSimulate={handleTriggerSimulation}
+        />
+      </section>
+
+      {/* 7. BUSINESS COURSE: Secondary organizational trajectory */}
+      <section>
         <BusinessCourse />
+      </section>
+
+      {/* 8. LIVE EVENT LOG: Secondary auditability stream */}
+      <section>
+        <LiveEventStream
+          events={events}
+          isAnalyzing={isAnalyzing}
+        />
       </section>
     </div>
   );
