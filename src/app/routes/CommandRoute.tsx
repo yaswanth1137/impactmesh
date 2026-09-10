@@ -7,11 +7,9 @@ import { DecisionOptionList } from '../../components/decisions/DecisionOptionLis
 import { RecommendationCard } from '../../components/decisions/RecommendationCard.tsx';
 import { HumanDecisionPanel } from '../../components/decisions/HumanDecisionPanel.tsx';
 import { ExecutionPlanSection } from '../../components/decisions/ExecutionPlanSection.tsx';
-import { CausalChain } from '../../components/editorial/CausalChain.tsx';
+import { CausalChain, type CausalStep } from '../../components/editorial/CausalChain.tsx';
 import { OutcomeStrip } from '../../components/editorial/OutcomeStrip.tsx';
 import { ScenarioSimulatorModal } from '../../components/simulation/ScenarioSimulatorModal.tsx';
-import { useLiveBusinessSignals } from '../../lib/realtime/useLiveBusinessSignals.ts';
-import { LiveSignalBanner } from '../../components/signals/LiveSignalBanner.tsx';
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../../lib/realtime/subscription-manager.ts';
 import { signalService } from '../../../server/engines/signal-engine/signal.service.ts';
 import type { Signal } from '../../../server/engines/signal-engine/signal.interface.ts';
@@ -40,16 +38,6 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
   const [showFullGraph, setShowFullGraph] = useState<boolean>(false);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState<boolean>(false);
 
-  // Live Business Signal Hook (Realtime event processing and transient emphasis)
-  const {
-    activeSignal,
-    isEmphasized,
-    acknowledgeSignal,
-    dismissSignal,
-    markSignalReviewed,
-    simulateLiveDepartmentUpdate,
-  } = useLiveBusinessSignals();
-
   // Initialize and maintain active signals
   const [signals, setSignals] = useState<Signal[]>(() => {
     const generated = signalService.processState({
@@ -74,6 +62,23 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     return signals[0]?.id || null;
   });
 
+  // Dynamic challenge & operational trigger state (updates in realtime from mobile screens)
+  const [activeChallenge, setActiveChallenge] = useState({
+    department: 'OPERATIONS & SALES',
+    title: 'DELIVERY RISK: ENGINEERING DEMAND EXCEEDS CAPACITY',
+    description:
+      'Sales committed a custom enterprise feature, increasing sprint demand to 420h against 300h available capacity. Milestone delivery is projected to slip by +8 days without intervention.',
+    capacityHours: 300,
+    demandHours: 420,
+    deliveryDaysDelay: 8,
+    financialExposure: '₹50L Contract',
+    severity: 'CRITICAL' as 'NORMAL' | 'TENSION' | 'RISK' | 'CRITICAL',
+  });
+
+  const [latestEvent, setLatestEvent] = useState<DecisionEvent | null>(null);
+  const [recentEvents, setRecentEvents] = useState<DecisionEvent[]>([]);
+  const [showEventFeed, setShowEventFeed] = useState<boolean>(false);
+
   useEffect(() => {
     // Set authenticated user to CEO
     securityPolicyService.setCurrentUser(CEO_USER);
@@ -83,24 +88,73 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
       setConnectionState(state);
     });
 
-    // 2. Realtime event listener
+    // 2. Realtime event listener (actively receives updates broadcasted from mobile phones)
     const unsubscribe = realtimeSubscriptionManager.onEvent((incomingEvent: DecisionEvent) => {
       setIsAnalyzing(true);
-      if (
-        incomingEvent.event_type === 'capacity_changed' ||
-        incomingEvent.event_type === 'budget_changed' ||
-        (incomingEvent.event_type as string) === 'contractor_cut'
-      ) {
-        setIsSimulatingCascade(true);
-      } else if ((incomingEvent.event_type as string) === 'pipeline_adjusted') {
-        setIsSimulatingCascade(true);
-      } else if ((incomingEvent.event_type as string) === 'commercial_terms_changed') {
-        setIsSimulatingCascade(true);
-      } else if ((incomingEvent.event_type as string) === 'feature_scope_changed') {
-        setIsSimulatingCascade(true);
-      } else if ((incomingEvent.event_type as string) === 'launch_date_changed') {
-        setIsSimulatingCascade(true);
-      }
+      setLatestEvent(incomingEvent);
+      setRecentEvents((prev) => [incomingEvent, ...prev.slice(0, 19)]);
+
+      const payload = (incomingEvent.payload || {}) as Record<string, any>;
+      const deptName = incomingEvent.department?.toUpperCase() || 'OPERATIONS';
+
+      // Dynamically extract typed challenges or parameter changes from mobile
+      setActiveChallenge((prev) => {
+        const newTitle =
+          payload.challenge_title ||
+          (incomingEvent.event_type === 'capacity_changed'
+            ? `OPERATIONAL CAPACITY ${payload.production_capacity ?? ''}% (${payload.new_capacity_hours ?? prev.capacityHours}h)`
+            : incomingEvent.event_type === 'budget_changed'
+            ? `TREASURY BUDGET MODIFICATION: ₹${((payload.new_budget ?? 1100000) / 100000).toFixed(1)}L`
+            : incomingEvent.event_type === 'deal_accepted'
+            ? `SALES DEAL COMMITTED: ₹${((payload.final_value ?? 5000000) / 100000).toFixed(1)}L APEX CONTRACT`
+            : incomingEvent.event_type === 'spending_freeze'
+            ? 'TREASURY SPENDING FREEZE ACTIVATED'
+            : incomingEvent.event_type === 'delivery_delay'
+            ? `SHIPMENT DELAY: +${payload.delay_days ?? 14} DAYS SLIPPAGE`
+            : prev.title);
+
+        const newDesc =
+          payload.challenge_description ||
+          payload.notes ||
+          payload.rationale ||
+          `Department ${deptName} emitted live operational update: ${incomingEvent.event_type}`;
+
+        const newCap =
+          payload.new_capacity_hours !== undefined
+            ? Number(payload.new_capacity_hours)
+            : payload.engineering_capacity !== undefined
+            ? Number(payload.engineering_capacity)
+            : prev.capacityHours;
+
+        const newDelay =
+          payload.delay_days !== undefined
+            ? Number(payload.delay_days)
+            : payload.delivery_exposure_days !== undefined
+            ? Number(payload.delivery_exposure_days)
+            : payload.shipment_status === 'Delayed'
+            ? 12
+            : prev.deliveryDaysDelay;
+
+        const newExposure =
+          payload.final_value !== undefined
+            ? `₹${(Number(payload.final_value) / 100000).toFixed(1)}L Contract`
+            : payload.new_budget !== undefined
+            ? `₹${(Number(payload.new_budget) / 100000).toFixed(1)}L Discretionary`
+            : prev.financialExposure;
+
+        return {
+          department: deptName,
+          title: newTitle,
+          description: newDesc,
+          capacityHours: newCap,
+          demandHours: prev.demandHours,
+          deliveryDaysDelay: newDelay,
+          financialExposure: newExposure,
+          severity: payload.severity || (newCap < 300 ? 'CRITICAL' : 'RISK'),
+        };
+      });
+
+      setIsSimulatingCascade(true);
 
       // Re-evaluate signals incrementally
       const updated = signalService.getAllSignals();
@@ -118,10 +172,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
   }, []);
 
   const scrollToDecisionFlow = () => {
-    const el =
-      document.getElementById('what-happened-section') ||
-      document.getElementById('why-matters-section') ||
-      document.getElementById('impact-map-section');
+    const el = document.getElementById('what-changed-section');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -169,6 +220,59 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     }
   };
 
+  const dynamicCausalSteps: CausalStep[] = useMemo(() => {
+    const deficit = Math.max(0, activeChallenge.demandHours - activeChallenge.capacityHours);
+    const loadPct = Math.round((activeChallenge.demandHours / Math.max(1, activeChallenge.capacityHours)) * 100);
+
+    return [
+      {
+        id: 'trigger',
+        stage: `01. ${activeChallenge.department}`,
+        label: 'OPERATIONAL TRIGGER',
+        figure: activeChallenge.title.length > 24 ? activeChallenge.title.slice(0, 22) + '...' : activeChallenge.title,
+        subtext: activeChallenge.description.length > 40 ? activeChallenge.description.slice(0, 38) + '...' : activeChallenge.description,
+        status: activeChallenge.severity === 'CRITICAL' ? 'critical' : activeChallenge.severity === 'RISK' ? 'risk' : 'tension',
+        icon: 'spyglass',
+      },
+      {
+        id: 'scope',
+        stage: '02. PRODUCT',
+        label: 'PRODUCT LOAD',
+        figure: '3 Custom Modules',
+        subtext: `${activeChallenge.demandHours}h sprint load committed`,
+        status: deficit > 50 ? 'critical' : 'normal',
+        icon: 'compass',
+      },
+      {
+        id: 'engineering',
+        stage: '03. ENGINEERING',
+        label: 'ENGINEERING CAPACITY',
+        figure: `${activeChallenge.capacityHours}h / ${activeChallenge.demandHours}h`,
+        subtext: `${deficit}h deficit (${loadPct}% load)`,
+        status: deficit > 100 ? 'critical' : deficit > 0 ? 'risk' : 'normal',
+        icon: 'gear',
+      },
+      {
+        id: 'delivery',
+        stage: '04. OPERATIONS',
+        label: 'DELIVERY TIMELINE',
+        figure: `+${activeChallenge.deliveryDaysDelay} Days Delay`,
+        subtext: activeChallenge.deliveryDaysDelay > 0 ? 'Milestone target at risk' : 'On schedule',
+        status: activeChallenge.deliveryDaysDelay > 7 ? 'critical' : activeChallenge.deliveryDaysDelay > 0 ? 'risk' : 'normal',
+        icon: 'route-marker',
+      },
+      {
+        id: 'financial',
+        stage: '05. FINANCIAL POSTURE',
+        label: 'ENTERPRISE EXPOSURE',
+        figure: activeChallenge.financialExposure,
+        subtext: 'Blacktide Systems ARR & SLA',
+        status: activeChallenge.severity === 'CRITICAL' ? 'critical' : 'risk',
+        icon: 'ledger',
+      },
+    ];
+  }, [activeChallenge]);
+
   const affectedEntityIds = useMemo(() => {
     return MOCK_IMPACT_RESULT.affected_entities.map((e) => e.entity_id);
   }, []);
@@ -210,14 +314,6 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => simulateLiveDepartmentUpdate('sales_deadline')}
-            className="px-2.5 py-1 text-[11px] font-sans font-semibold bg-[#FAF8F1] hover:bg-[#F3EFE5] border border-[#C89638] text-[#18201D] rounded-xs cursor-pointer transition-colors shadow-2xs flex items-center gap-1.5"
-            title="Simulate incoming customer commitment change from Sales phone"
-          >
-            <span>Simulate Phone Update</span>
-            <span className="font-mono text-[9px] text-[#C89638]">📱</span>
-          </button>
-          <button
             onClick={() => setIsScenarioModalOpen(true)}
             className="px-2.5 py-1 text-[11px] font-sans font-semibold bg-[#F3EFE5] hover:bg-[#FAF8F1] border border-[#C89638] text-[#18201D] rounded-xs cursor-pointer transition-colors shadow-2xs flex items-center gap-1.5"
           >
@@ -227,85 +323,134 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         </div>
       </div>
 
-      {/* PROMINENT LIVE BUSINESS SIGNAL (Department change alert surface) */}
-      {activeSignal && (
-        <section id="live-business-signal-section" className="animate-in fade-in slide-in-from-top-3 duration-300">
-          <LiveSignalBanner
-            signal={activeSignal}
-            isEmphasized={isEmphasized}
-            onReview={(sig) => {
-              markSignalReviewed(sig.id);
-              if (sig.signalId) {
-                setSelectedSignalId(sig.signalId);
-              }
-              scrollToDecisionFlow();
-            }}
-            onAcknowledge={(id) => acknowledgeSignal(id)}
-            onDismiss={(id) => dismissSignal(id)}
-          />
-        </section>
+      {/* 0B. REALTIME LIVE INGESTED CHALLENGE BANNER (Flashing alert when mobile updates) */}
+      {latestEvent && (
+        <div className="p-4 bg-[#18201D] border-2 border-[#C89638] text-[#FAF8F1] rounded-xs flex flex-wrap items-center justify-between gap-3 shadow-xl animate-in slide-in-from-top-2">
+          <div className="flex items-center gap-3">
+            <span className="w-3 h-3 rounded-full bg-[#5B8D70] animate-ping shrink-0" />
+            <div>
+              <div className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest flex items-center gap-2">
+                <span>⚡ LIVE MOBILE INGESTION RECEIVED // [{latestEvent.department?.toUpperCase()}]</span>
+                <span className="text-[#A9ADA8]">
+                  {new Date(latestEvent.created_at).toLocaleTimeString()}
+                </span>
+                <span className="px-1.5 py-0.5 bg-[#FAF8F1]/10 text-[#5B8D70] text-[9px] font-bold rounded-2xs">
+                  REALTIME SYNCHRONIZED
+                </span>
+              </div>
+              <div className="font-sans font-bold text-sm sm:text-base text-[#FAF8F1] mt-0.5">
+                {(latestEvent.payload as any)?.challenge_title || (latestEvent.payload as any)?.notes || latestEvent.event_type}
+              </div>
+              <div className="font-sans text-xs text-[#DDD5C5]/80 mt-0.5 max-w-2xl truncate">
+                {(latestEvent.payload as any)?.challenge_description || (latestEvent.payload as any)?.notes || ''}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowEventFeed((prev) => !prev)}
+              className="px-2.5 py-1 text-[11px] font-mono border border-[#DDD5C5]/40 text-[#DDD5C5] hover:bg-[#FAF8F1]/10 transition-colors cursor-pointer"
+            >
+              {showEventFeed ? '▲ HIDE STREAM' : `▼ EVENT FEED (${recentEvents.length})`}
+            </button>
+            <button
+              onClick={scrollToDecisionFlow}
+              className="px-3 py-1.5 bg-[#C89638] hover:bg-[#D6A84F] text-[#18201D] font-sans font-bold text-xs cursor-pointer shadow-md transition-colors"
+            >
+              INSPECT IMPACT
+            </button>
+          </div>
+        </div>
       )}
 
-      {/* Main Content Area (de-emphasized briefly when new signal enters) */}
-      <div className={`space-y-6 transition-opacity duration-300 ${isEmphasized ? 'opacity-70' : 'opacity-100'}`}>
-        {/* 1. HEADER + SECTION 1 — WHAT NEEDS YOUR ATTENTION? (Important Signals) */}
-        <section id="decision-desk-section">
-          <DecisionDesk
-            signals={signals}
-            onReviewSignal={(id) => {
-              setSelectedSignalId(id);
-              scrollToDecisionFlow();
-            }}
-            onAcknowledgeSignal={handleAcknowledgeSignal}
-            onDismissSignal={handleDismissSignal}
-            selectedSignalId={selectedSignalId}
-          />
-        </section>
+      {/* Realtime Event Feed Drawer */}
+      {showEventFeed && recentEvents.length > 0 && (
+        <div className="p-3.5 bg-[#FAF8F1] border border-[#C89638] rounded-xs space-y-2 text-xs font-mono">
+          <div className="flex items-center justify-between pb-1.5 border-b border-[#DDD5C5]">
+            <span className="font-bold text-[#18201D] uppercase">
+              LIVE INGESTED EVENT FEED (CROSS-DEVICE MESH)
+            </span>
+            <span className="text-[#718894]">{recentEvents.length} TOTAL INGESTIONS</span>
+          </div>
+          <div className="space-y-1.5 max-h-48 overflow-y-auto">
+            {recentEvents.map((evt) => {
+              const p = (evt.payload || {}) as Record<string, any>;
+              return (
+                <div
+                  key={evt.id}
+                  className="p-2 bg-[#F3EFE5] border border-[#DDD5C5] flex items-center justify-between gap-2"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <span className="px-1.5 py-0.5 bg-[#18201D] text-[#FAF8F1] text-[9px] font-bold uppercase">
+                      {evt.department}
+                    </span>
+                    <span className="font-bold text-[#18201D] truncate">
+                      {p.challenge_title || p.notes || evt.event_type}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-[#718894] shrink-0">
+                    {new Date(evt.created_at).toLocaleTimeString()}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-      {/* 2. WHAT HAPPENED? (Causal Trigger Briefing) */}
-      <section id="what-happened-section">
+      {/* 1. HEADER + SECTION 1 — WHAT NEEDS YOUR ATTENTION? (Important Signals) */}
+      <section id="decision-desk-section">
+        <DecisionDesk
+          signals={signals}
+          onReviewSignal={(id) => {
+            setSelectedSignalId(id);
+            scrollToDecisionFlow();
+          }}
+          onAcknowledgeSignal={handleAcknowledgeSignal}
+          onDismissSignal={handleDismissSignal}
+          selectedSignalId={selectedSignalId}
+        />
+      </section>
+
+      {/* 2. SECTION 2 — WHAT CHANGED? (Causal Trigger - Dynamically Reflects Mobile Updates) */}
+      <section id="what-changed-section">
         <DecisionAlert
-          department="OPERATIONS &amp; SALES"
-          actionTitle="DELIVERY RISK: ENGINEERING DEMAND EXCEEDS CAPACITY"
-          changeDetail="Sales committed a custom feature to Apex Global while engineering capacity was already constrained. Milestone delivery is projected to slip by +8 days without intervention."
+          department={activeChallenge.department}
+          actionTitle={activeChallenge.title}
+          changeDetail={activeChallenge.description}
           effectsCount={5}
-          capacityDeficitHours={120}
-          deliveryExposureDays={8}
-          financialExposure="Apex Global Contract"
+          capacityDeficitHours={Math.max(0, activeChallenge.demandHours - activeChallenge.capacityHours)}
+          deliveryExposureDays={activeChallenge.deliveryDaysDelay}
+          financialExposure={activeChallenge.financialExposure}
           onReviewImpact={scrollToDecisionFlow}
           onViewDetails={scrollToDecisionFlow}
         />
       </section>
 
-      {/* 3. WHY DOES IT MATTER? (Explanation, Evidence Chips & Severity) */}
-      <section id="why-matters-section">
-        <ImpactSummary
-          event={MOCK_ACTIVE_DECISION_EVENT}
-          impact={MOCK_IMPACT_RESULT}
-        />
-      </section>
-
-      {/* 4. WHAT DOES THIS AFFECT? (Simple Causal Chain + Progressive Disclosure Full Graph) */}
+      {/* 3. SECTION 3 — WHAT DOES THIS AFFECT? (Simple Impact Chain + Interactive Graph) */}
       <section
         id="impact-map-section"
         className="p-5 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs space-y-4"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-[#DDD5C5]">
-          <div>
-            <h3 className="font-sans font-bold text-xl text-[#18201D] tracking-tight">
+        <div className="flex items-center justify-between pb-2 border-b border-[#DDD5C5]">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
+              STEP 03 // IMPACT CHAIN
+            </span>
+            <span className="text-[#718894]">/</span>
+            <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
               WHAT DOES THIS AFFECT?
             </h3>
-            <p className="font-sans text-xs text-[#576560] mt-0.5">
-              How this decision affects the business across cross-functional operations.
-            </p>
           </div>
-          <span className="font-mono text-xs text-[#718894]">
+          <span className="font-mono text-xs text-[#576560]">
             5 LINKED ENTITIES
           </span>
         </div>
 
-        {/* Clean Process Chain: Name + Short Status */}
+        {/* Clean 5-Card Horizontal Process Chain (Actively updates from mobile input) */}
         <CausalChain
+          steps={dynamicCausalSteps}
           showFullGraph={showFullGraph}
           onToggleFullGraph={() => setShowFullGraph((prev) => !prev)}
         />
@@ -325,7 +470,15 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         )}
       </section>
 
-      {/* 5. WHAT CAN WE DO? (Feasible Decision Courses) */}
+      {/* 4. SECTION 4 — HOW SERIOUS IS IT? (Severity & Impact Summary) */}
+      <section id="severity-summary-section">
+        <ImpactSummary
+          event={MOCK_ACTIVE_DECISION_EVENT}
+          impact={MOCK_IMPACT_RESULT}
+        />
+      </section>
+
+      {/* 5. SECTION 5 — WHAT CAN WE DO? (4 Strategic Options) */}
       <section id="options-section">
         <DecisionOptionList
           options={MOCK_DECISION_OPTIONS}
@@ -375,7 +528,6 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
           }
         />
       </section>
-      </div>
 
       {/* Scenario Simulator Modal */}
       <ScenarioSimulatorModal

@@ -13,7 +13,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   systemOnline = true,
   timestamp = '09 SEP 2026 // 21:13:42 UTC',
   nodeId = 'BLACKTIDE-01',
-  userRole = 'CEO',
+  userRole = 'CFO',
   userName = 'Devon Ross',
 }) => {
   return (

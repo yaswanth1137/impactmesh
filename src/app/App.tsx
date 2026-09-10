@@ -34,14 +34,14 @@ const parseRouteFromLocation = (): NavRoute => {
   const path = window.location.pathname.toLowerCase();
   const hash = window.location.hash.toLowerCase();
 
-  if (path.includes('command') || hash.includes('command')) return 'command';
-  if (path.includes('flowtrace') || hash.includes('flowtrace')) return 'flowtrace';
-  if (path.includes('simulator') || hash.includes('simulator')) return 'simulator';
+  if (path.includes('operations') || hash.includes('operations') || path.includes('ops')) return 'operations';
+  if (path.includes('commercial') || hash.includes('commercial') || path.includes('comm')) return 'commercial';
   if (path.includes('sales') || hash.includes('sales')) return 'sales';
   if (path.includes('product') || hash.includes('product')) return 'product';
   if (path.includes('finance') || hash.includes('finance')) return 'finance';
-  if (path.includes('operations') || hash.includes('operations') || path.includes('ops') || hash.includes('ops')) return 'operations';
-  if (path.includes('commercial') || hash.includes('commercial') || path === '/comm' || hash === '#comm') return 'commercial';
+  if (path.includes('flowtrace') || hash.includes('flowtrace')) return 'flowtrace';
+  if (path.includes('simulator') || hash.includes('simulator')) return 'simulator';
+  if (path.includes('command') || hash.includes('command')) return 'command';
 
   // If on mobile screen without explicit path, default directly to operations
   if (window.innerWidth < 768) {
@@ -54,6 +54,7 @@ export function App() {
   const [currentRoute, setCurrentRoute] = useState<NavRoute>(parseRouteFromLocation);
   const [realtimeState, setRealtimeState] = useState<RealtimeConnectionState>('CONNECTED');
   const [isMobile, setIsMobile] = useState<boolean>(isMobileScreen);
+  const [eventCount, setEventCount] = useState<number>(4);
 
   const navigateTo = useCallback((route: NavRoute) => {
     setCurrentRoute(route);
@@ -73,6 +74,10 @@ export function App() {
       setRealtimeState(state);
     });
 
+    const unsubscribeEvent = realtimeSubscriptionManager.onEvent(() => {
+      setEventCount((prev) => prev + 1);
+    });
+
     // 2. Synchronize on browser forward / back navigation
     const handlePopState = () => {
       setCurrentRoute(parseRouteFromLocation());
@@ -87,6 +92,7 @@ export function App() {
 
     return () => {
       unsubscribeConn();
+      unsubscribeEvent();
       window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('resize', handleResize);
     };
@@ -192,7 +198,7 @@ export function App() {
 
       {/* 3. BOTTOM TELEMETRY STATUS BAR (desktop only) */}
       <div className="hidden md:block">
-        <StatusBar realtimeState={realtimeState} activeEventCount={5} healthScore={64} />
+        <StatusBar realtimeState={realtimeState} activeEventCount={eventCount} healthScore={64} />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
+import { PixelIcon } from '../pixel/PixelIcon.tsx';
 
-interface CausalStep {
+export interface CausalStep {
   id: string;
   stage: string;
   label: string;
@@ -19,46 +20,46 @@ interface CausalChainProps {
 const DEFAULT_STEPS: CausalStep[] = [
   {
     id: 'sales',
-    stage: 'SALES',
-    label: 'Sales commitment',
+    stage: '01. SALES',
+    label: 'SALES COMMITMENT',
     figure: 'Apex Expansion',
-    subtext: 'Custom feature committed',
+    subtext: 'Custom feature commitment',
     status: 'tension',
     icon: 'spyglass',
   },
   {
     id: 'scope',
-    stage: 'PRODUCT',
-    label: 'Product scope',
-    figure: '3 Modules',
+    stage: '02. PRODUCT',
+    label: 'PRODUCT SCOPE',
+    figure: '3 Custom Modules',
     subtext: 'Added to release backlog',
     status: 'normal',
     icon: 'compass',
   },
   {
     id: 'engineering',
-    stage: 'ENGINEERING',
-    label: 'Engineering capacity',
-    figure: 'Constrained',
-    subtext: 'Capacity constrained',
+    stage: '03. ENGINEERING',
+    label: 'ENGINEERING CAPACITY',
+    figure: '300h / 420h',
+    subtext: '120h deficit (140% load)',
     status: 'critical',
     icon: 'gear',
   },
   {
     id: 'delivery',
-    stage: 'DELIVERY',
-    label: 'Delivery target',
-    figure: 'At Risk',
-    subtext: 'Target at risk (+8 days)',
+    stage: '04. OPERATIONS',
+    label: 'DELIVERY DATE',
+    figure: '+8 Days Delay',
+    subtext: 'Milestone target at risk',
     status: 'critical',
     icon: 'route-marker',
   },
   {
     id: 'customer',
-    stage: 'CUSTOMER',
-    label: 'Customer outcome',
-    figure: 'Exposed',
-    subtext: 'Commitment exposed',
+    stage: '05. CUSTOMER',
+    label: 'CUSTOMER COMMITMENT',
+    figure: '₹50L Contract',
+    subtext: 'Apex Global Financials',
     status: 'risk',
     icon: 'ledger',
   },
@@ -69,63 +70,76 @@ export const CausalChain: React.FC<CausalChainProps> = ({
   onToggleFullGraph,
   showFullGraph = false,
 }) => {
-  const getStatusStyle = (status: CausalStep['status']) => {
+  const getStatusColor = (status: CausalStep['status']) => {
     switch (status) {
       case 'critical':
         return {
-          border: 'border-[#C86150]/60 bg-[#FAF8F1]',
-          statusText: 'text-[#C86150]',
+          border: 'border-[#C86150]',
+          badge: 'bg-[#C86150]/10 text-[#C86150] border-[#C86150]/30',
+          accent: 'text-[#C86150]',
         };
       case 'risk':
         return {
-          border: 'border-[#C89638]/60 bg-[#FAF8F1]',
-          statusText: 'text-[#C89638]',
+          border: 'border-[#C89638]',
+          badge: 'bg-[#C89638]/10 text-[#C89638] border-[#C89638]/30',
+          accent: 'text-[#C89638]',
         };
       case 'tension':
         return {
-          border: 'border-[#B97B63]/60 bg-[#FAF8F1]',
-          statusText: 'text-[#B97B63]',
+          border: 'border-[#B97B63]',
+          badge: 'bg-[#B97B63]/10 text-[#B97B63] border-[#B97B63]/30',
+          accent: 'text-[#B97B63]',
         };
       case 'normal':
       default:
         return {
-          border: 'border-[#DDD5C5] bg-[#FAF8F1]',
-          statusText: 'text-[#576560]',
+          border: 'border-[#DDD5C5]',
+          badge: 'bg-[#DDD5C5]/30 text-[#576560] border-[#DDD5C5]',
+          accent: 'text-[#18201D]',
         };
     }
   };
 
   return (
-    <div className="space-y-3">
-      {/* Simple Causal Chain: Name + Short Status/Value */}
+    <div className="space-y-4">
+      {/* Horizontal / Responsive Causal Flow Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 relative">
         {steps.map((step, idx) => {
-          const style = getStatusStyle(step.status);
+          const colors = getStatusColor(step.status);
           const isLast = idx === steps.length - 1;
 
           return (
             <div key={step.id} className="relative flex flex-col">
               <div
-                className={`p-3.5 border rounded-xs shadow-2xs transition-all hover:border-[#18201D] flex flex-col justify-between min-h-[82px] ${style.border}`}
+                className={`flex-1 p-3.5 bg-[#FAF8F1] border rounded-xs shadow-2xs transition-all hover:shadow-xs ${colors.border}`}
               >
-                {/* Node Name */}
-                <div className="font-mono text-[10px] text-[#718894] uppercase tracking-wider font-bold">
-                  {step.stage}
+                {/* Stage Tag */}
+                <div className="flex items-center justify-between gap-1 mb-2">
+                  <span className="font-mono text-[9px] text-[#718894] uppercase tracking-wider font-bold">
+                    {step.stage}
+                  </span>
+                  <PixelIcon name={step.icon} size={13} color="#718894" />
                 </div>
 
-                <div className="font-sans font-bold text-xs md:text-sm text-[#18201D] tracking-tight mt-0.5">
+                {/* Node Label */}
+                <div className="font-sans font-bold text-xs text-[#18201D] tracking-tight">
                   {step.label}
                 </div>
 
-                {/* Short Status / Value */}
-                <div className={`font-sans text-xs font-semibold mt-1 ${style.statusText}`}>
+                {/* Prominent Business Figure */}
+                <div className={`font-mono text-base font-bold my-1 tracking-tight ${colors.accent}`}>
+                  {step.figure}
+                </div>
+
+                {/* Supporting Explanation */}
+                <div className="font-sans text-[11px] text-[#576560] leading-tight mt-0.5">
                   {step.subtext}
                 </div>
               </div>
 
-              {/* Arrow connector between nodes */}
+              {/* Arrow connector between cards on desktop */}
               {!isLast && (
-                <div className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 w-4 h-4 bg-[#FAF8F1] border border-[#DDD5C5] rounded-full items-center justify-center text-[9px] text-[#718894] font-bold">
+                <div className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 w-4 h-4 bg-[#F3EFE5] border border-[#DDD5C5] rounded-full items-center justify-center text-[10px] text-[#718894] font-bold">
                   →
                 </div>
               )}

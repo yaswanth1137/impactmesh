@@ -27,6 +27,7 @@ export class RealtimeSubscriptionManager {
 
   private processedEventIds: Set<string> = new Set();
   private broadcastChannel: BroadcastChannel | null = null;
+  private eventSource: EventSource | null = null;
 
   // Auto-reconnect telemetry
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -75,6 +76,33 @@ export class RealtimeSubscriptionManager {
           }
         }
       });
+    }
+
+    // Cross-device local network SSE stream (syncs mobile phone <-> desktop laptop)
+    this.initializeServerEventStream();
+  }
+
+  public initializeServerEventStream(): void {
+    if (typeof window === 'undefined' || typeof EventSource === 'undefined') return;
+    if (this.eventSource) return;
+
+    try {
+      this.eventSource = new EventSource('/api/events/stream');
+      this.eventSource.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data.type === 'DECISION_EVENT' && data.event) {
+            this.handleIncomingEvent(data.event);
+          }
+        } catch (_err) {
+          // Ignore json parse error
+        }
+      };
+      this.eventSource.onerror = () => {
+        // Browser EventSource automatically reconnects
+      };
+    } catch (err) {
+      console.warn('[RealtimeManager] Server EventSource stream unavailable:', err);
     }
   }
 
@@ -132,6 +160,17 @@ export class RealtimeSubscriptionManager {
       } catch (_err) {
         // Storage quota / security policy safe
       }
+    }
+
+    // Cross-device server relay (Mobile Phone -> Laptop Desktop)
+    if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+      fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event }),
+      }).catch(() => {
+        // Safe fallback if server endpoint unavailable
+      });
     }
   }
 
@@ -349,6 +388,10 @@ export class RealtimeSubscriptionManager {
       await supabase.removeChannel(channel);
     }
     this.channels.clear();
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+    }
     this.setConnectionState('DISCONNECTED');
   }
 

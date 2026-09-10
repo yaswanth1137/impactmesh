@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PixelBadge } from '../pixel/PixelBadge.tsx';
 import type { RealtimeConnectionState } from '../../lib/realtime/subscription-manager.ts';
+import { MobileChallengeIntake } from './MobileChallengeIntake.tsx';
 
 import type { PixelBadgeVariant } from '../pixel/PixelBadge.tsx';
 
@@ -71,6 +72,7 @@ export const MobileDepartmentSwitcher: React.FC<MobileDepartmentSwitcherProps> =
   onNavigate,
   className = '',
 }) => {
+  const [showChallengeIntake, setShowChallengeIntake] = useState<boolean>(false);
   const currentConfig = DEPARTMENTS.find((d) => d.id === currentDept) || DEPARTMENTS[0];
 
   const handleSelect = (deptId: DeptRouteKey) => {
@@ -132,6 +134,33 @@ export const MobileDepartmentSwitcher: React.FC<MobileDepartmentSwitcherProps> =
           );
         })}
       </div>
+
+      {/* 3. QUICK CHALLENGE / CHANGE BROADCAST BUTTON */}
+      <div className="pt-1">
+        <button
+          onClick={() => setShowChallengeIntake((prev) => !prev)}
+          className="w-full py-2 px-3 bg-[#1A222B] hover:bg-[#252F3B] border border-[#D6A84F]/60 text-[#D6A84F] font-pixel text-[11px] tracking-wider uppercase flex items-center justify-between shadow-sm cursor-pointer transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-[#F59E0B] font-mono text-sm">⚡</span>
+            <span>REPORT NEW CHALLENGE / SITUATION</span>
+          </div>
+          <span className="font-mono text-xs text-[#A9ADA8]">
+            {showChallengeIntake ? '▲ CLOSE' : '▼ OPEN INTAKE'}
+          </span>
+        </button>
+      </div>
+
+      {/* 4. EXPANDABLE CHALLENGE INTAKE CONSOLE */}
+      {showChallengeIntake && (
+        <div className="pt-2 animate-in fade-in slide-in-from-top-2">
+          <MobileChallengeIntake
+            currentDept={currentDept}
+            onSuccess={() => setShowChallengeIntake(false)}
+            onClose={() => setShowChallengeIntake(false)}
+          />
+        </div>
+      )}
     </div>
   );
 };

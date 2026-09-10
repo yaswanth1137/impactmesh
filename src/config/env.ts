@@ -34,7 +34,9 @@ const isSupabaseConfigured =
   Boolean(supabaseUrl) &&
   Boolean(supabaseAnonKey) &&
   !supabaseUrl.includes('placeholder-project') &&
-  !supabaseAnonKey.includes('placeholder-anon-key');
+  !supabaseUrl.includes('xyzcompany') &&
+  !supabaseAnonKey.includes('placeholder-anon-key') &&
+  !supabaseAnonKey.includes('example_anon_key');
 
 const isGroqConfigured =
   Boolean(groqApiKey) &&
