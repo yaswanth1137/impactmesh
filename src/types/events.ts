@@ -3,7 +3,7 @@
  * Strongly typed events emitted by the four operational departments of Blacktide Systems.
  */
 
-export type DepartmentCode = 'sales' | 'product' | 'engineering' | 'finance' | 'command_center' | 'operations';
+export type DepartmentCode = 'sales' | 'product' | 'engineering' | 'finance' | 'command_center' | 'operations' | 'commercial';
 
 // =============================================================================
 // SALES EVENTS
@@ -234,6 +234,35 @@ export type FinanceEventType =
   | 'runway_changed';
 
 // =============================================================================
+// COMMERCIAL EVENTS
+// =============================================================================
+
+export interface PipelineAdjustedPayload {
+  pipeline_id: string;
+  deal_name?: string;
+  previous_pipeline_value: number;
+  new_pipeline_value: number;
+  weighted_pipeline?: number;
+  active_deal_count?: number;
+  stage?: string;
+  notes?: string;
+}
+
+export interface CommercialTermsChangedPayload {
+  deal_id: string;
+  customer_name: string;
+  contract_value: number;
+  payment_terms: string;
+  sla_penalty_exposure?: number;
+  discount_applied_percent?: number;
+  notes?: string;
+}
+
+export type CommercialEventType =
+  | 'pipeline_adjusted'
+  | 'commercial_terms_changed';
+
+// =============================================================================
 // UNIFIED EVENT SCHEMAS
 // =============================================================================
 
@@ -241,9 +270,13 @@ export type ImpactMeshEventType =
   | SalesEventType
   | ProductEventType
   | EngineeringEventType
-  | FinanceEventType;
+  | FinanceEventType
+  | CommercialEventType;
 
 export type EventPayloadMap = {
+  // Commercial
+  pipeline_adjusted: PipelineAdjustedPayload;
+  commercial_terms_changed: CommercialTermsChangedPayload;
   // Sales
   customer_added: CustomerAddedPayload;
   deal_created: DealCreatedPayload;

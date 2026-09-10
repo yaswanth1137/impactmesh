@@ -53,6 +53,12 @@ export const DEPARTMENTS: Record<
     deviceLabel: 'Device 3: Operations Mobile',
     description: 'Production capacity, inventory units, machinery burn rate, delivery delays',
   },
+  commercial: {
+    name: 'Commercial Operations',
+    code: 'commercial',
+    deviceLabel: 'Device 6: Commercial Mobile',
+    description: 'Pipeline value, contract commitments, payment terms, and SLA penalty schedules',
+  },
 };
 
 export const CORE_ENTITY_TYPES: BusinessEntityType[] = [

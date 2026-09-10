@@ -15,9 +15,13 @@ const VALID_DEPARTMENTS: DepartmentCode[] = [
   'finance',
   'command_center',
   'operations',
+  'commercial',
 ];
 
 const EVENT_DEPARTMENT_MAP: Record<ImpactMeshEventType, DepartmentCode[]> = {
+  // Commercial
+  pipeline_adjusted: ['commercial', 'sales', 'command_center'],
+  commercial_terms_changed: ['commercial', 'sales', 'command_center'],
   // Sales
   customer_added: ['sales', 'command_center'],
   deal_created: ['sales', 'command_center'],

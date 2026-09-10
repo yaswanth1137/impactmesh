@@ -210,6 +210,14 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         setIsSimulatingCascade(isCut);
       } else if (incomingEvent.event_type === 'deal_accepted') {
         setIsSimulatingCascade(true);
+      } else if ((incomingEvent.event_type as string) === 'pipeline_adjusted') {
+        setIsSimulatingCascade(true);
+      } else if ((incomingEvent.event_type as string) === 'commercial_terms_changed') {
+        setIsSimulatingCascade(true);
+      } else if ((incomingEvent.event_type as string) === 'feature_scope_changed') {
+        setIsSimulatingCascade(true);
+      } else if ((incomingEvent.event_type as string) === 'launch_date_changed') {
+        setIsSimulatingCascade(true);
       }
 
       // Re-evaluate signals incrementally

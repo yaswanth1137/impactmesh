@@ -44,6 +44,16 @@ export const OPERATIONS_USER: AuthUser = {
   deviceId: 'device-operations-mobile',
 };
 
+export const ENTERPRISE_OPERATOR: AuthUser = {
+  id: 'u0000000-0000-0000-0000-000000000002',
+  email: 'operator@blacktide.io',
+  fullName: 'Morgan Cross (Enterprise Operator)',
+  role: 'operator',
+  department: 'operations',
+  organizationId: 'a0000000-0000-0000-0000-000000000001',
+  deviceId: 'device-mobile-operator',
+};
+
 export class SecurityPolicyViolationError extends Error {
   public readonly code = '403_FORBIDDEN';
   public readonly user: AuthUser;
@@ -60,7 +70,7 @@ export class SecurityPolicyViolationError extends Error {
 }
 
 class SecurityPolicyService {
-  private currentUser: AuthUser = OPERATIONS_USER;
+  private currentUser: AuthUser = ENTERPRISE_OPERATOR;
   private userListeners: Set<(user: AuthUser) => void> = new Set();
 
   constructor() {
@@ -70,7 +80,7 @@ class SecurityPolicyService {
       if (path.includes('command')) {
         this.currentUser = CEO_USER;
       } else {
-        this.currentUser = OPERATIONS_USER;
+        this.currentUser = ENTERPRISE_OPERATOR;
       }
     }
   }
@@ -94,8 +104,8 @@ class SecurityPolicyService {
    * Evaluates if the user is authorized to read departmental data.
    */
   public canReadDepartment(user: AuthUser, department: DepartmentCode): boolean {
-    if (user.role === 'ceo' || user.department === 'command_center') {
-      return true; // CEO has full read access to all departments
+    if (user.role === 'ceo' || user.department === 'command_center' || user.role === 'operator') {
+      return true; // CEO and multi-department operator can read all department operational data
     }
 
     if (department === 'operations' || department === 'engineering') {
@@ -109,8 +119,8 @@ class SecurityPolicyService {
    * Evaluates if the user is authorized to modify or emit events for a department.
    */
   public canModifyDepartment(user: AuthUser, department: DepartmentCode): boolean {
-    if (user.role === 'ceo') {
-      return true;
+    if (user.role === 'ceo' || user.role === 'operator') {
+      return true; // CEO and multi-department operator can operate all departments
     }
 
     if (department === 'operations' || department === 'engineering') {

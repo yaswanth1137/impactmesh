@@ -4,6 +4,7 @@ import { PixelIcon, type PixelIconType } from '../pixel/PixelIcon.tsx';
 export type NavRoute =
   | 'command'
   | 'sales'
+  | 'commercial'
   | 'product'
   | 'operations'
   | 'finance'
@@ -34,6 +35,7 @@ export const CommandRail: React.FC<CommandRailProps> = ({
 
   const crewNav: NavItem[] = [
     { id: 'sales', label: 'SALES // LOOKOUT', icon: 'spyglass' },
+    { id: 'commercial', label: 'COMMERCIAL // OPS', icon: 'coin' },
     { id: 'product', label: 'PRODUCT // NAVIGATOR', icon: 'compass' },
     { id: 'operations', label: 'OPERATIONS // ENGINEER', icon: 'gear' },
     { id: 'finance', label: 'FINANCE // PURSER', icon: 'ledger' },

@@ -9,17 +9,19 @@ import { SalesRoute } from './routes/SalesRoute.tsx';
 import { ProductRoute } from './routes/ProductRoute.tsx';
 import { OperationsRoute } from './routes/OperationsRoute.tsx';
 import { FinanceRoute } from './routes/FinanceRoute.tsx';
+import { CommercialRoute } from './routes/CommercialRoute.tsx';
 import { FlowTraceRoute } from './routes/FlowTraceRoute.tsx';
 import { SimulatorRoute } from './routes/SimulatorRoute.tsx';
 
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../lib/realtime/subscription-manager.ts';
 
-// Mobile terminals are strictly limited to the 4 department screens
+// Mobile operator workspace provides 5 dedicated department consoles:
 export const MOBILE_DEPT_ROUTES: { id: NavRoute; label: string; name: string }[] = [
-  { id: 'operations', label: 'OPER', name: 'Operations' },
-  { id: 'sales', label: 'SALE', name: 'Sales' },
-  { id: 'product', label: 'PROD', name: 'Product' },
   { id: 'finance', label: 'FIN', name: 'Finance' },
+  { id: 'sales', label: 'SALE', name: 'Sales' },
+  { id: 'commercial', label: 'COMM', name: 'Commercial' },
+  { id: 'operations', label: 'OPER', name: 'Operations' },
+  { id: 'product', label: 'PROD', name: 'Product' },
 ];
 
 const isMobileScreen = () => {
@@ -33,6 +35,7 @@ const parseRouteFromLocation = (): NavRoute => {
   const hash = window.location.hash.toLowerCase();
 
   if (path.includes('operations') || hash.includes('operations') || path.includes('ops')) return 'operations';
+  if (path.includes('commercial') || hash.includes('commercial') || path.includes('comm')) return 'commercial';
   if (path.includes('sales') || hash.includes('sales')) return 'sales';
   if (path.includes('product') || hash.includes('product')) return 'product';
   if (path.includes('finance') || hash.includes('finance')) return 'finance';
@@ -89,7 +92,7 @@ export function App() {
   }, []);
 
   const renderActiveRoute = () => {
-    // On mobile devices, non-department routes (command, flowtrace, simulator) are strictly restricted
+    // On mobile devices, non-department routes (command, flowtrace, simulator) are restricted to executive desktop workstations
     if (isMobile && (currentRoute === 'command' || currentRoute === 'flowtrace' || currentRoute === 'simulator')) {
       return (
         <div className="flex flex-col items-center justify-center p-6 text-center min-h-[60vh] max-w-sm mx-auto space-y-4">
@@ -98,7 +101,7 @@ export function App() {
           </div>
           <div>
             <div className="font-pixel text-xs text-[#F87171] tracking-widest uppercase">
-              DESKTOP ONLY ACCESS
+              DESKTOP WORKSTATION REQUIRED
             </div>
             <h2 className="font-pixel text-sm text-[#E8E4D8] mt-1 uppercase">
               CEO COMMAND RESTRICTED
@@ -106,7 +109,7 @@ export function App() {
           </div>
           <p className="text-xs text-[#A9ADA8] font-mono leading-relaxed bg-[#101419] p-3 border border-[#2A333B]">
             Department mobile terminals are authorized strictly for operational controls:
-            <span className="text-[#D6A84F] font-semibold block mt-1">OPERATIONS · SALES · PRODUCT · FINANCE</span>
+            <span className="text-[#D6A84F] font-semibold block mt-1">FINANCE · SALES · COMMERCIAL · OPERATIONS · PRODUCT</span>
             The CEO Command Center and FlowTrace require executive desktop workstation authorization.
           </p>
           <div className="grid grid-cols-2 gap-2 w-full pt-2">
@@ -135,6 +138,8 @@ export function App() {
         return <OperationsRoute />;
       case 'finance':
         return <FinanceRoute />;
+      case 'commercial':
+        return <CommercialRoute />;
       case 'flowtrace':
         return <FlowTraceRoute onBackToCommand={() => navigateTo('command')} />;
       case 'simulator':
@@ -158,18 +163,18 @@ export function App() {
           className="hidden md:flex shrink-0"
         />
 
-        {/* Mobile-Only Navigation Bar: Exactly the 4 Department Screens (OPER, SALE, PROD, FIN) */}
-        <div className="md:hidden fixed bottom-8 left-0 right-0 z-40 px-2 py-1.5 flex items-center justify-around bg-[#FAF8F1]/95 border-t border-[#DDD5C5] backdrop-blur-md shadow-md">
+        {/* Mobile-Only Navigation Bar: Exactly the 5 Department Screens (FIN, SALE, COMM, OPER, PROD) */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 px-2 py-1.5 flex items-center justify-around bg-[#101419]/98 border-t border-[#2A333B] backdrop-blur-md shadow-2xl">
           {MOBILE_DEPT_ROUTES.map((dept) => {
             const isActive = currentRoute === dept.id;
             return (
               <button
                 key={dept.id}
                 onClick={() => navigateTo(dept.id)}
-                className={`flex-1 mx-1 py-2 px-1 text-center font-mono text-[10px] uppercase cursor-pointer rounded-xs border transition-all ${
+                className={`flex-1 mx-0.5 py-2 px-1 text-center font-pixel text-[9px] uppercase cursor-pointer border transition-all ${
                   isActive
-                    ? 'bg-[#C89638] text-[#FAF8F1] border-[#C89638] font-bold shadow-2xs'
-                    : 'bg-[#F3EFE5] text-[#576560] border-[#DDD5C5] hover:text-[#18201D] hover:border-[#C89638]'
+                    ? 'bg-[#D6A84F] text-[#090B0F] border-[#D6A84F] font-bold shadow-md shadow-[#D6A84F]/20'
+                    : 'bg-[#141A20] text-[#A9ADA8] border-[#2A333B] hover:text-[#E8E4D8] hover:border-[#3E4954]'
                 }`}
               >
                 {dept.label}
@@ -179,13 +184,15 @@ export function App() {
         </div>
 
         {/* Central Workspace Area */}
-        <main className="flex-1 overflow-y-auto p-3 md:p-6 lg:p-8 chart-grid-bg min-h-0 pb-20 md:pb-8">
+        <main className="flex-1 overflow-y-auto p-3 md:p-6 lg:p-8 chart-grid-bg min-h-0 pb-16 md:pb-8">
           {renderActiveRoute()}
         </main>
       </div>
 
-      {/* 3. BOTTOM TELEMETRY STATUS BAR */}
-      <StatusBar realtimeState={realtimeState} activeEventCount={4} healthScore={64} />
+      {/* 3. BOTTOM TELEMETRY STATUS BAR (desktop only) */}
+      <div className="hidden md:block">
+        <StatusBar realtimeState={realtimeState} activeEventCount={5} healthScore={64} />
+      </div>
     </div>
   );
 }
