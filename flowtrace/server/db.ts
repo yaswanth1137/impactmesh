@@ -1,5 +1,4 @@
-import fs from 'node:fs';
-import path from 'node:path';
+
 import type {
   WorkflowDefinition,
   WorkflowNodeData,
@@ -191,16 +190,18 @@ class FlowTraceDatabase {
   private incidents: Map<string, IncidentRecord> = new Map();
   private recommendations: Map<string, RecommendationRecord> = new Map();
   private auditLogs: Map<string, AuditLogRecord> = new Map();
-  private storeFilePath = path.resolve(process.cwd(), 'data', 'workflows_store.json');
-
   constructor() {
     this.seed();
     this.loadFromDisk();
   }
 
-  public saveToDisk() {
+  public async saveToDisk() {
+    if (typeof window !== 'undefined') return;
     try {
-      const dataDir = path.dirname(this.storeFilePath);
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const storeFilePath = path.resolve(process.cwd(), 'data', 'workflows_store.json');
+      const dataDir = path.dirname(storeFilePath);
       if (!fs.existsSync(dataDir)) {
         fs.mkdirSync(dataDir, { recursive: true });
       }
@@ -211,16 +212,20 @@ class FlowTraceDatabase {
         riskEvents: Array.from(this.riskEvents.entries()),
         auditLogs: Array.from(this.auditLogs.entries())
       };
-      fs.writeFileSync(this.storeFilePath, JSON.stringify(dump, null, 2), 'utf8');
-    } catch (err) {
-      console.warn('Failed to persist database state to disk:', err);
+      fs.writeFileSync(storeFilePath, JSON.stringify(dump, null, 2), 'utf8');
+    } catch {
+      // In-memory mode active
     }
   }
 
-  public loadFromDisk() {
+  public async loadFromDisk() {
+    if (typeof window !== 'undefined') return;
     try {
-      if (fs.existsSync(this.storeFilePath)) {
-        const raw = fs.readFileSync(this.storeFilePath, 'utf8');
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const storeFilePath = path.resolve(process.cwd(), 'data', 'workflows_store.json');
+      if (fs.existsSync(storeFilePath)) {
+        const raw = fs.readFileSync(storeFilePath, 'utf8');
         const parsed = JSON.parse(raw);
         if (parsed.workflows) {
           parsed.workflows.forEach(([id, val]: [string, WorkflowRecord]) => this.workflows.set(id, val));
@@ -238,8 +243,8 @@ class FlowTraceDatabase {
           parsed.auditLogs.forEach(([id, val]: [string, AuditLogRecord]) => this.auditLogs.set(id, val));
         }
       }
-    } catch (err) {
-      console.warn('Failed to load database state from disk:', err);
+    } catch {
+      // Seed data used
     }
   }
 

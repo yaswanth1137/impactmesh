@@ -3,8 +3,15 @@
 // Server-Side LLM Reasoning via Groq LPU API
 // ============================================================================
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
-const GROQ_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+const getEnvSafe = (key: string): string => {
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key] || '';
+  }
+  return '';
+};
+
+const GROQ_API_KEY = getEnvSafe('GROQ_API_KEY');
+const GROQ_MODEL = getEnvSafe('GROQ_MODEL') || 'openai/gpt-oss-120b';
 
 export interface GroqReasoningRequest {
   workflowName: string;
