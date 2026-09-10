@@ -19,6 +19,8 @@ export function App() {
   const [realtimeState, setRealtimeState] = useState<RealtimeConnectionState>('CONNECTED');
 
   useEffect(() => {
+    realtimeSubscriptionManager.initializeChannels();
+
     const unsubscribe = realtimeSubscriptionManager.onConnectionStateChange((state) => {
       setRealtimeState(state);
     });

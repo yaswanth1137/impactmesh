@@ -1,11 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PixelPanel } from '../../components/pixel/PixelPanel.tsx';
 import { PixelBadge } from '../../components/pixel/PixelBadge.tsx';
 import { PixelButton } from '../../components/pixel/PixelButton.tsx';
 import { PixelCharacter } from '../../components/pixel/PixelCharacter.tsx';
+import { publishDecisionEvent } from '../../lib/realtime/channel-service.ts';
+import { realtimeSubscriptionManager } from '../../lib/realtime/subscription-manager.ts';
 
 export const ProductRoute: React.FC = () => {
   const [scopeReduced, setScopeReduced] = useState(false);
+  const [isTransmitting, setIsTransmitting] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = realtimeSubscriptionManager.onEvent<'feature_scope_changed'>((event) => {
+      if (event.payload) {
+        setScopeReduced(event.payload.new_points < event.payload.previous_points);
+      }
+    }, 'feature_scope_changed');
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleToggleScope = async () => {
+    const nextScopeReduced = !scopeReduced;
+    setScopeReduced(nextScopeReduced);
+    setIsTransmitting(true);
+
+    try {
+      await publishDecisionEvent({
+        organization_id: '00000000-0000-0000-0000-000000000000',
+        department: 'product',
+        event_type: 'feature_scope_changed',
+        entity_id: 'FEAT-SCOPE-SPRINT24',
+        payload: {
+          feature_id: 'FEAT-CUSTOM-ANALYTICS',
+          previous_points: nextScopeReduced ? 155 : 80,
+          new_points: nextScopeReduced ? 80 : 155,
+          justification: nextScopeReduced
+            ? 'Descope non-critical custom modules (-120h) to preserve Apex Global delivery SLA'
+            : 'Restore full custom scope commitment',
+        },
+        created_by: 'navigator_product_lead',
+      });
+    } finally {
+      setIsTransmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-5 pb-12 max-w-4xl mx-auto select-none">
@@ -60,9 +99,14 @@ export const ProductRoute: React.FC = () => {
           <PixelButton
             variant="outline"
             size="sm"
-            onClick={() => setScopeReduced((prev) => !prev)}
+            disabled={isTransmitting}
+            onClick={handleToggleScope}
           >
-            {scopeReduced ? '[ RESTORE FULL SCOPE ]' : '[ DESCOPE NON-CRITICAL (120h) ]'}
+            {isTransmitting
+              ? '[ TRANSMITTING SCOPE VIA REALTIME... ]'
+              : scopeReduced
+              ? '[ RESTORE FULL SCOPE ]'
+              : '[ DESCOPE NON-CRITICAL (120h) ]'}
           </PixelButton>
         }
       >

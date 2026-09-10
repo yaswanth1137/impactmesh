@@ -8,11 +8,27 @@ interface ClientEnvironmentConfig {
   supabaseUrl: string;
   supabaseAnonKey: string;
   isSupabaseConfigured: boolean;
+  groqApiKey: string;
+  groqModel: string;
+  isGroqConfigured: boolean;
   isDevelopment: boolean;
 }
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const getEnv = (key: string): string => {
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key] || '';
+  }
+  const meta = import.meta as unknown as { env?: Record<string, string> };
+  if (meta && meta.env && meta.env[key]) {
+    return meta.env[key] || '';
+  }
+  return '';
+};
+
+const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('SUPABASE_URL');
+const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('SUPABASE_ANON_KEY');
+const groqApiKey = getEnv('VITE_GROQ_API_KEY') || getEnv('GROQ_API_KEY');
+const groqModel = getEnv('VITE_GROQ_MODEL') || getEnv('GROQ_MODEL') || 'llama-3.3-70b-versatile';
 
 const isSupabaseConfigured =
   Boolean(supabaseUrl) &&
@@ -20,15 +36,17 @@ const isSupabaseConfigured =
   !supabaseUrl.includes('placeholder-project') &&
   !supabaseAnonKey.includes('placeholder-anon-key');
 
-if (!isSupabaseConfigured && import.meta.env.DEV) {
-  console.warn(
-    '[IMPACTMESH Config Warning] Supabase client is not fully configured or using placeholders. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.'
-  );
-}
+const isGroqConfigured =
+  Boolean(groqApiKey) &&
+  !groqApiKey.includes('placeholder') &&
+  groqApiKey.startsWith('gsk_');
 
 export const env: ClientEnvironmentConfig = {
   supabaseUrl,
   supabaseAnonKey,
   isSupabaseConfigured,
-  isDevelopment: import.meta.env.DEV,
+  groqApiKey,
+  groqModel,
+  isGroqConfigured,
+  isDevelopment: import.meta.env?.DEV ?? true,
 };

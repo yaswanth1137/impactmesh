@@ -24,8 +24,57 @@ class RealtimeSubscriptionManager {
   private impactListeners: Set<EventCallback<ImpactResult>> = new Set();
   private recommendationListeners: Set<EventCallback<Recommendation>> = new Set();
 
+  private processedEventIds: Set<string> = new Set();
+  private broadcastChannel: BroadcastChannel | null = null;
+
+  constructor() {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        this.broadcastChannel = new BroadcastChannel('impactmesh_events_bus');
+        this.broadcastChannel.onmessage = (msg) => {
+          if (msg.data && msg.data.type === 'DECISION_EVENT') {
+            this.handleIncomingEvent(msg.data.event);
+          }
+        };
+      } catch (err) {
+        console.warn('[RealtimeManager] BroadcastChannel unavailable:', err);
+      }
+    }
+  }
+
   public getConnectionState(): RealtimeConnectionState {
     return this.connectionState;
+  }
+
+  public handleIncomingEvent(event: DecisionEvent): void {
+    if (!event || !event.id) return;
+    if (this.processedEventIds.has(event.id)) {
+      return; // Deduplicate
+    }
+    this.processedEventIds.add(event.id);
+    if (this.processedEventIds.size > 2000) {
+      const first = this.processedEventIds.values().next().value;
+      if (first) this.processedEventIds.delete(first);
+    }
+
+    this.eventListeners.forEach((listener) => {
+      try {
+        listener(event);
+      } catch (err) {
+        console.error('[RealtimeManager] Error in event listener:', err);
+      }
+    });
+  }
+
+  public emitLocalEvent(event: DecisionEvent): void {
+    this.handleIncomingEvent(event);
+    if (this.broadcastChannel) {
+      try {
+        this.broadcastChannel.postMessage({ type: 'DECISION_EVENT', event });
+      } catch (err) {
+        console.warn('[RealtimeManager] BroadcastChannel postMessage failed:', err);
+      }
+    }
   }
 
   public onConnectionStateChange(callback: EventCallback<RealtimeConnectionState>): UnsubscribeFn {
@@ -69,7 +118,7 @@ class RealtimeSubscriptionManager {
         },
         (payload) => {
           const event = payload.new as DecisionEvent;
-          this.eventListeners.forEach((listener) => listener(event));
+          this.handleIncomingEvent(event);
         }
       )
       .subscribe((status) => {

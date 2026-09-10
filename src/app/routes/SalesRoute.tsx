@@ -1,12 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PixelPanel } from '../../components/pixel/PixelPanel.tsx';
 import { PixelBadge } from '../../components/pixel/PixelBadge.tsx';
 import { PixelButton } from '../../components/pixel/PixelButton.tsx';
 import { PixelIcon } from '../../components/pixel/PixelIcon.tsx';
 import { PixelCharacter } from '../../components/pixel/PixelCharacter.tsx';
+import { publishDecisionEvent } from '../../lib/realtime/channel-service.ts';
+import { realtimeSubscriptionManager } from '../../lib/realtime/subscription-manager.ts';
 
 export const SalesRoute: React.FC = () => {
   const [dealAccepted, setDealAccepted] = useState(false);
+  const [isTransmitting, setIsTransmitting] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = realtimeSubscriptionManager.onEvent<'deal_accepted'>(() => {
+      setDealAccepted(true);
+    }, 'deal_accepted');
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleAcceptDeal = async () => {
+    setDealAccepted(true);
+    setIsTransmitting(true);
+
+    try {
+      await publishDecisionEvent({
+        organization_id: '00000000-0000-0000-0000-000000000000',
+        department: 'sales',
+        event_type: 'deal_accepted',
+        entity_id: 'DEAL-APEX-50L',
+        payload: {
+          deal_id: 'DEAL-APEX-50L',
+          final_value: 5000000,
+          close_date: '2026-09-30',
+          sla_commitments: ['SAML SSO Compliance', '30 Calendar Days Delivery SLA', '3 Custom Modules'],
+        },
+        created_by: 'lookout_sales_lead',
+      });
+    } finally {
+      setIsTransmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-5 pb-12 max-w-4xl mx-auto select-none">
@@ -97,11 +131,15 @@ export const SalesRoute: React.FC = () => {
             <PixelButton
               variant={dealAccepted ? 'secondary' : 'primary'}
               size="sm"
-              disabled={dealAccepted}
-              onClick={() => setDealAccepted(true)}
+              disabled={dealAccepted || isTransmitting}
+              onClick={handleAcceptDeal}
               icon={<PixelIcon name="emblem-blacktide" size={13} />}
             >
-              {dealAccepted ? 'DEAL TRANSMITTED (CONTRACT SEALED)' : '[ ACCEPT ENTERPRISE DEAL ]'}
+              {isTransmitting
+                ? 'TRANSMITTING VIA REALTIME...'
+                : dealAccepted
+                ? 'DEAL TRANSMITTED (CONTRACT SEALED)'
+                : '[ ACCEPT ENTERPRISE DEAL ]'}
             </PixelButton>
           </div>
         </div>

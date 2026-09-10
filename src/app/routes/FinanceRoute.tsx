@@ -1,12 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PixelPanel } from '../../components/pixel/PixelPanel.tsx';
 import { PixelBadge } from '../../components/pixel/PixelBadge.tsx';
 import { PixelButton } from '../../components/pixel/PixelButton.tsx';
 import { PixelIcon } from '../../components/pixel/PixelIcon.tsx';
 import { PixelCharacter } from '../../components/pixel/PixelCharacter.tsx';
+import { publishDecisionEvent } from '../../lib/realtime/channel-service.ts';
+import { realtimeSubscriptionManager } from '../../lib/realtime/subscription-manager.ts';
 
 export const FinanceRoute: React.FC = () => {
   const [budgetCutActive, setBudgetCutActive] = useState(true);
+  const [isTransmitting, setIsTransmitting] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = realtimeSubscriptionManager.onEvent<'budget_changed'>((event) => {
+      if (event.payload) {
+        setBudgetCutActive(event.payload.new_budget <= 1100000);
+      }
+    }, 'budget_changed');
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleToggleBudget = async () => {
+    const nextCutActive = !budgetCutActive;
+    setBudgetCutActive(nextCutActive);
+    setIsTransmitting(true);
+
+    try {
+      await publishDecisionEvent({
+        organization_id: '00000000-0000-0000-0000-000000000000',
+        department: 'finance',
+        event_type: 'budget_changed',
+        entity_id: 'BUDGET-MAIN',
+        payload: {
+          department: 'finance',
+          previous_budget: nextCutActive ? 1800000 : 1100000,
+          new_budget: nextCutActive ? 1100000 : 1800000,
+          fiscal_period: 'Q3-2026',
+          rationale: nextCutActive
+            ? 'Discretionary budget ceiling contraction (-₹7.0L)'
+            : 'Baseline budget allocation restored (₹18.0L)',
+        },
+        created_by: 'purser_finance_lead',
+      });
+    } finally {
+      setIsTransmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-5 pb-12 max-w-4xl mx-auto select-none">
@@ -85,10 +125,13 @@ export const FinanceRoute: React.FC = () => {
             <PixelButton
               variant={budgetCutActive ? 'secondary' : 'danger'}
               size="md"
-              onClick={() => setBudgetCutActive((prev) => !prev)}
+              disabled={isTransmitting}
+              onClick={handleToggleBudget}
               icon={<PixelIcon name="coin" size={14} />}
             >
-              {budgetCutActive
+              {isTransmitting
+                ? '[ TRANSMITTING VIA REALTIME... ]'
+                : budgetCutActive
                 ? '[ RESTORE BUDGET (₹18.0L) ]'
                 : '[ TRANSMIT BUDGET CUT (₹18L → ₹11L) ]'}
             </PixelButton>
