@@ -14,6 +14,19 @@ import { SimulatorRoute } from './routes/SimulatorRoute.tsx';
 
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../lib/realtime/subscription-manager.ts';
 
+// Mobile terminals are strictly limited to the 4 department screens
+export const MOBILE_DEPT_ROUTES: { id: NavRoute; label: string; name: string }[] = [
+  { id: 'operations', label: 'OPER', name: 'Operations' },
+  { id: 'sales', label: 'SALE', name: 'Sales' },
+  { id: 'product', label: 'PROD', name: 'Product' },
+  { id: 'finance', label: 'FIN', name: 'Finance' },
+];
+
+const isMobileScreen = () => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768;
+};
+
 const parseRouteFromLocation = (): NavRoute => {
   if (typeof window === 'undefined') return 'command';
   const path = window.location.pathname.toLowerCase();
@@ -25,12 +38,18 @@ const parseRouteFromLocation = (): NavRoute => {
   if (path.includes('finance') || hash.includes('finance')) return 'finance';
   if (path.includes('flowtrace') || hash.includes('flowtrace')) return 'flowtrace';
   if (path.includes('simulator') || hash.includes('simulator')) return 'simulator';
+
+  // If on mobile screen without explicit path, default directly to operations
+  if (window.innerWidth < 768) {
+    return 'operations';
+  }
   return 'command';
 };
 
 export function App() {
   const [currentRoute, setCurrentRoute] = useState<NavRoute>(parseRouteFromLocation);
   const [realtimeState, setRealtimeState] = useState<RealtimeConnectionState>('CONNECTED');
+  const [isMobile, setIsMobile] = useState<boolean>(isMobileScreen);
 
   const navigateTo = useCallback((route: NavRoute) => {
     setCurrentRoute(route);
@@ -56,13 +75,55 @@ export function App() {
     };
     window.addEventListener('popstate', handlePopState);
 
+    // 3. Responsive resize listener
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+
     return () => {
       unsubscribeConn();
       window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   const renderActiveRoute = () => {
+    // On mobile devices, non-department routes (command, flowtrace, simulator) are strictly restricted
+    if (isMobile && (currentRoute === 'command' || currentRoute === 'flowtrace' || currentRoute === 'simulator')) {
+      return (
+        <div className="flex flex-col items-center justify-center p-6 text-center min-h-[60vh] max-w-sm mx-auto space-y-4">
+          <div className="w-14 h-14 bg-[#141A20] border-2 border-[#F87171] text-[#F87171] flex items-center justify-center font-pixel text-2xl shadow-lg shadow-red-950/20">
+            🔒
+          </div>
+          <div>
+            <div className="font-pixel text-xs text-[#F87171] tracking-widest uppercase">
+              DESKTOP ONLY ACCESS
+            </div>
+            <h2 className="font-pixel text-sm text-[#E8E4D8] mt-1 uppercase">
+              CEO COMMAND RESTRICTED
+            </h2>
+          </div>
+          <p className="text-xs text-[#A9ADA8] font-mono leading-relaxed bg-[#101419] p-3 border border-[#2A333B]">
+            Department mobile terminals are authorized strictly for operational controls:
+            <span className="text-[#D6A84F] font-semibold block mt-1">OPERATIONS · SALES · PRODUCT · FINANCE</span>
+            The CEO Command Center and FlowTrace require executive desktop workstation authorization.
+          </p>
+          <div className="grid grid-cols-2 gap-2 w-full pt-2">
+            {MOBILE_DEPT_ROUTES.map((dept) => (
+              <button
+                key={dept.id}
+                onClick={() => navigateTo(dept.id)}
+                className="px-3 py-2 bg-[#1A2128] hover:bg-[#252E37] border border-[#2A333B] text-[#E8E4D8] hover:text-[#D6A84F] font-pixel text-[10px] tracking-wider uppercase cursor-pointer transition-colors"
+              >
+                [{dept.label}] {dept.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     switch (currentRoute) {
       case 'command':
         return <CommandRoute onPlotRoute={() => navigateTo('flowtrace')} />;
@@ -90,30 +151,35 @@ export function App() {
 
       {/* 2. BODY CONTAINER: COMMAND RAIL + MAIN WORKSPACE */}
       <div className="flex-1 flex min-h-0 overflow-hidden">
-        {/* Left Command Rail (Tactical Sidebar) */}
+        {/* Desktop Left Command Rail (Tactical Sidebar - hidden on mobile) */}
         <CommandRail
           currentRoute={currentRoute}
           onNavigate={navigateTo}
           className="hidden md:flex shrink-0"
         />
 
-        {/* Mobile Navigation Header on smaller viewports */}
-        <div className="md:hidden fixed bottom-8 left-0 right-0 z-40 px-3 flex items-center justify-around bg-[#101419]/95 border-t border-[#2A333B] py-2 backdrop-blur-sm">
-          {(['command', 'operations', 'sales', 'product', 'finance', 'flowtrace'] as NavRoute[]).map((r) => (
-            <button
-              key={r}
-              onClick={() => navigateTo(r)}
-              className={`px-2 py-1 font-pixel text-[9px] uppercase cursor-pointer ${
-                currentRoute === r ? 'bg-[#D6A84F] text-[#090B0F]' : 'text-[#A9ADA8]'
-              }`}
-            >
-              {r.slice(0, 4)}
-            </button>
-          ))}
+        {/* Mobile-Only Navigation Bar: Exactly the 4 Department Screens (OPER, SALE, PROD, FIN) */}
+        <div className="md:hidden fixed bottom-8 left-0 right-0 z-40 px-2 py-1.5 flex items-center justify-around bg-[#101419]/98 border-t border-[#2A333B] backdrop-blur-md shadow-2xl">
+          {MOBILE_DEPT_ROUTES.map((dept) => {
+            const isActive = currentRoute === dept.id;
+            return (
+              <button
+                key={dept.id}
+                onClick={() => navigateTo(dept.id)}
+                className={`flex-1 mx-1 py-2 px-1 text-center font-pixel text-[10px] uppercase cursor-pointer border transition-all ${
+                  isActive
+                    ? 'bg-[#D6A84F] text-[#090B0F] border-[#D6A84F] font-bold shadow-md shadow-[#D6A84F]/20'
+                    : 'bg-[#141A20] text-[#A9ADA8] border-[#2A333B] hover:text-[#E8E4D8] hover:border-[#3E4954]'
+                }`}
+              >
+                {dept.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Central Workspace Area */}
-        <main className="flex-1 overflow-y-auto p-3 md:p-6 lg:p-8 chart-grid-bg min-h-0">
+        <main className="flex-1 overflow-y-auto p-3 md:p-6 lg:p-8 chart-grid-bg min-h-0 pb-20 md:pb-8">
           {renderActiveRoute()}
         </main>
       </div>
