@@ -75,7 +75,32 @@ $$\text{EVENT} \longrightarrow \text{validate} \longrightarrow \text{store} \lon
 
 ---
 
-## 3. Physical Device Topology
+## 3. Decision → FlowTrace Execution Bridge (Closed-Loop Architecture)
+
+IMPACTMESH asks: **"WHAT SHOULD WE DO?"**  
+FLOWTRACE answers: **"HOW DO WE EXECUTE THE APPROVED RESPONSE?"**
+
+```mermaid
+graph TD
+    REC["Strategic Recommendation\n(e.g., Reduce Feature Scope)"] --> APPR["Human Approval Gate\n(Command Deck Authority)"]
+    APPR --> PLAN["Execution Plan Generation\n(4-Step Cross-Dept Route)"]
+    PLAN --> FLOW["FlowTrace Execution Bridge\n(Step-by-Step Sequencing)"]
+    FLOW --> STEP["Step Execution & Evidence\n(Product -> Ops -> Sales -> Finance)"]
+    STEP --> EVT["DecisionEvent Emitted\n(with ExecutionContext Provenance)"]
+    EVT --> VAL["Event Validator\n(Schema, Types, Freshness)"]
+    VAL --> STATE["State Transition Engine\n(Deterministic Mutation)"]
+    STATE --> UPD["Business State Updated\n(Demand normalized, Deficit cleared!)"]
+    UPD -.->|Closed Feedback Loop| REC
+```
+
+### Architectural Ownership
+- **IMPACTMESH Owns**: Authoritative `BusinessState`, `DecisionEvent` history, dependency graph, impact analysis, and state transitions.
+- **FLOWTRACE Owns**: Execution plan lifecycle, step dependencies (`dependsOn`), live execution status (`ready`, `running`, `completed`), and execution evidence.
+- **Zero Direct Mutation**: FlowTrace steps *never* directly mutate business metrics. All mutations pass through typed `DecisionEvent`s back into the `StateTransitionEngine`.
+
+---
+
+## 4. Physical Device Topology
 
 | Device | Role | Primary Operational Activity |
 | :--- | :--- | :--- |

@@ -249,6 +249,8 @@ export type EventPayloadMap = {
   runway_changed: RunwayChangedPayload;
 };
 
+import type { ExecutionContext } from './execution.ts';
+
 export interface DecisionEvent<K extends ImpactMeshEventType = ImpactMeshEventType> {
   id: string;
   organization_id: string;
@@ -258,4 +260,8 @@ export interface DecisionEvent<K extends ImpactMeshEventType = ImpactMeshEventTy
   payload: K extends keyof EventPayloadMap ? EventPayloadMap[K] : Record<string, unknown>;
   created_by: string;
   created_at: string;
+
+  // Phase 3 FlowTrace provenance tracking
+  execution_context?: ExecutionContext;
+  executionContext?: ExecutionContext;
 }
