@@ -321,4 +321,16 @@ export interface DecisionEvent<K extends ImpactMeshEventType = ImpactMeshEventTy
   // Phase 3 FlowTrace provenance tracking
   execution_context?: ExecutionContext;
   executionContext?: ExecutionContext;
+
+  // Connector Hub provenance tracking
+  source_metadata?: SourceMetadata;
+}
+
+export interface SourceMetadata {
+  source: string;
+  externalId?: string;
+  eventType?: string;
+  receivedAt?: string;
+  rawPayloadHash?: string;
+  [key: string]: unknown;
 }

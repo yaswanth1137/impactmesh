@@ -71,6 +71,7 @@ export interface BusinessMetrics {
   active_deals_count?: number;
   committed_features_count?: number;
   committed_scope_points?: number;
+  engineering_deficit?: number;
 
   // CamelCase accessors / aliases
   availableBudget?: number;
@@ -85,6 +86,7 @@ export interface BusinessMetrics {
   committedRevenue?: number;
   runwayMonths?: number;
   deliveryPressure?: number;
+  engineeringDeficit?: number;
 }
 
 export interface BusinessState {
@@ -99,6 +101,7 @@ export interface BusinessState {
   // Phase 2 backward-compatible entity state map & versioning
   entities?: Record<string, BusinessEntity>;
   version?: number;
+  processed_event_ids?: string[];
 }
 
 export interface MetricDelta {

@@ -244,7 +244,7 @@ export const SimulatorRoute: React.FC<SimulatorRouteProps> = ({ onSelectRoute })
               onClick={handleStartFullScenario}
               icon={<PixelIcon name="helm" size={15} color="#090B0F" />}
             >
-              [ RUN COMPLETE SCENARIO (1-5) ]
+              [ START SCENARIO ]
             </PixelButton>
 
             <PixelButton
@@ -254,7 +254,7 @@ export const SimulatorRoute: React.FC<SimulatorRouteProps> = ({ onSelectRoute })
               onClick={handleReset}
               icon={<PixelIcon name="anchor" size={15} color="#D6A84F" />}
             >
-              [ ↺ RESET SCENARIO (NON-DESTRUCTIVE) ]
+              [ ↺ RESET SCENARIO ]
             </PixelButton>
           </div>
 

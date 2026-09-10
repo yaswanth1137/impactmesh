@@ -149,7 +149,10 @@ describe('Blacktide Core Demo Scenario', () => {
     expect(step3.nextState.metrics.engineering_capacity).toBe(300);
     // Capacity utilization: 420h demand / 300h capacity = 140% DEFICIT!
     expect(step3.nextState.metrics.capacity_utilization).toBe(140);
+    expect(step3.nextState.metrics.engineering_deficit).toBe(120);
+    expect(step3.nextState.metrics.engineeringDeficit).toBe(120);
     expect(step3.stateDelta.changes.some((c) => c.metric === 'engineeringCapacity' && c.delta === -120)).toBe(true);
+    expect(step3.stateDelta.changes.some((c) => c.metric === 'engineeringDeficit' && c.delta === 120)).toBe(true);
 
     // -------------------------------------------------------------------------
     // STEP 4: EVENT 4 (budget_changed -> ₹18L to ₹11L)
@@ -167,9 +170,12 @@ describe('Blacktide Core Demo Scenario', () => {
     expect(replayedState.metrics.available_budget).toBe(1100000);
     expect(replayedState.metrics.engineering_capacity).toBe(300);
     expect(replayedState.metrics.engineering_demand).toBe(420);
+    expect(replayedState.metrics.engineering_deficit).toBe(120);
+    expect(replayedState.metrics.engineeringDeficit).toBe(120);
     expect(replayedState.metrics.capacity_utilization).toBe(140);
     expect(replayedState.metrics.committed_revenue).toBe(5000000);
     expect(replayedState.state_hash).toBe(step4.nextState.state_hash);
+    expect(replayedState).toEqual(step4.nextState);
 
     // -------------------------------------------------------------------------
     // READABLE STATE SNAPSHOT LOGGING FOR DEBUGGING
@@ -185,6 +191,7 @@ describe('Blacktide Core Demo Scenario', () => {
         'Revenue Pipeline': `₹${(replayedState.metrics.revenue_pipeline / 100000).toFixed(1)}L (₹${replayedState.metrics.revenue_pipeline.toLocaleString()})`,
         'Engineering Capacity': `${replayedState.metrics.engineering_capacity}h`,
         'Engineering Demand': `${replayedState.metrics.engineering_demand}h`,
+        'Engineering Deficit': `${replayedState.metrics.engineering_deficit}h (DEFICIT)`,
         'Capacity Utilization': `${replayedState.metrics.capacity_utilization}% (DEFICIT)`,
         'Budget Pressure': `${(replayedState.metrics.budget_pressure * 100).toFixed(1)}%`,
         'Committed Features': `${replayedState.metrics.committed_features_count}`,
@@ -202,6 +209,7 @@ describe('Blacktide Core Demo Scenario', () => {
     expect(snapshot.metrics['Committed Revenue']).toContain('50.0L');
     expect(snapshot.metrics['Engineering Capacity']).toBe('300h');
     expect(snapshot.metrics['Engineering Demand']).toBe('420h');
+    expect(snapshot.metrics['Engineering Deficit']).toBe('120h (DEFICIT)');
     expect(snapshot.metrics['Capacity Utilization']).toBe('140% (DEFICIT)');
   });
 });

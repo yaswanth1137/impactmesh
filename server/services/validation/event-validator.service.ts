@@ -14,8 +14,6 @@ const VALID_DEPARTMENTS: DepartmentCode[] = [
   'engineering',
   'finance',
   'command_center',
-  'operations',
-  'commercial',
 ];
 
 const EVENT_DEPARTMENT_MAP: Record<ImpactMeshEventType, DepartmentCode[]> = {
@@ -41,7 +39,7 @@ const EVENT_DEPARTMENT_MAP: Record<ImpactMeshEventType, DepartmentCode[]> = {
   inventory_changed: ['engineering', 'command_center', 'operations'],
   resource_unavailable: ['engineering', 'command_center', 'operations'],
   delivery_delay: ['engineering', 'command_center', 'operations'],
-  infrastructure_cost_changed: ['engineering', 'finance', 'command_center'],
+  infrastructure_cost_changed: ['engineering', 'finance', 'command_center', 'operations'],
   supplier_delay: ['engineering', 'command_center', 'operations'],
   // Finance
   budget_changed: ['finance', 'command_center'],
@@ -347,6 +345,168 @@ export class EventValidator implements IEventValidator {
             eventId: event.id,
           });
         }
+        const featureCount = payload.feature_count ?? payload.featureCount;
+        if (featureCount !== undefined && (!isNumber(featureCount) || featureCount < 0 || !Number.isInteger(featureCount))) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'feature_count',
+            message: 'feature_count must be a non-negative integer.',
+            received: featureCount,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'feature_requested': {
+        if (!payload.feature_id || typeof payload.feature_id !== 'string') {
+          errors.push({
+            code: 'INVALID_PAYLOAD',
+            field: 'feature_id',
+            message: 'feature_id is required in feature_requested payload.',
+            eventId: event.id,
+          });
+        }
+        const points = payload.estimated_scope_points;
+        if (points !== undefined && (!isNumber(points) || points < 0)) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'estimated_scope_points',
+            message: 'estimated_scope_points must be a non-negative number.',
+            received: points,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'deadline_changed': {
+        if (!payload.deal_id || typeof payload.deal_id !== 'string') {
+          errors.push({
+            code: 'INVALID_PAYLOAD',
+            field: 'deal_id',
+            message: 'deal_id is required in deadline_changed payload.',
+            eventId: event.id,
+          });
+        }
+        if (!payload.new_deadline || typeof payload.new_deadline !== 'string' || payload.new_deadline.trim() === '') {
+          errors.push({
+            code: 'INVALID_PAYLOAD',
+            field: 'new_deadline',
+            message: 'new_deadline must be a non-empty string.',
+            received: payload.new_deadline,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'customer_risk_changed': {
+        if (!payload.customer_id || typeof payload.customer_id !== 'string') {
+          errors.push({
+            code: 'INVALID_PAYLOAD',
+            field: 'customer_id',
+            message: 'customer_id is required in customer_risk_changed payload.',
+            eventId: event.id,
+          });
+        }
+        const newRisk = payload.new_risk;
+        if (!isNumber(newRisk) || newRisk < 0) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'new_risk',
+            message: 'new_risk must be a non-negative number.',
+            received: newRisk,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'resource_unavailable': {
+        if (!payload.resource_id || typeof payload.resource_id !== 'string') {
+          errors.push({
+            code: 'INVALID_PAYLOAD',
+            field: 'resource_id',
+            message: 'resource_id is required in resource_unavailable payload.',
+            eventId: event.id,
+          });
+        }
+        const days = payload.duration_days;
+        if (!isNumber(days) || days < 0) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'duration_days',
+            message: 'duration_days must be a non-negative number.',
+            received: days,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'delivery_delay': {
+        const days = payload.delay_days;
+        if (!isNumber(days) || days < 0) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'delay_days',
+            message: 'delay_days must be a non-negative number.',
+            received: days,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'infrastructure_cost_changed': {
+        const prev = payload.previous_monthly_cost;
+        const next = payload.new_monthly_cost;
+        if (!isNumber(prev) || prev < 0) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'previous_monthly_cost',
+            message: 'previous_monthly_cost must be a non-negative number.',
+            received: prev,
+            eventId: event.id,
+          });
+        }
+        if (!isNumber(next) || next < 0) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'new_monthly_cost',
+            message: 'new_monthly_cost must be a non-negative number.',
+            received: next,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'supplier_delay': {
+        const days = payload.delay_days;
+        if (!isNumber(days) || days < 0) {
+          errors.push({
+            code: 'INVALID_NUMERIC_VALUE',
+            field: 'delay_days',
+            message: 'delay_days must be a non-negative number.',
+            received: days,
+            eventId: event.id,
+          });
+        }
+        break;
+      }
+
+      case 'spending_freeze': {
+        if (payload.effective_immediately !== undefined && typeof payload.effective_immediately !== 'boolean') {
+          errors.push({
+            code: 'INVALID_PAYLOAD',
+            field: 'effective_immediately',
+            message: 'effective_immediately must be a boolean.',
+            received: payload.effective_immediately,
+            eventId: event.id,
+          });
+        }
         break;
       }
 
@@ -456,6 +616,30 @@ export class EventValidator implements IEventValidator {
     currentState: BusinessState,
     errors: ValidationError[]
   ): void {
+    // If the event has already been applied (idempotent duplicate), skip stale state checks
+    if (
+      currentState.last_event_id === event.id ||
+      currentState.processed_event_ids?.includes(event.id)
+    ) {
+      return;
+    }
+
+    // Explicit state version check if provided
+    if (
+      payload.expected_state_version !== undefined &&
+      currentState.version !== undefined &&
+      payload.expected_state_version !== currentState.version
+    ) {
+      errors.push({
+        code: 'STALE_STATE',
+        message: `Version conflict: incoming event expected state version ${payload.expected_state_version}, but current version is ${currentState.version}.`,
+        expected: currentState.version,
+        received: payload.expected_state_version,
+        entity: 'version',
+        eventId: event.id,
+      });
+    }
+
     if (event.event_type === 'budget_changed') {
       const prev = payload.previous_budget ?? payload.previousBudget;
       if (prev !== undefined && prev !== null) {

@@ -72,7 +72,7 @@ export function createCanonicalBlacktideExecutionPlan(
       entity_id: 'ent-res-eng',
       payload: {
         team_id: 'ent-res-eng',
-        previous_capacity_hours: 420,
+        previous_capacity_hours: 300,
         new_capacity_hours: 300,
         effective_date: '2026-09-15',
       },

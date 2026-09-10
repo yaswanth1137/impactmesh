@@ -111,10 +111,13 @@ describe('ReplayService', () => {
     // Assert absolute state determinism
     expect(stateA.state_hash).toBe(stateB.state_hash);
     expect(stateB.state_hash).toBe(stateC.state_hash);
+    expect(stateA).toEqual(stateB);
+    expect(stateB).toEqual(stateC);
 
     expect(stateA.metrics.available_budget).toBe(1100000);
     expect(stateA.metrics.engineering_capacity).toBe(300);
     expect(stateA.metrics.engineering_demand).toBe(420);
+    expect(stateA.metrics.engineering_deficit).toBe(120);
     expect(stateA.metrics.committed_revenue).toBe(5000000);
     expect(stateA.metrics.capacity_utilization).toBe(140);
   });

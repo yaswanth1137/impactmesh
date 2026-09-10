@@ -402,8 +402,15 @@ describe('Phase 4 Intelligence Core', () => {
   // ===========================================================================
   describe('Full Closed-Loop Pipeline', () => {
     it('executes: event -> state -> impact -> constraints -> options -> recommendation', async () => {
-      // 1. Initial State
-      const initial = getBaselineState();
+      // 1. Initial State (prior to budget cut)
+      const initial: BusinessState = {
+        ...getBaselineState(),
+        metrics: {
+          ...getBaselineState().metrics,
+          available_budget: 1800000,
+        },
+        last_event_id: 'demo-evt-03-capacity-changed',
+      };
 
       // 2. State Transition Engine applies event
       const { nextState } = stateEngine.applyEvent(initial, mockBudgetEvent);
