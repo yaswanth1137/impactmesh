@@ -58,9 +58,9 @@ RULES:
 - Event Payload: ${JSON.stringify(evidence.triggeringEvent.payload, null, 2)}
 
 CURRENT BUSINESS STATE:
-- Available Budget: ₹${evidence.currentBusinessState.metrics.available_budget.toLocaleString()}
-- Committed Budget: ₹${evidence.currentBusinessState.metrics.committed_budget.toLocaleString()}
-- Pipeline Revenue: ₹${evidence.currentBusinessState.metrics.revenue_pipeline.toLocaleString()}
+- Available Budget: ₹${evidence.currentBusinessState.metrics.available_budget.toLocaleString('en-US')}
+- Committed Budget: ₹${evidence.currentBusinessState.metrics.committed_budget.toLocaleString('en-US')}
+- Pipeline Revenue: ₹${evidence.currentBusinessState.metrics.revenue_pipeline.toLocaleString('en-US')}
 - Engineering Capacity: ${evidence.currentBusinessState.metrics.engineering_capacity} hrs/wk
 - Engineering Utilization: ${evidence.currentBusinessState.metrics.capacity_utilization}%
 - Budget Pressure: ${evidence.currentBusinessState.metrics.budget_pressure}

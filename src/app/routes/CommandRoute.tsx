@@ -145,7 +145,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         });
 
         setIsSimulatingCascade(true);
-      } else if (incomingEvent.event_type === 'contractor_cut') {
+      } else if ((incomingEvent.event_type as string) === 'contractor_cut') {
         const payload = incomingEvent.payload as any;
         const newHours = payload?.new_hours ?? 300;
         const capacityPercent = Math.round((newHours / 420) * 100);
@@ -160,8 +160,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
           lastUpdatedEventId: incomingEvent.id,
         }));
         setIsSimulatingCascade(true);
-      } else if (incomingEvent.event_type === 'machine_offline') {
-        const payload = incomingEvent.payload as any;
+      } else if ((incomingEvent.event_type as string) === 'machine_offline') {
         setOperationalMetrics((prev) => ({
           ...prev,
           equipmentStatus: 'OFFLINE (MAINTENANCE)',
@@ -279,7 +278,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         <BusinessPositionStrip
           isSimulatingCascade={isSimulatingCascade}
           operationalMetrics={operationalMetrics}
-          realtimeState={connectionState}
+          connectionState={connectionState}
         />
       </section>
 
