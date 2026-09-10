@@ -27,6 +27,38 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
   >([]);
   const [isExecutingAll, setIsExecutingAll] = useState(false);
   const [showGraph, setShowGraph] = useState(true);
+  const [isGraphFullscreen, setIsGraphFullscreen] = useState(false);
+  const graphContainerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleFsChange = () => {
+      setIsGraphFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+    };
+  }, []);
+
+  const toggleGraphFullscreen = () => {
+    const elem = graphContainerRef.current;
+    if (!elem) return;
+    if (!document.fullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(() => setIsGraphFullscreen((prev) => !prev));
+      } else {
+        setIsGraphFullscreen((prev) => !prev);
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => setIsGraphFullscreen(false));
+      } else {
+        setIsGraphFullscreen(false);
+      }
+    }
+  };
 
   const workflow = useMemo(() => {
     if (!plan) return { id: 'empty', name: 'Empty', version: '1.0', nodes: [], edges: [], telemetry: [], healthScore: 100 };
@@ -152,6 +184,9 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
           <PixelButton variant="ghost" size="sm" onClick={() => setShowGraph(!showGraph)}>
             {showGraph ? '[ HIDE GRAPH ]' : '[ SHOW FLOWTRACE DAG ]'}
           </PixelButton>
+          <PixelButton variant="ghost" size="sm" onClick={toggleGraphFullscreen}>
+            {isGraphFullscreen ? '[ EXIT FULLSCREEN ]' : '[ FULLSCREEN ]'}
+          </PixelButton>
           <PixelButton variant="ghost" size="sm" onClick={handleReset}>
             [ RESET ]
           </PixelButton>
@@ -160,7 +195,7 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
 
       {/* Real FlowTrace DAG Visualization Canvas */}
       {showGraph && (
-        <div className="border-2 border-[#2A333B] bg-[#0A0E13] p-3 pixel-shadow">
+        <div ref={graphContainerRef} className="border-2 border-[#2A333B] bg-[#0A0E13] p-3 pixel-shadow">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-2 px-1 border-b border-[#2A333B] mb-2 font-mono text-xs text-[#AFCBC2]">
             <div className="flex items-center gap-2">
               <PixelIcon name="route-marker" size={14} color="#D6A84F" />
@@ -177,7 +212,7 @@ export const FlowTraceRoute: React.FC<FlowTraceRouteProps> = ({ onBackToCommand 
             </div>
           </div>
 
-          <div className="h-[280px] w-full bg-[#0D131A] rounded overflow-hidden relative border border-[#1C242C]">
+          <div className="h-[320px] w-full bg-[#0D131A] rounded overflow-hidden relative border border-[#1C242C]">
             <WorkflowGraph
               nodesData={workflow.nodes}
               edgesData={workflow.edges}

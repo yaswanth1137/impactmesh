@@ -30,23 +30,23 @@ export const CommandRail: React.FC<CommandRailProps> = ({
   className = '',
 }) => {
   const primaryNav: NavItem[] = [
-    { id: 'command', label: 'DECISION DESK', icon: 'helm', badge: 'LIVE' },
+    { id: 'command', label: 'Decision Desk', icon: 'helm', badge: 'LIVE' },
   ];
 
   const crewNav: NavItem[] = [
-    { id: 'sales', label: 'SALES // LOOKOUT', icon: 'spyglass' },
-    { id: 'commercial', label: 'COMMERCIAL // OPS', icon: 'coin' },
-    { id: 'product', label: 'PRODUCT // NAVIGATOR', icon: 'compass' },
-    { id: 'operations', label: 'OPERATIONS // ENGINEER', icon: 'gear' },
-    { id: 'finance', label: 'FINANCE // PURSER', icon: 'ledger' },
+    { id: 'sales', label: 'Sales', icon: 'spyglass' },
+    { id: 'commercial', label: 'Commercial', icon: 'coin' },
+    { id: 'product', label: 'Product', icon: 'compass' },
+    { id: 'operations', label: 'Operations', icon: 'gear' },
+    { id: 'finance', label: 'Finance', icon: 'ledger' },
   ];
 
   const toolsNav: NavItem[] = [
-    { id: 'simulator', label: 'DEVICE SIMULATOR', icon: 'crosshair' },
+    { id: 'simulator', label: 'Scenario Simulator', icon: 'crosshair' },
   ];
 
   const executionNav: NavItem[] = [
-    { id: 'flowtrace', label: 'FLOWTRACE', icon: 'route-marker', badge: 'READY' },
+    { id: 'flowtrace', label: 'FlowTrace', icon: 'route-marker', badge: 'READY' },
   ];
 
   const renderNavGroup = (items: NavItem[], groupHeader?: string) => (
@@ -101,13 +101,13 @@ export const CommandRail: React.FC<CommandRailProps> = ({
       className={`w-60 bg-[#FAF8F1] border-r border-[#DDD5C5] flex flex-col justify-between select-none shadow-xs ${className}`}
     >
       <div className="p-2.5 space-y-2.5 overflow-y-auto">
-        {renderNavGroup(primaryNav, 'EXECUTIVE DESK')}
+        {renderNavGroup(primaryNav)}
         <div className="border-t border-[#DDD5C5] my-1" />
         {renderNavGroup(crewNav, 'DEPARTMENTS')}
         <div className="border-t border-[#DDD5C5] my-1" />
-        {renderNavGroup(toolsNav, 'TEST TOOLS')}
+        {renderNavGroup(toolsNav, 'TOOLS')}
         <div className="border-t border-[#DDD5C5] my-1" />
-        {renderNavGroup(executionNav, 'EXECUTION BRIDGE')}
+        {renderNavGroup(executionNav, 'EXECUTION')}
       </div>
 
       {/* Bottom Station Status */}

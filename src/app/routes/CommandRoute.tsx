@@ -1,79 +1,45 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { DecisionDesk } from '../../components/signals/DecisionDesk.tsx';
-import { HumanOverrideModal } from '../../components/decisions/HumanOverrideModal.tsx';
 import { DecisionAlert } from '../../components/decisions/DecisionAlert.tsx';
-import { BusinessPositionStrip, type OperationalMetrics } from '../../components/business/BusinessPositionStrip.tsx';
 import { ImpactSummary } from '../../components/decisions/ImpactSummary.tsx';
-import { ImpactMap } from '../../components/impact-map/ImpactMap.tsx';
+import { InteractiveImpactMap } from '../../components/impact-map/InteractiveImpactMap.tsx';
 import { DecisionOptionList } from '../../components/decisions/DecisionOptionList.tsx';
 import { RecommendationCard } from '../../components/decisions/RecommendationCard.tsx';
-import { BusinessCourse } from '../../components/course/BusinessCourse.tsx';
-import { LiveEventStream } from '../../components/decisions/LiveEventStream.tsx';
+import { HumanDecisionPanel } from '../../components/decisions/HumanDecisionPanel.tsx';
+import { ExecutionPlanSection } from '../../components/decisions/ExecutionPlanSection.tsx';
 import { CausalChain } from '../../components/editorial/CausalChain.tsx';
-import { AnalysisQualityCard } from '../../components/editorial/AnalysisQualityCard.tsx';
 import { OutcomeStrip } from '../../components/editorial/OutcomeStrip.tsx';
+import { ScenarioSimulatorModal } from '../../components/simulation/ScenarioSimulatorModal.tsx';
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../../lib/realtime/subscription-manager.ts';
 import { signalService } from '../../../server/engines/signal-engine/signal.service.ts';
 import type { Signal } from '../../../server/engines/signal-engine/signal.interface.ts';
-import type { ExecutiveRole } from '../../types/policies.ts';
 import type { DecisionEvent } from '../../types/events.ts';
 import {
   MOCK_ENTITIES,
   MOCK_DEPENDENCIES,
-  MOCK_EVENT_LOG,
   MOCK_ACTIVE_DECISION_EVENT,
   MOCK_IMPACT_RESULT,
   MOCK_DECISION_OPTIONS,
   MOCK_RECOMMENDATION,
   MOCK_BUSINESS_STATE,
 } from '../../mocks/blacktide-mock.ts';
-
 import { securityPolicyService, CEO_USER } from '../../lib/auth/auth-service.ts';
 
 interface CommandRouteProps {
   onPlotRoute: () => void;
 }
 
-const getInitialOperationalMetrics = (): OperationalMetrics => {
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = window.localStorage.getItem('impactmesh_ops_state');
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch {
-      // fallback
-    }
-  }
-  return {
-    productionCapacity: 100,
-    previousProductionCapacity: 100,
-    capacityHours: 420,
-    inventoryUnits: 1240,
-    previousInventoryUnits: 1240,
-    equipmentStatus: 'ONLINE',
-    inventoryLevel: 'NORMAL',
-    deliveryDelayDays: 0,
-  };
-};
-
 export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
-  const [isSimulatingCascade, setIsSimulatingCascade] = useState<boolean>(() => {
-    const initialMetrics = getInitialOperationalMetrics();
-    return initialMetrics.productionCapacity <= 70 || (initialMetrics.inventoryUnits ?? 1240) < 1000;
-  });
+  const [isSimulatingCascade, setIsSimulatingCascade] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [selectedOptionId, setSelectedOptionId] = useState<string>('opt-scope-reduction');
-  const [events, setEvents] = useState<any[]>(MOCK_EVENT_LOG);
+  const [isDecisionConfirmed, setIsDecisionConfirmed] = useState<boolean>(false);
   const [connectionState, setConnectionState] = useState<RealtimeConnectionState>('CONNECTED');
-  const [operationalMetrics, setOperationalMetrics] = useState<OperationalMetrics>(getInitialOperationalMetrics);
-  const [activeRole, setActiveRole] = useState<'ALL' | 'CEO' | 'CFO' | 'COO'>('ALL');
-  const [showFullGraph, setShowFullGraph] = useState<boolean>(true);
-  const [isOverrideModalOpen, setIsOverrideModalOpen] = useState<boolean>(false);
+  const [showFullGraph, setShowFullGraph] = useState<boolean>(false);
+  const [isScenarioModalOpen, setIsScenarioModalOpen] = useState<boolean>(false);
 
   // Initialize and maintain active signals
   const [signals, setSignals] = useState<Signal[]>(() => {
-    // Generate initial deterministic signals from current business state
     const generated = signalService.processState({
       state: {
         ...MOCK_BUSINESS_STATE,
@@ -105,110 +71,14 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
       setConnectionState(state);
     });
 
-    // 2. Realtime event listener (deduplicated automatically by RealtimeSubscriptionManager)
+    // 2. Realtime event listener
     const unsubscribe = realtimeSubscriptionManager.onEvent((incomingEvent: DecisionEvent) => {
       setIsAnalyzing(true);
-
-      const streamEvent = {
-        id: incomingEvent.id,
-        timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
-        department: incomingEvent.department.toUpperCase(),
-        department_code: incomingEvent.department,
-        actor: incomingEvent.created_by,
-        action: incomingEvent.event_type.replace(/_/g, ' ').toUpperCase(),
-        severity: (incomingEvent.event_type.includes('cut') ||
-        incomingEvent.event_type.includes('delay') ||
-        incomingEvent.event_type.includes('unavailable') ||
-        incomingEvent.event_type.includes('budget') ||
-        incomingEvent.event_type.includes('inventory')
-          ? 'critical'
-          : incomingEvent.event_type.includes('accepted')
-          ? 'success'
-          : 'warning') as 'critical' | 'warning' | 'success' | 'info',
-        details: JSON.stringify(incomingEvent.payload),
-      };
-
-      setEvents((prev) => [streamEvent, ...prev]);
-
-      if (incomingEvent.event_type === 'inventory_changed') {
-        const payload = incomingEvent.payload as any;
-        const newInv = payload?.new_value ?? 860;
-        const prevInv = payload?.previous_value ?? 1240;
-
-        setOperationalMetrics((prev) => {
-          const updated = {
-            ...prev,
-            inventoryUnits: newInv,
-            previousInventoryUnits: prevInv,
-            lastUpdatedEventId: incomingEvent.id,
-            lastUpdatedTime: new Date().toLocaleTimeString('en-US', { hour12: false }),
-          };
-          if (typeof window !== 'undefined') {
-            try {
-              window.localStorage.setItem('impactmesh_ops_state', JSON.stringify(updated));
-            } catch {}
-          }
-          return updated;
-        });
-
-        setIsSimulatingCascade(true);
-      } else if (incomingEvent.event_type === 'capacity_changed') {
-        const payload = incomingEvent.payload as any;
-        const newCapacity = payload?.production_capacity ?? Math.round(((payload?.new_hours ?? 300) / 420) * 100);
-        const prevCapacity = payload?.previous_production_capacity ?? 100;
-        const newInv = payload?.inventory_units ?? 860;
-        const prevInv = payload?.previous_inventory_units ?? 1240;
-
-        setOperationalMetrics((prev) => {
-          const updated = {
-            ...prev,
-            productionCapacity: newCapacity,
-            previousProductionCapacity: prevCapacity,
-            capacityHours: payload?.new_hours ?? 300,
-            inventoryUnits: newInv,
-            previousInventoryUnits: prevInv,
-            shipmentStatus: payload?.shipment_status ?? prev.shipmentStatus,
-            operationsStatus: payload?.operations_status ?? prev.operationsStatus,
-            equipmentStatus: payload?.equipment_status ?? prev.equipmentStatus,
-            lastUpdatedEventId: incomingEvent.id,
-            lastUpdatedTime: new Date().toLocaleTimeString('en-US', { hour12: false }),
-          };
-          if (typeof window !== 'undefined') {
-            try {
-              window.localStorage.setItem('impactmesh_ops_state', JSON.stringify(updated));
-            } catch {}
-          }
-          return updated;
-        });
-
-        setIsSimulatingCascade(true);
-      } else if ((incomingEvent.event_type as string) === 'contractor_cut') {
-        const payload = incomingEvent.payload as any;
-        const newHours = payload?.new_hours ?? 300;
-        const capacityPercent = Math.round((newHours / 420) * 100);
-
-        setOperationalMetrics((prev) => ({
-          ...prev,
-          capacityHours: newHours,
-          productionCapacity: capacityPercent,
-          previousProductionCapacity: 100,
-          inventoryUnits: prev.inventoryUnits ?? 860,
-          previousInventoryUnits: 1240,
-          lastUpdatedEventId: incomingEvent.id,
-        }));
-        setIsSimulatingCascade(true);
-      } else if ((incomingEvent.event_type as string) === 'machine_offline') {
-        setOperationalMetrics((prev) => ({
-          ...prev,
-          equipmentStatus: 'OFFLINE (MAINTENANCE)',
-          lastUpdatedEventId: incomingEvent.id,
-        }));
-        setIsSimulatingCascade(true);
-      } else if (incomingEvent.event_type === 'budget_changed') {
-        const payload = incomingEvent.payload as any;
-        const isCut = (payload?.new_budget ?? 0) <= 1100000;
-        setIsSimulatingCascade(isCut);
-      } else if (incomingEvent.event_type === 'deal_accepted') {
+      if (
+        incomingEvent.event_type === 'capacity_changed' ||
+        incomingEvent.event_type === 'budget_changed' ||
+        (incomingEvent.event_type as string) === 'contractor_cut'
+      ) {
         setIsSimulatingCascade(true);
       } else if ((incomingEvent.event_type as string) === 'pipeline_adjusted') {
         setIsSimulatingCascade(true);
@@ -226,7 +96,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
 
       setTimeout(() => {
         setIsAnalyzing(false);
-      }, 700);
+      }, 600);
     });
 
     return () => {
@@ -235,18 +105,10 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     };
   }, []);
 
-  const handleTriggerSimulation = () => {
-    setIsAnalyzing(true);
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setIsSimulatingCascade((prev) => !prev);
-    }, 800);
-  };
-
-  const scrollToImpact = () => {
-    const el = document.getElementById('impact-map-section');
+  const scrollToDecisionFlow = () => {
+    const el = document.getElementById('what-changed-section');
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -254,7 +116,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     signalService.acknowledgeSignal(signalId, {
       id: 'USR-DEVON-ROSS',
       name: 'Commander Devon Ross',
-      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+      role: 'ceo',
     });
     setSignals([...signalService.getAllSignals()]);
   };
@@ -263,73 +125,46 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
     signalService.dismissSignal(signalId, {
       id: 'USR-DEVON-ROSS',
       name: 'Commander Devon Ross',
-      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+      role: 'ceo',
     });
     setSignals([...signalService.getAllSignals()]);
   };
 
-  const handleRequestContext = (signalId: string, fields: string[]) => {
-    signalService.requestMoreContext(
-      signalId,
-      {
-        id: 'USR-DEVON-ROSS',
-        name: 'Commander Devon Ross',
-        role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
-      },
-      fields
-    );
-    setSignals([...signalService.getAllSignals()]);
-  };
-
-  const handleConvertToDecision = (signalId: string) => {
-    signalService.convertToDecision(signalId, {
-      id: 'USR-DEVON-ROSS',
-      name: 'Commander Devon Ross',
-      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
-    });
-    setSignals([...signalService.getAllSignals()]);
-    scrollToImpact();
-  };
-
-  const handleConfirmHumanDecision = (chosenId: string, isOverride: boolean, overrideReason?: string) => {
+  const handleConfirmHumanDecision = (chosenId: string, decisionNote: string) => {
     setSelectedOptionId(chosenId);
+    setIsDecisionConfirmed(true);
+
     signalService.recordDecisionReview({
       decisionId: 'DEC-APEX-EXPANSION-Q3',
       reviewerId: 'USR-DEVON-ROSS',
       reviewerName: 'Commander Devon Ross',
-      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+      role: 'ceo',
       systemRecommendationId: MOCK_RECOMMENDATION.id,
       systemRecommendedOptionId: MOCK_RECOMMENDATION.top_option_id,
       selectedOptionId: chosenId,
-      override: isOverride,
-      overrideReason,
+      override: chosenId !== MOCK_RECOMMENDATION.top_option_id,
+      overrideReason: decisionNote || undefined,
       approvedAt: new Date().toISOString(),
     });
 
-    onPlotRoute();
+    // Smoothly scroll to Execution Plan
+    const execSec = document.getElementById('execution-plan-section');
+    if (execSec) {
+      execSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
-  const filteredSignals = useMemo(() => {
-    if (activeRole === 'ALL') return signals;
-    return signals.filter((s) => {
-      if (activeRole === 'CEO') return s.materiality === 'HIGH' || s.relatedDepartments.includes('sales');
-      if (activeRole === 'CFO') return s.relatedDepartments.includes('finance');
-      if (activeRole === 'COO') return s.relatedDepartments.includes('engineering') || s.relatedDepartments.includes('product');
-      return true;
-    });
-  }, [signals, activeRole]);
-
-  const affectedEntityIds = isSimulatingCascade
-    ? MOCK_IMPACT_RESULT.affected_entities.map((e) => e.entity_id)
-    : [];
+  const affectedEntityIds = useMemo(() => {
+    return MOCK_IMPACT_RESULT.affected_entities.map((e) => e.entity_id);
+  }, []);
 
   const topOption =
     MOCK_DECISION_OPTIONS.find((o) => o.id === selectedOptionId) ||
     MOCK_DECISION_OPTIONS[0];
 
   return (
-    <div className="space-y-6 pb-20 max-w-6xl mx-auto">
-      {/* 0. Realtime Link Status Bar (Light Theme) */}
+    <div className="space-y-6 pb-20 max-w-6xl mx-auto select-none">
+      {/* 0. Live Telemetry & Scenario Link Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 bg-[#FAF8F1] border border-[#DDD5C5] text-xs font-mono shadow-2xs rounded-xs">
         <div className="flex items-center gap-2">
           <span
@@ -354,74 +189,59 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
             {connectionState}
           </span>
           <span className="text-[#DDD5C5] hidden sm:inline">|</span>
-          <span className="text-[#718894] hidden sm:inline">PERSPECTIVE:</span>
-          <span className="text-[#C89638] font-bold hidden sm:inline">EXECUTIVE DECISION DESK</span>
+          <span className="text-[#718894] hidden sm:inline">PRIMARY PERSPECTIVE:</span>
+          <span className="text-[#18201D] font-bold hidden sm:inline">EXECUTIVE DECISION DESK</span>
         </div>
-        <div className="flex items-center gap-3 text-[11px] text-[#576560]">
-          <span>OPS SYNC: <strong className="text-[#18201D]">{operationalMetrics.productionCapacity}% CAP / {operationalMetrics.inventoryUnits ?? 860}U</strong></span>
-          {operationalMetrics.lastUpdatedTime && (
-            <span className="text-[#718894]">({operationalMetrics.lastUpdatedTime})</span>
-          )}
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsScenarioModalOpen(true)}
+            className="px-2.5 py-1 text-[11px] font-sans font-semibold bg-[#F3EFE5] hover:bg-[#FAF8F1] border border-[#C89638] text-[#18201D] rounded-xs cursor-pointer transition-colors shadow-2xs flex items-center gap-1.5"
+          >
+            <span>Simulate Scenario</span>
+            <span className="font-mono text-[9px] text-[#C89638]">⚡</span>
+          </button>
         </div>
       </div>
 
-      {/* 1. STEP 01 // WHAT NEEDS YOUR ATTENTION? */}
+      {/* 1. HEADER + SECTION 1 — WHAT NEEDS YOUR ATTENTION? (Important Signals) */}
       <section id="decision-desk-section">
         <DecisionDesk
-          signals={filteredSignals}
-          activeRole={activeRole}
-          onSelectRole={(r) => setActiveRole(r)}
-          onReviewSignal={(id) => setSelectedSignalId(id)}
+          signals={signals}
+          onReviewSignal={(id) => {
+            setSelectedSignalId(id);
+            scrollToDecisionFlow();
+          }}
           onAcknowledgeSignal={handleAcknowledgeSignal}
           onDismissSignal={handleDismissSignal}
-          onRequestContext={handleRequestContext}
-          onConvertToDecision={handleConvertToDecision}
-          onToggleFullGraph={() => setShowFullGraph((prev) => !prev)}
           selectedSignalId={selectedSignalId}
         />
       </section>
 
-      {/* 2. STEP 02 // DECISION INTRODUCTION */}
-      <section id="decision-alert-section">
+      {/* 2. SECTION 2 — WHAT CHANGED? (Causal Trigger) */}
+      <section id="what-changed-section">
         <DecisionAlert
-          department={operationalMetrics.productionCapacity <= 70 ? 'OPERATIONS' : 'FINANCE'}
-          actionTitle={
-            (operationalMetrics.inventoryUnits ?? 1240) < 1000
-              ? 'OPERATIONS UPDATE: INVENTORY DEFICIT REQUIRES ACTION'
-              : operationalMetrics.productionCapacity <= 70
-              ? 'OPERATIONS UPDATE: PRODUCTION CAPACITY REDUCED'
-              : 'A BUDGET CHANGE MAY AFFECT A CUSTOMER COMMITMENT'
-          }
-          changeDetail={
-            (operationalMetrics.inventoryUnits ?? 1240) < 1000
-              ? `Safety buffer fell from ${operationalMetrics.previousInventoryUnits ?? 1240} to ${operationalMetrics.inventoryUnits ?? 860} units.`
-              : operationalMetrics.productionCapacity <= 70
-              ? `Production capacity reduced from ${operationalMetrics.previousProductionCapacity ?? 100}% to ${operationalMetrics.productionCapacity}% (${operationalMetrics.capacityHours}h).`
-              : 'Finance reduced the project budget from ₹18L to ₹11L.'
-          }
-          effectsCount={7}
+          department="OPERATIONS &amp; SALES"
+          actionTitle="DELIVERY RISK: ENGINEERING DEMAND EXCEEDS CAPACITY"
+          changeDetail="Sales committed a custom enterprise feature, increasing sprint demand to 420h against 300h available capacity. Milestone delivery is projected to slip by +8 days without intervention."
+          effectsCount={5}
           capacityDeficitHours={120}
           deliveryExposureDays={8}
-          financialExposure="₹50L"
-          onReviewImpact={scrollToImpact}
-          onViewDetails={scrollToImpact}
+          financialExposure="₹50L Contract"
+          onReviewImpact={scrollToDecisionFlow}
+          onViewDetails={scrollToDecisionFlow}
         />
       </section>
 
-      {/* 3. STEP 03 & STEP 05 // WHY DOES THIS MATTER? & HOW SERIOUS IS IT? */}
-      <section id="impact-map-section">
-        <ImpactSummary
-          event={MOCK_ACTIVE_DECISION_EVENT}
-          impact={MOCK_IMPACT_RESULT}
-        />
-      </section>
-
-      {/* 4. STEP 04 // WHAT DOES THIS AFFECT? (Causal Chain + Progressive Disclosure) */}
-      <section className="p-5 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs space-y-4">
+      {/* 3. SECTION 3 — WHAT DOES THIS AFFECT? (Simple Impact Chain + Interactive Graph) */}
+      <section
+        id="impact-map-section"
+        className="p-5 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs space-y-4"
+      >
         <div className="flex items-center justify-between pb-2 border-b border-[#DDD5C5]">
           <div className="flex items-center gap-2">
             <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
-              STEP 04 // DOWNSTREAM EFFECTS
+              STEP 03 // IMPACT CHAIN
             </span>
             <span className="text-[#718894]">/</span>
             <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
@@ -429,42 +249,41 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
             </h3>
           </div>
           <span className="font-mono text-xs text-[#576560]">
-            5 LINKED STATIONS
+            5 LINKED ENTITIES
           </span>
         </div>
 
-        {/* Simplified 5-Step Causal Chain */}
+        {/* Clean 5-Card Horizontal Process Chain */}
         <CausalChain
           showFullGraph={showFullGraph}
           onToggleFullGraph={() => setShowFullGraph((prev) => !prev)}
         />
 
-        {/* Progressive Disclosure: Advanced Full Impact Map */}
+        {/* Progressive Disclosure: Interactive Graph (Celonis-inspired React Flow) */}
         {showFullGraph && (
           <div className="pt-2 animate-in fade-in">
-            <ImpactMap
+            <InteractiveImpactMap
               entities={MOCK_ENTITIES}
               dependencies={MOCK_DEPENDENCIES}
               affectedEntityIds={affectedEntityIds}
               isAnalyzing={isAnalyzing}
               isSimulatingCascade={isSimulatingCascade}
-              onTriggerSimulation={handleTriggerSimulation}
+              showFullMapDefault={false}
             />
           </div>
         )}
       </section>
 
-      {/* 5. ORGANIZATIONAL POSITION (Business Health & Capacity Gauges) */}
-      <section>
-        <BusinessPositionStrip
-          isSimulatingCascade={isSimulatingCascade}
-          operationalMetrics={operationalMetrics}
-          connectionState={connectionState}
+      {/* 4. SECTION 4 — HOW SERIOUS IS IT? (Severity & Impact Summary) */}
+      <section id="severity-summary-section">
+        <ImpactSummary
+          event={MOCK_ACTIVE_DECISION_EVENT}
+          impact={MOCK_IMPACT_RESULT}
         />
       </section>
 
-      {/* 6. STEP 06 // WHAT CAN WE DO? (Candidate Alternatives) */}
-      <section>
+      {/* 5. SECTION 5 — WHAT CAN WE DO? (4 Strategic Options) */}
+      <section id="options-section">
         <DecisionOptionList
           options={MOCK_DECISION_OPTIONS}
           selectedOptionId={selectedOptionId}
@@ -472,55 +291,59 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 7. STEP 07 // SYSTEM VIEW (Recommended Course) */}
-      <section>
+      {/* 6. SECTION 6 — SYSTEM RECOMMENDATION (Plain Reason & Analysis Quality) */}
+      <section id="recommendation-section">
         <RecommendationCard
           recommendation={MOCK_RECOMMENDATION}
           topOption={topOption}
-          onPlotRoute={() => setIsOverrideModalOpen(true)}
-          onSimulate={handleTriggerSimulation}
+          onSimulate={() => setIsScenarioModalOpen(true)}
         />
       </section>
 
-      {/* 8. STEP 09 // CONFIDENCE & TRUST (Analysis Quality) */}
-      <section>
-        <AnalysisQualityCard
-          quality="GOOD"
-          dataCoverage={92}
-          dependencyCoverage={87}
-          constraintCoverage={100}
+      {/* 7. SECTION 7 — HUMAN DECISION (Explicit Choices + Decision Note + Confirm) */}
+      <section id="human-decision-section">
+        <HumanDecisionPanel
+          systemRecommendedOptionId="opt-scope-reduction"
+          systemRecommendedTitle="Reduce Scope (Defer Phase 2 Reporting)"
+          selectedOptionId={selectedOptionId}
+          onSelectOption={(optId) => setSelectedOptionId(optId)}
+          onConfirmDecision={handleConfirmHumanDecision}
+          isConfirmed={isDecisionConfirmed}
         />
       </section>
 
-      {/* 9. STEP 11 // WHAT ACTUALLY HAPPENED? (Closed-Loop Outcome) */}
-      <section>
+      {/* 8. SECTION 8 — EXECUTION PLAN (FlowTrace Execution Bridge) */}
+      <section id="execution-plan-section">
+        <ExecutionPlanSection
+          onOpenFlowTrace={onPlotRoute}
+          decisionTitle={topOption.title}
+          isConfirmed={isDecisionConfirmed}
+        />
+      </section>
+
+      {/* 9. SECTION 9 — WHAT ACTUALLY HAPPENED? (Closed-Loop Outcome) */}
+      <section id="outcome-section">
         <OutcomeStrip
           decisionTitle={topOption.title}
-          outcomeStatus="DECISION COMPLETED // CLOSED-LOOP VERIFIED"
+          outcomeStatus={
+            isDecisionConfirmed
+              ? 'DECISION CONFIRMED // FLOWTRACE READY TO DISPATCH'
+              : 'DECISION PENDING // OPERATIONAL BASELINE UNRESOLVED'
+          }
         />
       </section>
 
-      {/* 10. HISTORICAL TRAJECTORY */}
-      <section>
-        <BusinessCourse />
-      </section>
-
-      {/* 11. RECENT OPERATIONAL ACTIVITY STREAM */}
-      <section>
-        <LiveEventStream
-          events={events}
-          isAnalyzing={isAnalyzing}
-        />
-      </section>
-
-      {/* 12. STEP 08 // YOUR DECISION & EXECUTION (Human Authority Modal) */}
-      <HumanOverrideModal
-        isOpen={isOverrideModalOpen}
-        onClose={() => setIsOverrideModalOpen(false)}
-        recommendation={MOCK_RECOMMENDATION}
-        options={MOCK_DECISION_OPTIONS}
-        selectedOptionId={selectedOptionId}
-        onConfirmChoice={handleConfirmHumanDecision}
+      {/* Scenario Simulator Modal */}
+      <ScenarioSimulatorModal
+        isOpen={isScenarioModalOpen}
+        onClose={() => setIsScenarioModalOpen(false)}
+        onApplyScenarioToDecision={(optId) => {
+          setSelectedOptionId(optId);
+          const humanSec = document.getElementById('human-decision-section');
+          if (humanSec) {
+            humanSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
       />
     </div>
   );

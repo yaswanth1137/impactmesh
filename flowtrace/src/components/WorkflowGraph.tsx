@@ -301,25 +301,65 @@ const FlowInner: React.FC<WorkflowGraphProps> = ({
   const [insertNodeDesc, setInsertNodeDesc] = useState<string>('Validates & normalizes incoming payloads against Pydantic schema contract.');
   const [insertToast, setInsertToast] = useState<string | null>(null);
 
-  // Fullscreen Viewport Mode State
+  // Fullscreen Viewport Mode State using HTML5 Fullscreen API
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [drawerNode, setDrawerNode] = useState<WorkflowNodeData | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const toggleFullscreen = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen().catch(() => {
+          setIsFullscreen((prev) => !prev);
+        });
+      } else {
+        setIsFullscreen((prev) => !prev);
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {
+          setIsFullscreen(false);
+        });
+      } else {
+        setIsFullscreen(false);
+      }
+    }
+  }, []);
 
   useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isDocFullscreen = !!document.fullscreenElement;
+      setIsFullscreen(isDocFullscreen);
+      setTimeout(() => {
+        fitView({ duration: 250, padding: 0.18 });
+      }, 100);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (hoveredEdge) setHoveredEdge(null);
         if (hoveredNode) setHoveredNode(null);
-        if (isFullscreen) setIsFullscreen(false);
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        } else if (isFullscreen) {
+          setIsFullscreen(false);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen, hoveredEdge, hoveredNode]);
 
-  // Detail Drawer State (selected node data)
-  const [drawerNode, setDrawerNode] = useState<WorkflowNodeData | null>(null);
-
-  const containerRef = useRef<HTMLDivElement>(null);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFullscreen, hoveredEdge, hoveredNode, fitView]);
 
   // Cache dragged positions across renders so nodes stay where dropped
   const positionsRef = useRef<Record<string, { x: number; y: number }>>({});
@@ -866,10 +906,7 @@ const FlowInner: React.FC<WorkflowGraphProps> = ({
             Press <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-white">ESC</kbd> or click button to exit
           </span>
           <button
-            onClick={() => {
-              setIsFullscreen(false);
-              setTimeout(() => fitView({ duration: 250, padding: 0.18 }), 80);
-            }}
+            onClick={toggleFullscreen}
             className="px-2.5 py-0.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
           >
             <Minimize2 className="w-3 h-3 text-white" />
@@ -960,13 +997,7 @@ const FlowInner: React.FC<WorkflowGraphProps> = ({
         </button>
         <div className="h-3.5 w-px bg-slate-200 mx-0.5" />
         <button
-          onClick={() => {
-            const next = !isFullscreen;
-            setIsFullscreen(next);
-            setTimeout(() => {
-              fitView({ duration: 250, padding: 0.18 });
-            }, 80);
-          }}
+          onClick={toggleFullscreen}
           className={`px-2.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
             isFullscreen
               ? 'bg-blue-600 text-white shadow-2xs'

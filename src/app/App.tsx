@@ -41,6 +41,7 @@ const parseRouteFromLocation = (): NavRoute => {
   if (path.includes('finance') || hash.includes('finance')) return 'finance';
   if (path.includes('flowtrace') || hash.includes('flowtrace')) return 'flowtrace';
   if (path.includes('simulator') || hash.includes('simulator')) return 'simulator';
+  if (path.includes('command') || hash.includes('command')) return 'command';
 
   // If on mobile screen without explicit path, default directly to operations
   if (window.innerWidth < 768) {

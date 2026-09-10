@@ -5,12 +5,16 @@ interface HeaderBarProps {
   systemOnline?: boolean;
   timestamp?: string;
   nodeId?: string;
+  userRole?: string;
+  userName?: string;
 }
 
 export const HeaderBar: React.FC<HeaderBarProps> = ({
   systemOnline = true,
   timestamp = '09 SEP 2026 // 21:13:42 UTC',
   nodeId = 'BLACKTIDE-01',
+  userRole = 'CEO',
+  userName = 'Devon Ross',
 }) => {
   return (
     <header className="h-14 bg-[#FAF8F1] border-b border-[#DDD5C5] px-4 md:px-8 flex items-center justify-between gap-4 select-none z-30 shadow-xs">
@@ -36,6 +40,12 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
       {/* Right: Telemetry & Status */}
       <div className="flex items-center gap-3 font-mono text-xs">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs text-[11px] font-sans text-[#18201D]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#C89638]" />
+          <span className="font-semibold text-[#18201D]">{userRole}</span>
+          <span className="text-[#718894] hidden md:inline">• {userName}</span>
+        </div>
+
         <div className="hidden lg:flex items-center gap-1.5 text-[10px] text-[#576560] border border-[#DDD5C5] px-2.5 py-1 bg-[#F3EFE5] rounded-xs">
           <span className="text-[#718894]">NODE:</span>
           <span className="text-[#18201D] font-bold">{nodeId}</span>
