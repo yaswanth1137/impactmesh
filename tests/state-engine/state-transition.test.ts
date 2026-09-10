@@ -223,4 +223,138 @@ describe('StateTransitionEngine', () => {
     expect(availChange?.after).toBe(1700000);
     expect(availChange?.delta).toBe(-300000);
   });
+
+  it('11. capacity_changed calculates engineering deficit: 420h demand, 420h -> 300h capacity yields 120h deficit', () => {
+    const initialState = getInitialState();
+    initialState.metrics.engineering_capacity = 420;
+    initialState.metrics.engineering_demand = 420; // 420h demand
+
+    const event: DecisionEvent<'capacity_changed'> = {
+      id: 'evt-cap-deficit',
+      organization_id: 'org-blacktide',
+      department: 'engineering',
+      event_type: 'capacity_changed',
+      entity_id: 'ent-res-eng',
+      payload: {
+        team_id: 'team-core-platform',
+        previous_capacity_hours: 420,
+        new_capacity_hours: 300,
+        effective_date: '2026-09-15',
+      },
+      created_by: 'Devon Ross (Engineering)',
+      created_at: '2026-09-10T10:06:00Z',
+    };
+
+    const { nextState, stateDelta } = engine.applyEvent(initialState, event);
+
+    expect(nextState.metrics.engineering_capacity).toBe(300);
+    expect(nextState.metrics.engineering_demand).toBe(420);
+    expect(nextState.metrics.engineering_deficit).toBe(120);
+    expect(nextState.metrics.engineeringDeficit).toBe(120);
+    expect(nextState.metrics.capacity_utilization).toBe(140);
+
+    const deficitChange = stateDelta.changes.find(
+      (c) => c.metric === 'engineeringDeficit' || c.metric === 'engineering_deficit'
+    );
+    expect(deficitChange).toBeDefined();
+    expect(deficitChange?.before).toBe(0);
+    expect(deficitChange?.after).toBe(120);
+    expect(deficitChange?.delta).toBe(120);
+  });
+
+  it('12. canonical applyEvent standalone function executes deterministically', () => {
+    const initialState = getInitialState();
+    const event: DecisionEvent<'budget_changed'> = {
+      id: 'evt-budget-canonical',
+      organization_id: 'org-blacktide',
+      department: 'finance',
+      event_type: 'budget_changed',
+      entity_id: 'ent-budget-q1',
+      payload: {
+        department: 'finance',
+        previous_budget: 1800000,
+        new_budget: 1100000,
+        fiscal_period: 'Q1-2026',
+      },
+      created_by: 'Priya Sharma (Finance)',
+      created_at: '2026-09-10T10:07:00Z',
+    };
+
+    const result = engine.applyEvent(initialState, event);
+    expect(result.nextState.metrics.available_budget).toBe(1100000);
+    expect(result.stateDelta.changes.some((c) => c.metric === 'availableBudget' && c.delta === -700000)).toBe(true);
+  });
+
+  it('13. applyEvent rejects stale events when previous value mismatches current state', () => {
+    const initialState = getInitialState(); // available_budget is 1,800,000
+
+    const staleEvent: DecisionEvent<'budget_changed'> = {
+      id: 'evt-stale-budget',
+      organization_id: 'org-blacktide',
+      department: 'finance',
+      event_type: 'budget_changed',
+      entity_id: 'ent-budget-q1',
+      payload: {
+        department: 'finance',
+        previous_budget: 1200000, // Stale! Current is 1,800,000
+        new_budget: 1100000,
+        fiscal_period: 'Q1-2026',
+      },
+      created_by: 'Finance Lead',
+      created_at: '2026-09-10T10:08:00Z',
+    };
+
+    expect(() => engine.applyEvent(initialState, staleEvent)).toThrow(
+      /Stale state event rejected/i
+    );
+  });
+
+  it('14. applyEvent rejects malformed/invalid events explicitly', () => {
+    const initialState = getInitialState();
+
+    const malformedEvent = {
+      id: 'evt-malformed',
+      organization_id: 'org-blacktide',
+      department: 'invalid-dept',
+      event_type: 'budget_changed',
+      entity_id: 'ent-budget-q1',
+      payload: {
+        previous_budget: -100,
+        new_budget: 'not-a-number',
+      },
+      created_by: 'Test',
+      created_at: '2026-09-10T10:00:00Z',
+    } as unknown as DecisionEvent;
+
+    expect(() => engine.applyEvent(initialState, malformedEvent)).toThrow(
+      /Invalid event rejected/i
+    );
+  });
+
+  it('15. state engine operates completely offline without network access', () => {
+    const initialState = getInitialState();
+
+    const offlineEvent: DecisionEvent<'deal_accepted'> = {
+      id: 'evt-offline-01',
+      organization_id: 'org-blacktide',
+      department: 'sales',
+      event_type: 'deal_accepted',
+      entity_id: 'ent-deal-offline',
+      payload: {
+        deal_id: 'ent-deal-offline',
+        final_value: 5000000,
+        close_date: '2026-10-15',
+        sla_commitments: ['Offline Guarantee'],
+      },
+      created_by: 'Sales Lead',
+      created_at: '2026-09-10T10:09:00Z',
+    };
+
+    // applyEvent is a pure synchronous in-memory operation
+    const result = engine.applyEvent(initialState, offlineEvent);
+    expect(result).toBeDefined();
+    expect(result.nextState.metrics.committed_revenue).toBe(5000000);
+    expect(result.stateDelta.changes.some((c) => c.metric === 'committedRevenue' && c.delta === 5000000)).toBe(true);
+    expect(result.stateDelta.changes.some((c) => c.metric === 'revenuePipeline' && c.delta === 5000000)).toBe(true);
+  });
 });

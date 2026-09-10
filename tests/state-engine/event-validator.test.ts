@@ -143,4 +143,55 @@ describe('EventValidator', () => {
     expect(staleError?.expected).toBe(420);
     expect(staleError?.received).toBe(500);
   });
+
+  it('rejects string numeric coercion: string "300" fails explicitly without silent coercion', () => {
+    const coercedEvent = {
+      id: 'evt-coerced-cap',
+      organization_id: 'org-test',
+      department: 'engineering',
+      event_type: 'capacity_changed',
+      entity_id: 'ent-eng',
+      payload: {
+        team_id: 'team-platform',
+        previous_capacity_hours: 420,
+        new_capacity_hours: '300', // String instead of number!
+        effective_date: '2026-09-15',
+      },
+      created_by: 'Eng Lead',
+      created_at: '2026-09-10T10:00:00Z',
+    } as unknown as DecisionEvent<'capacity_changed'>;
+
+    const result = validator.validate(coercedEvent, mockState);
+    expect(result.isValid).toBe(false);
+    const numError = result.errors.find(
+      (e) => e.code === 'INVALID_NUMERIC_VALUE' && e.field === 'new_capacity_hours'
+    );
+    expect(numError).toBeDefined();
+    expect(numError?.received).toBe('300');
+  });
+
+  it('rejects invalid feature_count: negative or non-integer is rejected', () => {
+    const invalidCountEvent: DecisionEvent<'feature_committed'> = {
+      id: 'evt-neg-count',
+      organization_id: 'org-test',
+      department: 'product',
+      event_type: 'feature_committed',
+      entity_id: 'ent-feat',
+      payload: {
+        feature_id: 'ent-feat-1',
+        sprint_target: 'Sprint-1',
+        committed_capacity_hours: 420,
+        feature_count: -1, // Invalid negative
+      },
+      created_by: 'Product Lead',
+      created_at: '2026-09-10T10:00:00Z',
+    };
+
+    const result = validator.validate(invalidCountEvent, mockState);
+    expect(result.isValid).toBe(false);
+    const numError = result.errors.find(
+      (e) => e.code === 'INVALID_NUMERIC_VALUE' && e.field === 'feature_count'
+    );
+    expect(numError).toBeDefined();
+  });
 });

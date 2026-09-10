@@ -86,24 +86,7 @@ export async function handleEventIngestion(
 
     const stateToValidate = currentState || DEFAULT_INITIAL_STATE;
 
-    // 1. Validate Event
-    const validationResult = eventValidator.validate(event, stateToValidate);
-    if (!validationResult.isValid) {
-      const isStale = validationResult.errors.some((err) => err.code === 'STALE_STATE');
-      return {
-        statusCode: isStale ? 409 : 400,
-        body: {
-          success: false,
-          error: isStale
-            ? 'Stale state conflict detected: event expectations mismatch current state.'
-            : 'Event validation failed.',
-          code: isStale ? 'STALE_STATE' : 'VALIDATION_ERROR',
-          validationErrors: validationResult.errors,
-        },
-      };
-    }
-
-    // 2. Idempotency Check: if event already processed, return cached outcome without re-mutating
+    // 1. Idempotency Check: if event already processed, return cached outcome without re-mutating
     if (eventStore.hasProcessed(event.id)) {
       const cached = eventStore.getCachedResult(event.id);
       if (cached) {
@@ -119,6 +102,23 @@ export async function handleEventIngestion(
           },
         };
       }
+    }
+
+    // 2. Validate Event
+    const validationResult = eventValidator.validate(event, stateToValidate);
+    if (!validationResult.isValid) {
+      const isStale = validationResult.errors.some((err) => err.code === 'STALE_STATE');
+      return {
+        statusCode: isStale ? 409 : 400,
+        body: {
+          success: false,
+          error: isStale
+            ? 'Stale state conflict detected: event expectations mismatch current state.'
+            : 'Event validation failed.',
+          code: isStale ? 'STALE_STATE' : 'VALIDATION_ERROR',
+          validationErrors: validationResult.errors,
+        },
+      };
     }
 
     // 3. Apply Deterministic State Transition

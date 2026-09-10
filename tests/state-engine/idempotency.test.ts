@@ -111,4 +111,33 @@ describe('Idempotency & Event Store', () => {
       expect(res2.body.nextState.metrics.available_budget).toBe(1100000);
     }
   });
+
+  it('direct applyEvent is idempotent and returns no-op delta when event was already applied', () => {
+    const initialState = getTestState();
+    const event: DecisionEvent<'deal_accepted'> = {
+      id: 'evt-direct-idemp-01',
+      organization_id: 'org-test',
+      department: 'sales',
+      event_type: 'deal_accepted',
+      entity_id: 'ent-deal-apex',
+      payload: {
+        deal_id: 'ent-deal-apex',
+        final_value: 5000000,
+        close_date: '2026-10-15',
+        sla_commitments: ['Tier-1 SLA'],
+      },
+      created_by: 'Sales Lead',
+      created_at: '2026-09-10T10:00:00Z',
+    };
+
+    const firstResult = engine.applyEvent(initialState, event);
+    expect(firstResult.idempotent).toBeFalsy();
+    expect(firstResult.nextState.metrics.committed_revenue).toBe(5000000);
+
+    // Apply the exact same event again to the resulting state
+    const secondResult = engine.applyEvent(firstResult.nextState, event);
+    expect(secondResult.idempotent).toBe(true);
+    expect(secondResult.nextState.metrics.committed_revenue).toBe(5000000); // Did not double to 10M!
+    expect(secondResult.stateDelta.changes).toHaveLength(0);
+  });
 });

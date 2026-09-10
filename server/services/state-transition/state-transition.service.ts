@@ -7,6 +7,7 @@
 
 import type { BusinessMetrics, BusinessState } from '../../../src/types/domain.ts';
 import type { DecisionEvent } from '../../../src/types/events.ts';
+import { eventValidator } from '../validation/event-validator.service.ts';
 import type {
   IStateTransitionEngine,
   StateTransitionResult,
@@ -26,6 +27,7 @@ function computeStateHash(metrics: BusinessMetrics, lastEventId: string | null):
     cr: metrics.committed_revenue ?? 0,
     ec: metrics.engineering_capacity,
     ed: metrics.engineering_demand,
+    edef: metrics.engineering_deficit ?? 0,
     cu: Math.round(metrics.capacity_utilization * 100) / 100,
     bp: Math.round(metrics.budget_pressure * 100) / 100,
     eid: lastEventId ?? '',
@@ -42,6 +44,33 @@ function computeStateHash(metrics: BusinessMetrics, lastEventId: string | null):
 
 export class StateTransitionEngine implements IStateTransitionEngine {
   public applyEvent(currentState: BusinessState, event: DecisionEvent): StateTransitionResult {
+    // 1. In-State Idempotency check: duplicate event returns cached/no-op state without re-mutating
+    if (
+      currentState.last_event_id === event.id ||
+      currentState.processed_event_ids?.includes(event.id)
+    ) {
+      return {
+        nextState: currentState,
+        stateDelta: {
+          eventId: event.id,
+          timestamp: event.created_at || currentState.timestamp,
+          changes: [],
+        },
+        affectedEntities: [],
+        idempotent: true,
+      };
+    }
+
+    // 2. Strict Event Validation & Freshness Check: reject malformed or stale events explicitly
+    const validation = eventValidator.validate(event, currentState);
+    if (!validation.isValid) {
+      const hasMalformedErrors = validation.errors.some((err) => err.code !== 'STALE_STATE');
+      const isStale = !hasMalformedErrors && validation.errors.some((err) => err.code === 'STALE_STATE');
+      const errorMsg = validation.errors.map((e) => e.message).join('; ');
+      throw new Error(
+        `[StateTransitionEngine] ${isStale ? 'Stale state event rejected' : 'Invalid event rejected'}: ${errorMsg}`
+      );
+    }
     // Clone metrics cleanly
     const beforeMetrics: BusinessMetrics = { ...currentState.metrics };
     const nextMetrics: BusinessMetrics = { ...currentState.metrics };
@@ -206,12 +235,17 @@ export class StateTransitionEngine implements IStateTransitionEngine {
         nextMetrics.engineering_demand = nextDemand;
         recordChange('engineeringDemand', 'engineering_demand', prevDemand, nextDemand);
 
-        // Recalculate capacity utilization
+        // Recalculate capacity utilization & deficit
         const cap = nextMetrics.engineering_capacity ?? 0;
         const prevUtil = nextMetrics.capacity_utilization ?? 0;
         const nextUtil = cap > 0 ? Math.round((nextDemand / cap) * 10000) / 100 : 100;
         nextMetrics.capacity_utilization = nextUtil;
         recordChange('capacityUtilization', 'capacity_utilization', prevUtil, nextUtil);
+
+        const prevDeficit = nextMetrics.engineering_deficit ?? Math.max(0, prevDemand - cap);
+        const nextDeficit = Math.max(0, nextDemand - cap);
+        nextMetrics.engineering_deficit = nextDeficit;
+        recordChange('engineeringDeficit', 'engineering_deficit', prevDeficit, nextDeficit);
 
         const countIncrement = Number(payload.feature_count ?? payload.featureCount ?? 1);
         nextMetrics.committed_features_count = (nextMetrics.committed_features_count ?? 0) + countIncrement;
@@ -262,6 +296,11 @@ export class StateTransitionEngine implements IStateTransitionEngine {
         nextMetrics.capacity_utilization = nextUtil;
         recordChange('capacityUtilization', 'capacity_utilization', prevUtil, nextUtil);
 
+        const prevDeficit = nextMetrics.engineering_deficit ?? Math.max(0, prevDemand - cap);
+        const nextDeficit = Math.max(0, nextDemand - cap);
+        nextMetrics.engineering_deficit = nextDeficit;
+        recordChange('engineeringDeficit', 'engineering_deficit', prevDeficit, nextDeficit);
+
         nextMetrics.committed_features_count = Math.max(0, (nextMetrics.committed_features_count ?? 1) - 1);
 
         affectedEntities.push({
@@ -310,12 +349,17 @@ export class StateTransitionEngine implements IStateTransitionEngine {
         nextMetrics.engineering_capacity = nextCap;
         recordChange('engineeringCapacity', 'engineering_capacity', prevCap, nextCap);
 
-        // Recalculate capacity utilization
+        // Recalculate capacity utilization & deficit
         const demand = nextMetrics.engineering_demand ?? 0;
         const prevUtil = nextMetrics.capacity_utilization ?? 0;
         const nextUtil = nextCap > 0 ? Math.round((demand / nextCap) * 10000) / 100 : 100;
         nextMetrics.capacity_utilization = nextUtil;
         recordChange('capacityUtilization', 'capacity_utilization', prevUtil, nextUtil);
+
+        const prevDeficit = nextMetrics.engineering_deficit ?? Math.max(0, demand - prevCap);
+        const nextDeficit = Math.max(0, demand - nextCap);
+        nextMetrics.engineering_deficit = nextDeficit;
+        recordChange('engineeringDeficit', 'engineering_deficit', prevDeficit, nextDeficit);
 
         affectedEntities.push({
           entityId: String(payload.team_id || event.entity_id || 'ent-eng-capacity'),
@@ -529,6 +573,7 @@ export class StateTransitionEngine implements IStateTransitionEngine {
     nextMetrics.revenuePipeline = nextMetrics.revenue_pipeline;
     nextMetrics.engineeringCapacity = nextMetrics.engineering_capacity;
     nextMetrics.engineeringDemand = nextMetrics.engineering_demand;
+    nextMetrics.engineeringDeficit = nextMetrics.engineering_deficit;
     nextMetrics.capacityUtilization = nextMetrics.capacity_utilization;
     nextMetrics.budgetPressure = nextMetrics.budget_pressure;
     nextMetrics.riskScore = nextMetrics.risk_score;
@@ -539,21 +584,29 @@ export class StateTransitionEngine implements IStateTransitionEngine {
 
     const nextStateHash = computeStateHash(nextMetrics, event.id);
 
+    const nextVersion = (currentState.version ?? 1) + 1;
+    const deterministicTimestamp = event.created_at || currentState.timestamp;
+    const processedIds = [
+      ...(currentState.processed_event_ids || []),
+      event.id,
+    ];
+
     const nextState: BusinessState = {
-      id: `state-${Date.now()}-${event.id.slice(0, 8)}`,
+      id: `state-${nextVersion}-${event.id.slice(0, 12)}`,
       organization_id: currentState.organization_id || event.organization_id,
-      timestamp: event.created_at || new Date().toISOString(),
+      timestamp: deterministicTimestamp,
       metrics: nextMetrics,
       state_hash: nextStateHash,
       last_event_id: event.id,
-      created_at: new Date().toISOString(),
+      created_at: deterministicTimestamp,
       entities: currentState.entities ? { ...currentState.entities } : {},
-      version: (currentState.version ?? 1) + 1,
+      version: nextVersion,
+      processed_event_ids: processedIds,
     };
 
     const stateDelta: StateDelta = {
       eventId: event.id,
-      timestamp: event.created_at || new Date().toISOString(),
+      timestamp: deterministicTimestamp,
       changes,
     };
 
@@ -566,3 +619,7 @@ export class StateTransitionEngine implements IStateTransitionEngine {
 }
 
 export const stateTransitionEngine = new StateTransitionEngine();
+export const applyEvent = (
+  currentState: BusinessState,
+  event: DecisionEvent
+): StateTransitionResult => stateTransitionEngine.applyEvent(currentState, event);

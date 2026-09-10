@@ -4,6 +4,7 @@ export { realtimeSubscriptionManager } from '../../lib/realtime/subscription-man
 // State Transition Engine & Replay
 export {
   stateTransitionEngine,
+  applyEvent,
   StateTransitionEngine,
 } from '../../../server/services/state-transition/state-transition.service.ts';
 export type {
