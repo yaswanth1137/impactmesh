@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import "./styles/pixel.css";
+
+:root {
+  color-scheme: dark;
+  --font-pixel: 'Silkscreen', 'VT323', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  font-family: var(--font-sans);
+  background-color: #090B0F;
+  color: #E8E4D8;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #090B0F;
+  color: #E8E4D8;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Nautical selection highlight */
+::selection {
+  background-color: #D6A84F;
+  color: #090B0F;
+}
+
+/* Custom Mechanical Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #101419;
+  border-left: 1px solid #1C242C;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A333B;
+  border: 1px solid #141A20;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D6A84F;
+}
+
+/* Utility font classes */
+.font-pixel {
+  font-family: var(--font-pixel);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
