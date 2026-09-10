@@ -227,6 +227,94 @@ export const SalesRoute: React.FC = () => {
             </button>
           </div>
 
+          {/* Interactive Customer Delivery Commitment change for Demo Scenario */}
+          <div className="p-3 bg-[#101419] border border-[#D6A84F]/40 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#D6A84F] uppercase font-bold tracking-wider">
+                CUSTOMER DELIVERY COMMITMENT
+              </span>
+              <span className="text-[10px] text-[#A0AFA9] font-mono">
+                Apex Global
+              </span>
+            </div>
+
+            <p className="text-[11px] font-sans text-[#A9ADA8] leading-tight">
+              Customer requested expedited milestone delivery for core enterprise deployment.
+            </p>
+
+            <div className="p-2 bg-[#141A20] border border-[#2A333B] flex items-center justify-between text-xs font-mono">
+              <span className="text-[#A9ADA8]">Commitment:</span>
+              <div className="flex items-center gap-2">
+                <span className={deadline === 'June 20' ? 'text-[#D6A84F] font-bold' : 'text-[#6C727A] line-through'}>
+                  June 20
+                </span>
+                <span className="text-[#A9ADA8]">→</span>
+                <span className={deadline === 'June 12' ? 'text-[#4ADE80] font-bold bg-[#4ADE80]/15 px-1.5 py-0.5 border border-[#4ADE80]/30' : 'text-[#A9ADA8]'}>
+                  June 12
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={async () => {
+                setIsTransmitting(true);
+                const prevDate = deadline === 'June 12' ? 'June 12' : 'June 20';
+                const nextDate = deadline === 'June 12' ? 'June 20' : 'June 12';
+
+                try {
+                  const res = await publishDecisionEvent({
+                    organization_id: ENTERPRISE_OPERATOR.organizationId,
+                    department: 'sales',
+                    event_type: 'deadline_changed',
+                    entity_id: 'DEAL-APEX-50L',
+                    payload: {
+                      deal_id: 'DEAL-APEX-50L',
+                      customer_name: 'Apex Global',
+                      previous_deadline: prevDate,
+                      new_deadline: nextDate,
+                      reason: 'Customer procurement requested expedited rollout timeline',
+                      penalty_clause_active: true,
+                    },
+                    created_by: ENTERPRISE_OPERATOR.fullName,
+                  });
+
+                  setDeadline(nextDate);
+                  const eventId = res.event?.id || `evt_${Date.now()}`;
+                  setTransmissionFeedback({
+                    status: 'success',
+                    message: `Saved. Delivery commitment changed to ${nextDate}. Broadcasted to Executive Decision Desk.`,
+                    eventId,
+                  });
+
+                  setRecentEvents((prev) => [
+                    {
+                      id: eventId,
+                      type: 'deadline_changed',
+                      detail: `Apex Global commitment moved: ${prevDate} → ${nextDate}`,
+                      time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+                    },
+                    ...prev.slice(0, 4),
+                  ]);
+                } catch (err: any) {
+                  setTransmissionFeedback({
+                    status: 'error',
+                    message: err.message || 'Transmission failed.',
+                  });
+                } finally {
+                  setIsTransmitting(false);
+                }
+              }}
+              disabled={isTransmitting}
+              className="w-full py-2.5 px-3 font-pixel text-[10px] uppercase border cursor-pointer bg-[#D6A84F] text-[#090B0F] hover:bg-[#C2953E] border-[#D6A84F] font-bold transition-all shadow-sm"
+            >
+              {isTransmitting
+                ? '[ SAVING & BROADCASTING... ]'
+                : deadline === 'June 12'
+                ? '[ RESET COMMITMENT TO JUNE 20 ]'
+                : '[ SAVE CHANGE: EXPEDITE TO JUNE 12 ]'}
+            </button>
+          </div>
+
           <div className="p-3 bg-[#101419] border border-[#2A333B]">
             <span className="text-[10px] text-[#66727C] uppercase block mb-1.5">INTAKE NEW PIPELINE OPPORTUNITY</span>
             <div className="grid grid-cols-2 gap-2">

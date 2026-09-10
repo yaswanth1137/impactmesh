@@ -34,9 +34,11 @@ export interface DealValueChangedPayload {
 
 export interface DeadlineChangedPayload {
   deal_id: string;
+  customer_name?: string;
   previous_deadline: string;
   new_deadline: string;
   penalty_clause_active?: boolean;
+  reason?: string;
 }
 
 export interface DealAcceptedPayload {

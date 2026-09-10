@@ -10,6 +10,8 @@ import { ExecutionPlanSection } from '../../components/decisions/ExecutionPlanSe
 import { CausalChain } from '../../components/editorial/CausalChain.tsx';
 import { OutcomeStrip } from '../../components/editorial/OutcomeStrip.tsx';
 import { ScenarioSimulatorModal } from '../../components/simulation/ScenarioSimulatorModal.tsx';
+import { useLiveBusinessSignals } from '../../lib/realtime/useLiveBusinessSignals.ts';
+import { LiveSignalBanner } from '../../components/signals/LiveSignalBanner.tsx';
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../../lib/realtime/subscription-manager.ts';
 import { signalService } from '../../../server/engines/signal-engine/signal.service.ts';
 import type { Signal } from '../../../server/engines/signal-engine/signal.interface.ts';
@@ -37,6 +39,16 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
   const [connectionState, setConnectionState] = useState<RealtimeConnectionState>('CONNECTED');
   const [showFullGraph, setShowFullGraph] = useState<boolean>(false);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState<boolean>(false);
+
+  // Live Business Signal Hook (Realtime event processing and transient emphasis)
+  const {
+    activeSignal,
+    isEmphasized,
+    acknowledgeSignal,
+    dismissSignal,
+    markSignalReviewed,
+    simulateLiveDepartmentUpdate,
+  } = useLiveBusinessSignals();
 
   // Initialize and maintain active signals
   const [signals, setSignals] = useState<Signal[]>(() => {
@@ -198,6 +210,14 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => simulateLiveDepartmentUpdate('sales_deadline')}
+            className="px-2.5 py-1 text-[11px] font-sans font-semibold bg-[#FAF8F1] hover:bg-[#F3EFE5] border border-[#C89638] text-[#18201D] rounded-xs cursor-pointer transition-colors shadow-2xs flex items-center gap-1.5"
+            title="Simulate incoming customer commitment change from Sales phone"
+          >
+            <span>Simulate Phone Update</span>
+            <span className="font-mono text-[9px] text-[#C89638]">📱</span>
+          </button>
+          <button
             onClick={() => setIsScenarioModalOpen(true)}
             className="px-2.5 py-1 text-[11px] font-sans font-semibold bg-[#F3EFE5] hover:bg-[#FAF8F1] border border-[#C89638] text-[#18201D] rounded-xs cursor-pointer transition-colors shadow-2xs flex items-center gap-1.5"
           >
@@ -207,19 +227,40 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         </div>
       </div>
 
-      {/* 1. HEADER + SECTION 1 — WHAT NEEDS YOUR ATTENTION? (Important Signals) */}
-      <section id="decision-desk-section">
-        <DecisionDesk
-          signals={signals}
-          onReviewSignal={(id) => {
-            setSelectedSignalId(id);
-            scrollToDecisionFlow();
-          }}
-          onAcknowledgeSignal={handleAcknowledgeSignal}
-          onDismissSignal={handleDismissSignal}
-          selectedSignalId={selectedSignalId}
-        />
-      </section>
+      {/* PROMINENT LIVE BUSINESS SIGNAL (Department change alert surface) */}
+      {activeSignal && (
+        <section id="live-business-signal-section" className="animate-in fade-in slide-in-from-top-3 duration-300">
+          <LiveSignalBanner
+            signal={activeSignal}
+            isEmphasized={isEmphasized}
+            onReview={(sig) => {
+              markSignalReviewed(sig.id);
+              if (sig.signalId) {
+                setSelectedSignalId(sig.signalId);
+              }
+              scrollToDecisionFlow();
+            }}
+            onAcknowledge={(id) => acknowledgeSignal(id)}
+            onDismiss={(id) => dismissSignal(id)}
+          />
+        </section>
+      )}
+
+      {/* Main Content Area (de-emphasized briefly when new signal enters) */}
+      <div className={`space-y-6 transition-opacity duration-300 ${isEmphasized ? 'opacity-70' : 'opacity-100'}`}>
+        {/* 1. HEADER + SECTION 1 — WHAT NEEDS YOUR ATTENTION? (Important Signals) */}
+        <section id="decision-desk-section">
+          <DecisionDesk
+            signals={signals}
+            onReviewSignal={(id) => {
+              setSelectedSignalId(id);
+              scrollToDecisionFlow();
+            }}
+            onAcknowledgeSignal={handleAcknowledgeSignal}
+            onDismissSignal={handleDismissSignal}
+            selectedSignalId={selectedSignalId}
+          />
+        </section>
 
       {/* 2. WHAT HAPPENED? (Causal Trigger Briefing) */}
       <section id="what-happened-section">
@@ -334,6 +375,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
           }
         />
       </section>
+      </div>
 
       {/* Scenario Simulator Modal */}
       <ScenarioSimulatorModal
