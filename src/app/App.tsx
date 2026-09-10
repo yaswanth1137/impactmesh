@@ -34,14 +34,14 @@ const parseRouteFromLocation = (): NavRoute => {
   const path = window.location.pathname.toLowerCase();
   const hash = window.location.hash.toLowerCase();
 
-  if (path.includes('operations') || hash.includes('operations') || path.includes('ops')) return 'operations';
-  if (path.includes('commercial') || hash.includes('commercial') || path.includes('comm')) return 'commercial';
+  if (path.includes('command') || hash.includes('command')) return 'command';
+  if (path.includes('flowtrace') || hash.includes('flowtrace')) return 'flowtrace';
+  if (path.includes('simulator') || hash.includes('simulator')) return 'simulator';
   if (path.includes('sales') || hash.includes('sales')) return 'sales';
   if (path.includes('product') || hash.includes('product')) return 'product';
   if (path.includes('finance') || hash.includes('finance')) return 'finance';
-  if (path.includes('flowtrace') || hash.includes('flowtrace')) return 'flowtrace';
-  if (path.includes('simulator') || hash.includes('simulator')) return 'simulator';
-  if (path.includes('command') || hash.includes('command')) return 'command';
+  if (path.includes('operations') || hash.includes('operations') || path.includes('ops') || hash.includes('ops')) return 'operations';
+  if (path.includes('commercial') || hash.includes('commercial') || path === '/comm' || hash === '#comm') return 'commercial';
 
   // If on mobile screen without explicit path, default directly to operations
   if (window.innerWidth < 768) {

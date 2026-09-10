@@ -14,9 +14,11 @@ const DECISION_CHOICES = [
   { id: 'opt-delay-delivery', label: 'Delay Delivery' },
   { id: 'opt-reallocate-capacity', label: 'Reallocate Capacity' },
   { id: 'opt-add-external', label: 'Add External Capacity' },
+  { id: 'opt-split-phases', label: 'Split into Phases' },
 ];
 
 export const HumanDecisionPanel: React.FC<HumanDecisionPanelProps> = ({
+  systemRecommendedOptionId,
   systemRecommendedTitle,
   selectedOptionId,
   onSelectOption,
@@ -26,7 +28,9 @@ export const HumanDecisionPanel: React.FC<HumanDecisionPanelProps> = ({
   const [decisionNote, setDecisionNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedChoice = DECISION_CHOICES.find((c) => c.id === selectedOptionId) || DECISION_CHOICES[0];
+  const selectedChoice =
+    DECISION_CHOICES.find((c) => c.id === selectedOptionId) || DECISION_CHOICES[0];
+  const isOverriding = selectedOptionId !== systemRecommendedOptionId;
 
   const handleConfirm = () => {
     setIsSubmitting(true);
@@ -43,30 +47,29 @@ export const HumanDecisionPanel: React.FC<HumanDecisionPanelProps> = ({
     >
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DDD5C5] pb-3">
-        <div className="flex items-center gap-2">
+        <div>
           <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
-            STEP 07 // HUMAN DECISION
+            HUMAN GOVERNANCE
           </span>
-          <span className="text-[#718894]">/</span>
-          <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
-            Your Decision
+          <h3 className="font-sans font-bold text-xl text-[#18201D] tracking-tight mt-0.5">
+            YOUR DECISION
           </h3>
         </div>
 
         {isConfirmed ? (
           <span className="px-3 py-1 font-mono text-xs font-bold bg-[#5B8D70]/15 text-[#2D5A40] border border-[#5B8D70]/40 rounded-xs uppercase flex items-center gap-1.5">
             <span>✓</span>
-            <span>Decision Confirmed &amp; Recorded</span>
+            <span>Decision Confirmed &amp; Dispatched</span>
           </span>
         ) : (
           <span className="px-3 py-1 font-mono text-[11px] font-bold bg-[#C89638]/15 text-[#8B651B] border border-[#C89638]/30 rounded-xs uppercase">
-            Human Approval Required
+            Explicit Human Choice Required
           </span>
         )}
       </div>
 
       {/* System Recommends vs Your Choice */}
-      <div className="p-3 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+      <div className="p-3.5 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div>
           <span className="font-mono text-[9px] text-[#718894] uppercase font-bold block">
             SYSTEM RECOMMENDS:
@@ -75,24 +78,32 @@ export const HumanDecisionPanel: React.FC<HumanDecisionPanelProps> = ({
             {systemRecommendedTitle}
           </span>
         </div>
-        <div className="text-[11px] text-[#576560] font-sans">
-          The human operator retains final governance and authority.
-        </div>
+
+        {isOverriding ? (
+          <div className="px-2.5 py-1 bg-[#C89638]/15 border border-[#C89638]/40 rounded-xs text-[#8B651B] font-sans text-xs flex items-center gap-1.5">
+            <span className="font-bold">HUMAN OVERRIDE ACTIVE:</span>
+            <span>System recommends {systemRecommendedTitle}, user selected {selectedChoice.label}</span>
+          </div>
+        ) : (
+          <div className="text-[11px] text-[#576560] font-sans">
+            System assists. Human decides.
+          </div>
+        )}
       </div>
 
-      {/* 4 Clickable Decision Options */}
+      {/* Clickable Decision Choices */}
       <div>
         <div className="font-mono text-[10px] text-[#718894] uppercase font-bold mb-2">
-          YOUR DECISION:
+          CHOOSE COURSE:
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
           {DECISION_CHOICES.map((choice) => {
             const isSelected = selectedOptionId === choice.id;
             return (
               <button
                 key={choice.id}
                 onClick={() => onSelectOption(choice.id)}
-                className={`px-3.5 py-3 text-left rounded-xs border transition-all cursor-pointer ${
+                className={`px-3 py-2.5 text-left rounded-xs border transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-[#18201D] text-[#FAF8F1] border-[#18201D] shadow-sm ring-2 ring-[#C89638]'
                     : 'bg-[#FAF8F1] text-[#18201D] border-[#DDD5C5] hover:border-[#C89638] hover:bg-[#F3EFE5]'
@@ -100,7 +111,11 @@ export const HumanDecisionPanel: React.FC<HumanDecisionPanelProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <span className="font-sans font-bold text-xs">{choice.label}</span>
-                  <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-[#C89638]' : 'bg-[#DDD5C5]'}`} />
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      isSelected ? 'bg-[#C89638]' : 'bg-[#DDD5C5]'
+                    }`}
+                  />
                 </div>
               </button>
             );
@@ -111,21 +126,28 @@ export const HumanDecisionPanel: React.FC<HumanDecisionPanelProps> = ({
       {/* Decision Note Field */}
       <div>
         <label className="font-mono text-[10px] text-[#718894] uppercase font-bold block mb-1">
-          Decision Note (Optional context / directive):
+          Decision Note (Optional directive or rationale):
         </label>
         <textarea
           rows={2}
           value={decisionNote}
           onChange={(e) => setDecisionNote(e.target.value)}
-          placeholder="e.g. Approved scope deferral of Phase 2 Custom Analytics for Q3 release. Customer success notified."
+          placeholder={
+            isOverriding
+              ? 'e.g. Strategic customer relationship is more important than delivery date.'
+              : 'e.g. Approved scope deferral of Phase 2 Custom Analytics for Q3 release.'
+          }
           className="w-full p-2.5 text-xs font-sans bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs text-[#18201D] placeholder:text-[#718894] focus:outline-none focus:border-[#C89638]"
         />
       </div>
 
-      {/* Confirm Button */}
+      {/* Confirm Action */}
       <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="text-xs text-[#576560]">
-          Selected: <strong className="text-[#18201D]">{selectedChoice.label}</strong>
+          Chosen Decision: <strong className="text-[#18201D]">{selectedChoice.label}</strong>
+          {isOverriding && (
+            <span className="ml-2 text-[#8B651B] font-semibold">(Override)</span>
+          )}
         </div>
 
         <button
@@ -138,11 +160,11 @@ export const HumanDecisionPanel: React.FC<HumanDecisionPanelProps> = ({
           }`}
         >
           {isSubmitting ? (
-            <span>Recording Decision...</span>
+            <span>RECORDING...</span>
           ) : isConfirmed ? (
-            <span>✓ Decision Confirmed (Update)</span>
+            <span>✓ CONFIRMED (DISPATCHED TO FLOWTRACE)</span>
           ) : (
-            <span>Confirm Decision →</span>
+            <span>CONFIRM DECISION</span>
           )}
         </button>
       </div>

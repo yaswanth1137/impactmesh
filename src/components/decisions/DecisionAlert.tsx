@@ -41,13 +41,10 @@ export const DecisionAlert: React.FC<DecisionAlertProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="inline-block w-2 h-2 rounded-full bg-[#C89638] animate-pulse" />
             <span className="font-mono text-[10px] text-[#C89638] font-bold tracking-widest uppercase">
-              PRIMARY DECISION IN REVIEW
+              WHAT HAPPENED?
             </span>
             <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-[#F3EFE5] text-[#576560] border border-[#DDD5C5] rounded-2xs uppercase">
               DEPT: {department}
-            </span>
-            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-[#C86150]/10 text-[#C86150] border border-[#C86150]/30 rounded-2xs uppercase">
-              ACTION REQUIRED
             </span>
           </div>
 
@@ -57,7 +54,7 @@ export const DecisionAlert: React.FC<DecisionAlertProps> = ({
           </h2>
 
           {/* Plain Language Description */}
-          <p className="font-sans text-sm text-[#576560] leading-relaxed max-w-2xl">
+          <p className="font-sans text-sm md:text-base text-[#18201D] leading-relaxed max-w-3xl bg-[#F3EFE5] p-3.5 border border-[#DDD5C5] rounded-xs">
             {changeDetail}
           </p>
 

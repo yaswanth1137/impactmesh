@@ -51,18 +51,17 @@ export const ExecutionPlanSection: React.FC<ExecutionPlanSectionProps> = ({
     >
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DDD5C5] pb-3">
-        <div className="flex items-center gap-2">
+        <div>
           <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
-            STEP 08 // EXECUTION PLAN
+            EXECUTION SEQUENCE
           </span>
-          <span className="text-[#718894]">/</span>
-          <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
-            Execution Plan &amp; FlowTrace Bridge
+          <h3 className="font-sans font-bold text-xl text-[#18201D] tracking-tight mt-0.5">
+            EXECUTION PLAN
           </h3>
         </div>
 
         <span className="px-2.5 py-0.5 font-mono text-[10px] font-bold bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30 rounded-2xs uppercase">
-          FlowTrace Bridge: Ready
+          FlowTrace Bridge: Connected
         </span>
       </div>
 

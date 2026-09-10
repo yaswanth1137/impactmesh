@@ -8,48 +8,56 @@ export interface DecisionOptionListProps {
   className?: string;
 }
 
-// 4 Canonical strategic options per Prompt Section 5
-export const CANONICAL_OPTIONS: Array<{
+// Feasible decision options dynamically generated for the current situation
+export const FEASIBLE_OPTIONS: Array<{
   id: string;
   title: string;
   action: string;
   consequence: string;
   tradeoff: string;
-  majorRisk: string;
+  secondaryImpact?: string;
   isRecommended?: boolean;
 }> = [
   {
     id: 'opt-scope-reduction',
-    title: '1. REDUCE SCOPE',
-    action: 'Remove lower-priority feature requirements (Phase 2 Reporting & Custom Export).',
-    consequence: 'Closes 105h of engineering deficit immediately; restores sprint balance.',
-    tradeoff: 'Secondary features deferred to the subsequent product release.',
-    majorRisk: 'Customer sales rep minor pushback regarding Phase 2 timeline.',
+    title: 'REDUCE SCOPE',
+    action: 'Remove lower-priority requirements from the commitment (Phase 2 Reporting & Custom Export).',
+    consequence: 'Protects the delivery target and closes 105h engineering deficit immediately.',
+    tradeoff: 'Customer receives reduced scope in the initial release.',
+    secondaryImpact: 'Saves ₹2.4L in engineering overtime and contractor ramp costs.',
     isRecommended: true,
   },
   {
     id: 'opt-delay-delivery',
-    title: '2. DELAY DELIVERY',
-    action: 'Keep full committed scope and renegotiate the delivery date (+14 days).',
-    consequence: 'No feature scope cuts required; existing engineering capacity absorbs work.',
-    tradeoff: 'Milestone target slips from Month 1 to Month 2.',
-    majorRisk: 'Apex procurement team may enforce formal contractual delivery penalty.',
+    title: 'DELAY DELIVERY',
+    action: 'Keep the current scope and move the target delivery date by +14 days.',
+    consequence: 'Engineering remains within capacity without cutting feature commitments.',
+    tradeoff: 'Customer commitment is delayed beyond original target.',
+    secondaryImpact: 'May trigger customer contract delivery penalty discussion.',
   },
   {
     id: 'opt-reallocate-capacity',
-    title: '3. REALLOCATE CAPACITY',
-    action: 'Move senior engineering capacity from internal platform infrastructure.',
-    consequence: 'Customer commitment delivered on original schedule with full scope.',
-    tradeoff: 'Internal infrastructure tech debt project postponed by one quarter.',
-    majorRisk: 'Internal systems maintenance delays increase future sprint defect rate.',
+    title: 'REALLOCATE CAPACITY',
+    action: 'Move engineering resources from another initiative (Internal Platform Infrastructure).',
+    consequence: 'Protects the current customer commitment on original schedule.',
+    tradeoff: 'Another initiative will be postponed by one quarter.',
+    secondaryImpact: 'Internal technical debt deferred to subsequent cycle.',
   },
   {
     id: 'opt-add-external',
-    title: '4. ADD EXTERNAL CAPACITY',
-    action: 'Retain approved specialist contractors to absorb the 120h spike immediately.',
+    title: 'ADD EXTERNAL CAPACITY',
+    action: 'Retain approved specialist contractors to absorb the 120h workload spike.',
     consequence: 'Zero scope cuts and zero delivery delay across all deliverables.',
     tradeoff: 'Requires unbudgeted contractor expense authorization.',
-    majorRisk: 'Vendor onboarding ramp time could still induce minor 2-3 day slippage.',
+    secondaryImpact: 'Vendor onboarding requires 2–3 days senior engineer pairing.',
+  },
+  {
+    id: 'opt-split-phases',
+    title: 'SPLIT INTO PHASES',
+    action: 'Ship critical SAML SSO on the original date; deliver custom export 30 days later.',
+    consequence: 'Unlocks customer go-live without missing the critical contractual milestone.',
+    tradeoff: 'Secondary features delivered in follow-on maintenance release.',
+    secondaryImpact: 'Maintains stakeholder confidence with predictable staged rollouts.',
   },
 ];
 
@@ -60,25 +68,25 @@ export const DecisionOptionList: React.FC<DecisionOptionListProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`space-y-4 ${className}`}>
-      <div className="flex items-center justify-between pb-2 border-b border-[#DDD5C5]">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
-            STEP 05 // OPTIONS
-          </span>
-          <span className="text-[#718894]">/</span>
-          <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
+    <div className={`p-5 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs space-y-4 select-none ${className}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-[#DDD5C5]">
+        <div>
+          <h3 className="font-sans font-bold text-xl text-[#18201D] tracking-tight">
             WHAT CAN WE DO?
           </h3>
+          <p className="font-sans text-xs text-[#576560] mt-0.5">
+            {FEASIBLE_OPTIONS.length} feasible options generated for this situation.
+          </p>
         </div>
-        <span className="font-mono text-xs text-[#576560]">
-          4 STRATEGIC COURSES
+        <span className="font-mono text-[10px] text-[#718894] uppercase tracking-wider">
+          FEASIBLE COURSES (MAX 7)
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {CANONICAL_OPTIONS.map((opt) => {
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
+        {FEASIBLE_OPTIONS.map((opt, idx) => {
           const isSelected = selectedOptionId === opt.id;
+          const priorityNumber = String(idx + 1).padStart(2, '0');
 
           return (
             <div
@@ -92,7 +100,7 @@ export const DecisionOptionList: React.FC<DecisionOptionListProps> = ({
                   projected_metrics: {},
                   feasibility_score: 85,
                   policy_alignment: { ceo: 80, cfo: 80, coo: 80, balanced: 80 },
-                  tradeoffs: { pros: [opt.consequence], cons: [opt.tradeoff], risks: [opt.majorRisk] },
+                  tradeoffs: { pros: [opt.consequence], cons: [opt.tradeoff], risks: [] },
                   rationale: opt.consequence,
                 };
                 onSelectOption && onSelectOption(found as DecisionOption);
@@ -100,53 +108,63 @@ export const DecisionOptionList: React.FC<DecisionOptionListProps> = ({
               className={`p-4 border rounded-xs cursor-pointer transition-all flex flex-col justify-between select-none ${
                 isSelected
                   ? 'bg-[#FAF8F1] border-[#C89638] ring-2 ring-[#C89638]/40 shadow-sm'
-                  : 'bg-[#FAF8F1] border-[#DDD5C5] hover:border-[#C89638] shadow-2xs'
+                  : 'bg-[#FAF8F1] border-[#DDD5C5] hover:border-[#18201D] shadow-2xs'
               }`}
             >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="font-sans font-bold text-sm text-[#18201D] tracking-tight">
+              <div className="space-y-3">
+                {/* Header: Priority + Title */}
+                <div>
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-xs font-bold text-[#C89638]">
+                      {priorityNumber}
+                    </span>
+                    {opt.isRecommended && (
+                      <span className="font-mono text-[8px] font-bold px-1.5 py-0.2 bg-[#C89638]/15 text-[#8B651B] border border-[#C89638]/30 rounded-2xs uppercase">
+                        RECOMMENDED
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="font-sans font-bold text-sm text-[#18201D] tracking-tight mt-0.5">
                     {opt.title}
                   </h4>
-                  {opt.isRecommended && (
-                    <span className="font-mono text-[8px] font-bold px-1.5 py-0.5 bg-[#C89638]/15 text-[#8B651B] border border-[#C89638]/30 rounded-2xs uppercase">
-                      RECOMMENDED
-                    </span>
-                  )}
                 </div>
 
+                {/* Action Description */}
                 <div>
-                  <span className="text-[9px] font-mono uppercase font-bold text-[#718894] block">Action:</span>
-                  <p className="font-sans text-xs text-[#18201D] leading-snug">
+                  <p className="font-sans text-xs text-[#18201D] leading-relaxed">
                     {opt.action}
                   </p>
                 </div>
 
-                <div>
-                  <span className="text-[9px] font-mono uppercase font-bold text-[#5B8D70] block">Primary Consequence:</span>
-                  <p className="font-sans text-xs text-[#576560] leading-snug">
+                {/* Result / Consequence */}
+                <div className="pt-2 border-t border-[#DDD5C5]/60 text-xs">
+                  <span className="font-mono text-[9px] uppercase font-bold text-[#5B8D70] block">
+                    Result:
+                  </span>
+                  <p className="font-sans text-xs text-[#576560] leading-snug mt-0.5">
                     {opt.consequence}
                   </p>
                 </div>
 
-                <div>
-                  <span className="text-[9px] font-mono uppercase font-bold text-[#8B651B] block">Secondary Tradeoff:</span>
-                  <p className="font-sans text-xs text-[#576560] leading-snug">
+                {/* Primary Trade-off */}
+                <div className="text-xs">
+                  <span className="font-mono text-[9px] uppercase font-bold text-[#C86150] block">
+                    Trade-off:
+                  </span>
+                  <p className="font-sans text-xs text-[#576560] leading-snug mt-0.5">
                     {opt.tradeoff}
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-[9px] font-mono uppercase font-bold text-[#C86150] block">Major Risk:</span>
-                  <p className="font-sans text-xs text-[#C86150] leading-snug">
-                    {opt.majorRisk}
                   </p>
                 </div>
               </div>
 
+              {/* Selection indicator footer */}
               <div className="pt-3 mt-3 border-t border-[#DDD5C5] flex items-center justify-between">
-                <span className={`text-[11px] font-sans font-semibold ${isSelected ? 'text-[#C89638]' : 'text-[#718894]'}`}>
-                  {isSelected ? '● Selected Course' : 'Click to Choose'}
+                <span
+                  className={`text-[11px] font-sans font-semibold ${
+                    isSelected ? 'text-[#C89638]' : 'text-[#718894]'
+                  }`}
+                >
+                  {isSelected ? '● Selected' : 'Select'}
                 </span>
                 <span className="font-mono text-[10px] text-[#718894]">→</span>
               </div>

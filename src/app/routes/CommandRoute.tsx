@@ -106,7 +106,10 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
   }, []);
 
   const scrollToDecisionFlow = () => {
-    const el = document.getElementById('what-changed-section');
+    const el =
+      document.getElementById('what-happened-section') ||
+      document.getElementById('why-matters-section') ||
+      document.getElementById('impact-map-section');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -218,42 +221,49 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 2. SECTION 2 — WHAT CHANGED? (Causal Trigger) */}
-      <section id="what-changed-section">
+      {/* 2. WHAT HAPPENED? (Causal Trigger Briefing) */}
+      <section id="what-happened-section">
         <DecisionAlert
           department="OPERATIONS &amp; SALES"
           actionTitle="DELIVERY RISK: ENGINEERING DEMAND EXCEEDS CAPACITY"
-          changeDetail="Sales committed a custom enterprise feature, increasing sprint demand to 420h against 300h available capacity. Milestone delivery is projected to slip by +8 days without intervention."
+          changeDetail="Sales committed a custom feature to Apex Global while engineering capacity was already constrained. Milestone delivery is projected to slip by +8 days without intervention."
           effectsCount={5}
           capacityDeficitHours={120}
           deliveryExposureDays={8}
-          financialExposure="₹50L Contract"
+          financialExposure="Apex Global Contract"
           onReviewImpact={scrollToDecisionFlow}
           onViewDetails={scrollToDecisionFlow}
         />
       </section>
 
-      {/* 3. SECTION 3 — WHAT DOES THIS AFFECT? (Simple Impact Chain + Interactive Graph) */}
+      {/* 3. WHY DOES IT MATTER? (Explanation, Evidence Chips & Severity) */}
+      <section id="why-matters-section">
+        <ImpactSummary
+          event={MOCK_ACTIVE_DECISION_EVENT}
+          impact={MOCK_IMPACT_RESULT}
+        />
+      </section>
+
+      {/* 4. WHAT DOES THIS AFFECT? (Simple Causal Chain + Progressive Disclosure Full Graph) */}
       <section
         id="impact-map-section"
         className="p-5 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs space-y-4"
       >
-        <div className="flex items-center justify-between pb-2 border-b border-[#DDD5C5]">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] text-[#C89638] uppercase font-bold tracking-widest">
-              STEP 03 // IMPACT CHAIN
-            </span>
-            <span className="text-[#718894]">/</span>
-            <h3 className="font-sans font-bold text-lg text-[#18201D] tracking-tight">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-[#DDD5C5]">
+          <div>
+            <h3 className="font-sans font-bold text-xl text-[#18201D] tracking-tight">
               WHAT DOES THIS AFFECT?
             </h3>
+            <p className="font-sans text-xs text-[#576560] mt-0.5">
+              How this decision affects the business across cross-functional operations.
+            </p>
           </div>
-          <span className="font-mono text-xs text-[#576560]">
+          <span className="font-mono text-xs text-[#718894]">
             5 LINKED ENTITIES
           </span>
         </div>
 
-        {/* Clean 5-Card Horizontal Process Chain */}
+        {/* Clean Process Chain: Name + Short Status */}
         <CausalChain
           showFullGraph={showFullGraph}
           onToggleFullGraph={() => setShowFullGraph((prev) => !prev)}
@@ -274,15 +284,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         )}
       </section>
 
-      {/* 4. SECTION 4 — HOW SERIOUS IS IT? (Severity & Impact Summary) */}
-      <section id="severity-summary-section">
-        <ImpactSummary
-          event={MOCK_ACTIVE_DECISION_EVENT}
-          impact={MOCK_IMPACT_RESULT}
-        />
-      </section>
-
-      {/* 5. SECTION 5 — WHAT CAN WE DO? (4 Strategic Options) */}
+      {/* 5. WHAT CAN WE DO? (Feasible Decision Courses) */}
       <section id="options-section">
         <DecisionOptionList
           options={MOCK_DECISION_OPTIONS}

@@ -37,6 +37,17 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
     return s.state === 'NEW' || s.state === 'REVIEWING';
   });
 
+  // Rank by importance (severity + priority score), capped at maximum 7 decisions
+  const rankedSignals = React.useMemo(() => {
+    return [...activeSignals]
+      .sort((a, b) => {
+        if (a.severity === 'CRITICAL' && b.severity !== 'CRITICAL') return -1;
+        if (b.severity === 'CRITICAL' && a.severity !== 'CRITICAL') return 1;
+        return (b.priorityScore || 0) - (a.priorityScore || 0);
+      })
+      .slice(0, 7);
+  }, [activeSignals]);
+
   const acknowledgedCount = signals.filter((s) => s.state === 'ACKNOWLEDGED').length;
   const reviewingSignal = signals.find((s) => s.id === (reviewingSignalId || selectedSignalId));
 
@@ -50,10 +61,13 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
   const handleOpenReview = (id: string) => {
     setReviewingSignalId(id);
     onReviewSignal(id);
-    // Smooth scroll to the causal and impact sections
-    const impactSec = document.getElementById('decision-story-section') || document.getElementById('impact-map-section');
-    if (impactSec) {
-      impactSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Smooth scroll to the decision briefing section
+    const detailSec =
+      document.getElementById('what-happened-section') ||
+      document.getElementById('decision-story-section') ||
+      document.getElementById('impact-map-section');
+    if (detailSec) {
+      detailSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -86,7 +100,7 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
         </div>
       )}
 
-      {/* HEADER: Clean Executive Banner (No prominent hero role switcher) */}
+      {/* HEADER: Clean Executive Decision Desk */}
       <div className="p-5 md:p-6 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="shrink-0 p-1.5 bg-[#F3EFE5] border border-[#DDD5C5] rounded-xs">
@@ -98,13 +112,13 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
                 BLACKTIDE SYSTEMS // DECISION DESK
               </span>
             </div>
-            <h2 className="font-sans text-xl md:text-2xl font-bold text-[#18201D] tracking-tight mt-0.5">
-              What needs your attention?
+            <h2 className="font-sans text-2xl md:text-3xl font-bold text-[#18201D] tracking-tight mt-0.5">
+              WHAT NEEDS YOUR ATTENTION?
             </h2>
-            <p className="font-sans text-xs text-[#576560] mt-0.5">
-              {activeSignals.length > 0
-                ? `${activeSignals.length} decision${activeSignals.length > 1 ? 's' : ''} require review.`
-                : 'Nothing requires attention right now. All commitments are within normal tolerances.'}
+            <p className="font-sans text-xs md:text-sm text-[#576560] mt-1">
+              {rankedSignals.length > 0
+                ? `${rankedSignals.length} decision${rankedSignals.length > 1 ? 's' : ''} currently require attention.`
+                : 'Nothing requires your attention right now. All commitments are within normal tolerances.'}
             </p>
           </div>
         </div>
@@ -122,29 +136,38 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
         )}
       </div>
 
-      {/* SECTION 1 — IMPORTANT SIGNALS */}
+      {/* DECISION LIST — MAXIMUM 7 CONCISE CARDS */}
       <div className="space-y-3">
-        {activeSignals.length === 0 ? (
+        {rankedSignals.length === 0 ? (
           <div className="p-8 bg-[#FAF8F1] border border-[#DDD5C5] rounded-xs text-center font-sans space-y-1">
             <div className="text-sm font-semibold text-[#18201D]">
-              Nothing requires attention right now.
+              Nothing requires your attention right now.
             </div>
             <p className="text-xs text-[#576560]">
               No active deviations, capacity bottlenecks, or exposed customer commitments detected.
             </p>
           </div>
         ) : (
-          activeSignals.map((signal) => {
+          rankedSignals.map((signal, idx) => {
+            const priorityNumber = String(idx + 1).padStart(2, '0');
             const isSelected = signal.id === (reviewingSignalId || selectedSignalId);
             const isCritical = signal.severity === 'CRITICAL';
             const isAcknowledged = signal.state === 'ACKNOWLEDGED';
+
+            // Concise scope summary (e.g. Customer · Product · Engineering · Delivery)
+            const affectsList =
+              signal.evidence.affectedDepartments && signal.evidence.affectedDepartments.length > 0
+                ? signal.evidence.affectedDepartments
+                    .map((d) => d.charAt(0).toUpperCase() + d.slice(1))
+                    .join(' · ')
+                : 'Customer · Product · Engineering · Delivery';
 
             return (
               <div
                 key={signal.id}
                 className={`p-4 md:p-5 border rounded-xs transition-all ${
                   isSelected
-                    ? 'bg-[#FAF8F1] border-[#C89638] shadow-sm ring-1 ring-[#C89638]/30'
+                    ? 'bg-[#FAF8F1] border-[#C89638] shadow-sm ring-1 ring-[#C89638]/40'
                     : isCritical
                     ? 'bg-[#FAF8F1] border-[#C86150]/40 hover:border-[#C86150]'
                     : 'bg-[#FAF8F1] border-[#DDD5C5] hover:border-[#C89638]'
@@ -152,80 +175,45 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   <div className="space-y-1.5 flex-1 min-w-0">
-                    {/* Badge line */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded-2xs uppercase border ${
-                          isCritical
-                            ? 'bg-[#C86150]/10 text-[#C86150] border-[#C86150]/30'
-                            : 'bg-[#C89638]/10 text-[#8B651B] border-[#C89638]/30'
-                        }`}
-                      >
-                        {signal.severity} PRIORITY
+                    {/* Priority + Title */}
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <span className="font-mono text-xs font-bold text-[#C89638] tracking-wider">
+                        {priorityNumber}
                       </span>
-                      <span className="font-mono text-[10px] text-[#718894] uppercase">
-                        {signal.scopeName} ({signal.scope})
-                      </span>
-                      {isAcknowledged && (
-                        <span className="font-mono text-[9px] px-1.5 py-0.5 bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30 rounded-2xs uppercase">
-                          ACKNOWLEDGED
+                      <h3 className="font-sans font-bold text-base md:text-lg text-[#18201D] tracking-tight">
+                        {signal.title.toUpperCase()}
+                      </h3>
+                      {isCritical && (
+                        <span className="font-mono text-[9px] font-bold px-1.5 py-0.2 bg-[#C86150]/10 text-[#C86150] border border-[#C86150]/30 rounded-2xs uppercase">
+                          CRITICAL
                         </span>
                       )}
-                      {signal.state === 'REVIEWING' && (
-                        <span className="font-mono text-[9px] px-1.5 py-0.5 bg-[#718894]/10 text-[#718894] border border-[#718894]/30 rounded-2xs uppercase">
-                          IN REVIEW
+                      {isAcknowledged && (
+                        <span className="font-mono text-[9px] px-1.5 py-0.2 bg-[#5B8D70]/10 text-[#2D5A40] border border-[#5B8D70]/30 rounded-2xs uppercase">
+                          ACKNOWLEDGED
                         </span>
                       )}
                     </div>
 
-                    {/* Clean Title */}
-                    <h3 className="font-sans font-bold text-base md:text-lg text-[#18201D] tracking-tight">
-                      {signal.title}
-                    </h3>
-
-                    {/* 1-Line Explanation */}
+                    {/* One-sentence explanation */}
                     <p className="font-sans text-xs md:text-sm text-[#576560] leading-relaxed max-w-3xl">
                       {signal.summary}
                     </p>
 
-                    {/* Small Facts Row */}
-                    <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-mono text-[#576560]">
-                      {signal.evidence.affectedCapacityHours ? (
-                        <span>
-                          <strong className="text-[#18201D]">Demand:</strong> 420h
-                          <span className="text-[#718894] mx-1">/</span>
-                          <strong className="text-[#18201D]">Capacity:</strong> 300h
-                          <span className="text-[#C86150] font-bold ml-1">
-                            (-{signal.evidence.affectedCapacityHours}h deficit)
-                          </span>
-                        </span>
-                      ) : null}
-                      {signal.evidence.deliveryDelayDays ? (
-                        <span>
-                          <strong className="text-[#18201D]">Delay risk:</strong> +{signal.evidence.deliveryDelayDays} days
-                        </span>
-                      ) : null}
-                      {signal.evidence.financialExposureINR ? (
-                        <span>
-                          <strong className="text-[#C89638]">Contract value:</strong> ₹{(signal.evidence.financialExposureINR / 100000).toFixed(1)}L
-                        </span>
-                      ) : null}
-                    </div>
-
-                    {/* Affected Areas */}
-                    <div className="pt-1 text-[11px] font-sans text-[#718894]">
-                      <span className="font-semibold text-[#576560]">Impact:</span> Customer commitments · Product delivery · Engineering workload
+                    {/* Small impact summary */}
+                    <div className="pt-1 text-xs font-sans text-[#718894]">
+                      <span className="font-semibold text-[#576560]">Affects:</span> {affectsList}
                     </div>
                   </div>
 
-                  {/* Actions: REVIEW / ACKNOWLEDGE / DISMISS */}
+                  {/* Actions: Primary [REVIEW], Optional [Acknowledge], [Dismiss] */}
                   <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
                     <button
                       onClick={() => handleOpenReview(signal.id)}
-                      className="px-4 py-2 font-sans font-semibold text-xs bg-[#FAF8F1] border border-[#C89638] text-[#18201D] hover:bg-[#F3EFE5] rounded-xs transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
+                      className="px-4 py-2 font-sans font-bold text-xs bg-[#18201D] text-[#FAF8F1] hover:bg-[#27312E] rounded-xs transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
                     >
                       <span>REVIEW</span>
-                      <span className="font-mono text-[10px]">→</span>
+                      <span className="font-mono text-[10px] text-[#C89638]">→</span>
                     </button>
                     {!isAcknowledged && (
                       <button
@@ -233,7 +221,7 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
                         className="px-3 py-2 font-sans text-xs bg-[#F3EFE5] border border-[#DDD5C5] text-[#576560] hover:text-[#18201D] hover:bg-[#FAF8F1] rounded-xs transition-colors cursor-pointer"
                         title="Acknowledge signal and monitor"
                       >
-                        ACKNOWLEDGE
+                        Acknowledge
                       </button>
                     )}
                     <button
@@ -241,7 +229,7 @@ export const DecisionDesk: React.FC<DecisionDeskProps> = ({
                       className="px-2.5 py-2 font-sans text-xs text-[#718894] hover:text-[#C86150] transition-colors cursor-pointer"
                       title="Dismiss this signal"
                     >
-                      DISMISS
+                      Dismiss
                     </button>
                   </div>
                 </div>
