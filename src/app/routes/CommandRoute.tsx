@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { DecisionDesk } from '../../components/signals/DecisionDesk.tsx';
+import { HumanOverrideModal } from '../../components/decisions/HumanOverrideModal.tsx';
 import { DecisionAlert } from '../../components/decisions/DecisionAlert.tsx';
 import { BusinessPositionStrip, type OperationalMetrics } from '../../components/business/BusinessPositionStrip.tsx';
 import { ImpactSummary } from '../../components/decisions/ImpactSummary.tsx';
@@ -8,6 +10,9 @@ import { RecommendationCard } from '../../components/decisions/RecommendationCar
 import { BusinessCourse } from '../../components/course/BusinessCourse.tsx';
 import { LiveEventStream } from '../../components/decisions/LiveEventStream.tsx';
 import { realtimeSubscriptionManager, type RealtimeConnectionState } from '../../lib/realtime/subscription-manager.ts';
+import { signalService } from '../../../server/engines/signal-engine/signal.service.ts';
+import type { Signal } from '../../../server/engines/signal-engine/signal.interface.ts';
+import type { ExecutiveRole } from '../../types/policies.ts';
 import type { DecisionEvent } from '../../types/events.ts';
 import {
   MOCK_ENTITIES,
@@ -17,6 +22,7 @@ import {
   MOCK_IMPACT_RESULT,
   MOCK_DECISION_OPTIONS,
   MOCK_RECOMMENDATION,
+  MOCK_BUSINESS_STATE,
 } from '../../mocks/blacktide-mock.ts';
 
 import { securityPolicyService, CEO_USER } from '../../lib/auth/auth-service.ts';
@@ -58,6 +64,34 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
   const [events, setEvents] = useState<any[]>(MOCK_EVENT_LOG);
   const [connectionState, setConnectionState] = useState<RealtimeConnectionState>('CONNECTED');
   const [operationalMetrics, setOperationalMetrics] = useState<OperationalMetrics>(getInitialOperationalMetrics);
+  const [activeRole, setActiveRole] = useState<'ALL' | 'CEO' | 'CFO' | 'COO'>('ALL');
+  const [showFullGraph, setShowFullGraph] = useState<boolean>(true);
+  const [isOverrideModalOpen, setIsOverrideModalOpen] = useState<boolean>(false);
+
+  // Initialize and maintain active signals
+  const [signals, setSignals] = useState<Signal[]>(() => {
+    // Generate initial deterministic signals from current business state
+    const generated = signalService.processState({
+      state: {
+        ...MOCK_BUSINESS_STATE,
+        metrics: {
+          ...MOCK_BUSINESS_STATE.metrics,
+          available_budget: 1100000,
+          committed_revenue: 5000000,
+          engineering_capacity: 300,
+          engineering_demand: 420,
+          capacity_utilization: 1.4,
+          budget_pressure: 1.0,
+          risk_score: 0.68,
+        },
+      },
+    });
+    return generated.length > 0 ? generated : signalService.getAllSignals();
+  });
+
+  const [selectedSignalId, setSelectedSignalId] = useState<string | null>(() => {
+    return signals[0]?.id || null;
+  });
 
   useEffect(() => {
     // Set authenticated user to CEO
@@ -175,6 +209,10 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         setIsSimulatingCascade(true);
       }
 
+      // Re-evaluate signals incrementally
+      const updated = signalService.getAllSignals();
+      setSignals([...updated]);
+
       setTimeout(() => {
         setIsAnalyzing(false);
       }, 700);
@@ -200,6 +238,75 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
       el.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const handleAcknowledgeSignal = (signalId: string) => {
+    signalService.acknowledgeSignal(signalId, {
+      id: 'USR-DEVON-ROSS',
+      name: 'Commander Devon Ross',
+      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+    });
+    setSignals([...signalService.getAllSignals()]);
+  };
+
+  const handleDismissSignal = (signalId: string) => {
+    signalService.dismissSignal(signalId, {
+      id: 'USR-DEVON-ROSS',
+      name: 'Commander Devon Ross',
+      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+    });
+    setSignals([...signalService.getAllSignals()]);
+  };
+
+  const handleRequestContext = (signalId: string, fields: string[]) => {
+    signalService.requestMoreContext(
+      signalId,
+      {
+        id: 'USR-DEVON-ROSS',
+        name: 'Commander Devon Ross',
+        role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+      },
+      fields
+    );
+    setSignals([...signalService.getAllSignals()]);
+  };
+
+  const handleConvertToDecision = (signalId: string) => {
+    signalService.convertToDecision(signalId, {
+      id: 'USR-DEVON-ROSS',
+      name: 'Commander Devon Ross',
+      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+    });
+    setSignals([...signalService.getAllSignals()]);
+    scrollToImpact();
+  };
+
+  const handleConfirmHumanDecision = (chosenId: string, isOverride: boolean, overrideReason?: string) => {
+    setSelectedOptionId(chosenId);
+    signalService.recordDecisionReview({
+      decisionId: 'DEC-APEX-EXPANSION-Q3',
+      reviewerId: 'USR-DEVON-ROSS',
+      reviewerName: 'Commander Devon Ross',
+      role: activeRole === 'ALL' ? 'ceo' : (activeRole.toLowerCase() as ExecutiveRole),
+      systemRecommendationId: MOCK_RECOMMENDATION.id,
+      systemRecommendedOptionId: MOCK_RECOMMENDATION.top_option_id,
+      selectedOptionId: chosenId,
+      override: isOverride,
+      overrideReason,
+      approvedAt: new Date().toISOString(),
+    });
+
+    onPlotRoute();
+  };
+
+  const filteredSignals = useMemo(() => {
+    if (activeRole === 'ALL') return signals;
+    return signals.filter((s) => {
+      if (activeRole === 'CEO') return s.materiality === 'HIGH' || s.relatedDepartments.includes('sales');
+      if (activeRole === 'CFO') return s.relatedDepartments.includes('finance');
+      if (activeRole === 'COO') return s.relatedDepartments.includes('engineering') || s.relatedDepartments.includes('product');
+      return true;
+    });
+  }, [signals, activeRole]);
 
   const affectedEntityIds = isSimulatingCascade
     ? MOCK_IMPACT_RESULT.affected_entities.map((e) => e.entity_id)
@@ -247,7 +354,23 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         </div>
       </div>
 
-      {/* 1. DECISION ALERT: Top executive banner immediately below header */}
+      {/* 1. DECISION DESK: Primary executive entry point ("WHAT NEEDS MY ATTENTION?") */}
+      <section>
+        <DecisionDesk
+          signals={filteredSignals}
+          activeRole={activeRole}
+          onSelectRole={(r) => setActiveRole(r)}
+          onReviewSignal={(id) => setSelectedSignalId(id)}
+          onAcknowledgeSignal={handleAcknowledgeSignal}
+          onDismissSignal={handleDismissSignal}
+          onRequestContext={handleRequestContext}
+          onConvertToDecision={handleConvertToDecision}
+          onToggleFullGraph={() => setShowFullGraph((prev) => !prev)}
+          selectedSignalId={selectedSignalId}
+        />
+      </section>
+
+      {/* 2. DECISION ALERT: Top executive banner immediately below desk */}
       <section>
         <DecisionAlert
           department={operationalMetrics.productionCapacity <= 70 ? 'OPERATIONS' : 'FINANCE'}
@@ -273,7 +396,7 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 2. BUSINESS POSITION: Concise executive metric strip with realtime updates */}
+      {/* 3. BUSINESS POSITION: Concise executive metric strip with realtime updates */}
       <section>
         <BusinessPositionStrip
           isSimulatingCascade={isSimulatingCascade}
@@ -282,27 +405,29 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 3. DECISION IMPACT SUMMARY */}
-      <section>
+      {/* 4. IMPACT SUMMARY: What changed, affected, at risk, financial exposure */}
+      <section id="impact-map-section">
         <ImpactSummary
           event={MOCK_ACTIVE_DECISION_EVENT}
           impact={MOCK_IMPACT_RESULT}
         />
       </section>
 
-      {/* 4. IMPACT MAP: What does this decision affect? */}
-      <section id="impact-map-section">
-        <ImpactMap
-          entities={MOCK_ENTITIES}
-          dependencies={MOCK_DEPENDENCIES}
-          affectedEntityIds={affectedEntityIds}
-          isAnalyzing={isAnalyzing}
-          isSimulatingCascade={isSimulatingCascade}
-          onTriggerSimulation={handleTriggerSimulation}
-        />
-      </section>
+      {/* 5. IMPACT MAP: What does this decision affect? (Progressive Disclosure) */}
+      {showFullGraph && (
+        <section>
+          <ImpactMap
+            entities={MOCK_ENTITIES}
+            dependencies={MOCK_DEPENDENCIES}
+            affectedEntityIds={affectedEntityIds}
+            isAnalyzing={isAnalyzing}
+            isSimulatingCascade={isSimulatingCascade}
+            onTriggerSimulation={handleTriggerSimulation}
+          />
+        </section>
+      )}
 
-      {/* 5. DECISION ALTERNATIVES: What can we do? */}
+      {/* 6. DECISION ALTERNATIVES: What can we do? */}
       <section>
         <DecisionOptionList
           options={MOCK_DECISION_OPTIONS}
@@ -311,28 +436,38 @@ export const CommandRoute: React.FC<CommandRouteProps> = ({ onPlotRoute }) => {
         />
       </section>
 
-      {/* 6. RECOMMENDED COURSE: Visually dominant recommendation card */}
+      {/* 7. RECOMMENDED COURSE: Visually dominant recommendation card */}
       <section>
         <RecommendationCard
           recommendation={MOCK_RECOMMENDATION}
           topOption={topOption}
-          onPlotRoute={onPlotRoute}
+          onPlotRoute={() => setIsOverrideModalOpen(true)}
           onSimulate={handleTriggerSimulation}
         />
       </section>
 
-      {/* 7. BUSINESS COURSE: Secondary organizational trajectory */}
+      {/* 8. BUSINESS COURSE: Secondary organizational trajectory */}
       <section>
         <BusinessCourse />
       </section>
 
-      {/* 8. LIVE EVENT LOG: Secondary auditability stream */}
+      {/* 9. LIVE EVENT LOG: Secondary auditability stream */}
       <section>
         <LiveEventStream
           events={events}
           isAnalyzing={isAnalyzing}
         />
       </section>
+
+      {/* 10. HUMAN OVERRIDE MODAL: Mandatory human governance before FlowTrace dispatch */}
+      <HumanOverrideModal
+        isOpen={isOverrideModalOpen}
+        onClose={() => setIsOverrideModalOpen(false)}
+        recommendation={MOCK_RECOMMENDATION}
+        options={MOCK_DECISION_OPTIONS}
+        selectedOptionId={selectedOptionId}
+        onConfirmChoice={handleConfirmHumanDecision}
+      />
     </div>
   );
 };
